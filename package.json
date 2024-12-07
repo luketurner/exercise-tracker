@@ -9,6 +9,7 @@
     "migration:run": "drizzle-kit migrate"
   },
   "devDependencies": {
+    "@flydotio/dockerfile": "^0.5.9",
     "@types/bun": "latest",
     "@types/express": "^5.0.0",
     "@types/pg": "^8.11.10",
