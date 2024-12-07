@@ -5,7 +5,7 @@ const port = 3000;
 app.set("view engine", "pug");
 
 app.get("/", (req, res) => {
-  res.send("Hello World!!");
+  res.render("index", { title: "Exercise Tracker", message: "Hello world!" });
 });
 
 app.listen(port, () => {
