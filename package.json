@@ -1,6 +1,6 @@
 {
   "name": "exercise-tracker",
-  "module": "index.ts",
+  "module": "src/index.ts",
   "type": "module",
   "scripts": {
     "migration:generate": "drizzle-kit generate",
