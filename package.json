@@ -2,6 +2,10 @@
   "name": "exercise-tracker",
   "module": "index.ts",
   "type": "module",
+  "scripts": {
+    "migration:generate": "drizzle-kit generate",
+    "migration:run": "drizzle-kit migrate"
+  },
   "devDependencies": {
     "@types/bun": "latest",
     "@types/pg": "^8.11.10",
