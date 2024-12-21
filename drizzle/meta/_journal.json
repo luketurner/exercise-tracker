@@ -8,6 +8,13 @@
       "when": 1733602908448,
       "tag": "0000_striped_speed",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1734812373326,
+      "tag": "0001_magical_mercury",
+      "breakpoints": true
     }
   ]
 }
