@@ -1,9 +1,16 @@
+import { toNodeHandler } from "better-auth/node";
 import { db } from "./db";
 import { exercisesTable } from "./db/schema";
+import { auth } from "./auth";
 
 const express = require("express");
 const app = express();
 const port = 3000;
+
+// Note -- make sure to use JSON middleware _after_ this
+app.all("/api/auth/*", toNodeHandler(auth));
+
+app.use(express.static("public"));
 
 app.set("view engine", "pug");
 
