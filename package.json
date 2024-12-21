@@ -8,14 +8,18 @@
     "migration:generate": "drizzle-kit generate",
     "migration:run": "drizzle-kit migrate",
     "db:start": "podman start exercise-tracker-db",
-    "db:create": "podman run -d -p 5432:5432 --name exercise-tracker-db -e POSTGRES_PASSWORD=foobar postgres"
+    "db:create": "podman run -d -p 5432:5432 --name exercise-tracker-db -e POSTGRES_PASSWORD=foobar postgres",
+    "client:dev": "esbuild client/auth.js --bundle --outfile=public/main.js --sourcemap --watch",
+    "client:build": "esbuild client/auth.js --bundle --outfile=public/main.js --minify"
   },
   "devDependencies": {
     "@flydotio/dockerfile": "^0.5.9",
+    "@starfederation/datastar": "^0.21.3",
     "@types/bun": "latest",
     "@types/express": "^5.0.0",
     "@types/pg": "^8.11.10",
     "drizzle-kit": "^0.29.1",
+    "esbuild": "^0.24.2",
     "tsx": "^4.19.2"
   },
   "peerDependencies": {
