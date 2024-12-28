@@ -17,14 +17,15 @@ app.set("view engine", "pug");
 app.use(getSessionMiddleware);
 
 app.get("/", async (req, res) => {
-  const exercise = (await db.select().from(exercisesTable).limit(1))[0];
-
   const { user } = req;
+
+  if (user) {
+    return res.redirect("/today");
+  }
 
   res.render("index", {
     title: "Exercise Tracker",
     message: "Hello world!",
-    exercise,
     user,
   });
 });
