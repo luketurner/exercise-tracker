@@ -42,13 +42,6 @@ authenticatedRouter.get("/today", async (req, res) => {
   });
 });
 
-if ((await db.$count(exercisesTable)) == 0) {
-  console.log("Inserting demo exercise");
-  await db.insert(exercisesTable).values({
-    name: "Demo exercise",
-  });
-}
-
 app.use(authenticatedRouter);
 
 app.listen(port, () => {
