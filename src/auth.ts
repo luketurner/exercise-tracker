@@ -47,7 +47,7 @@ export const requireSessionOrRedirect = async (
   next: NextFunction
 ) => {
   try {
-    if (!req.user) {
+    if (!req.user || !req.session) {
       res.redirect("/");
     }
     next();

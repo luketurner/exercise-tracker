@@ -8,6 +8,11 @@ export interface RequestWithSession extends Request {
   session?: Session;
 }
 
+export interface RequestWithGuaranteedSession extends RequestWithSession {
+  user: User;
+  session: Session;
+}
+
 const express = require("express");
 const app = express();
 const port = 3000;
