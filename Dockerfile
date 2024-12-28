@@ -27,6 +27,9 @@ RUN bun install --ci
 # Copy application code
 COPY . .
 
+# compile server-side code -- just to ensure there's no compile errors
+RUN bun run compile
+
 # compile client-side code
 RUN bun run client:build
 
