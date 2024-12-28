@@ -1,7 +1,12 @@
-import { toNodeHandler, fromNodeHeaders } from "better-auth/node";
-import { db } from "./db";
-import { exercisesTable } from "./db/schema";
+import { toNodeHandler } from "better-auth/node";
 import { auth, getSessionMiddleware, requireSessionOrRedirect } from "./auth";
+import type { Request, Response } from "express";
+import type { Session, User } from "better-auth";
+
+export interface RequestWithSession extends Request {
+  user?: User;
+  session?: Session;
+}
 
 const express = require("express");
 const app = express();
@@ -16,7 +21,7 @@ app.set("view engine", "pug");
 
 app.use(getSessionMiddleware);
 
-app.get("/", async (req, res) => {
+app.get("/", async (req: RequestWithSession, res: Response) => {
   const { user } = req;
 
   if (user) {
@@ -34,14 +39,17 @@ const authenticatedRouter = express.Router();
 
 authenticatedRouter.use(requireSessionOrRedirect);
 
-authenticatedRouter.get("/today", async (req, res) => {
-  const { user } = req;
+authenticatedRouter.get(
+  "/today",
+  async (req: RequestWithSession, res: Response) => {
+    const { user } = req;
 
-  res.render("today", {
-    title: "Today",
-    user,
-  });
-});
+    res.render("today", {
+      title: "Today",
+      user,
+    });
+  }
+);
 
 app.use(authenticatedRouter);
 

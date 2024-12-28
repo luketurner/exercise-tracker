@@ -3,6 +3,8 @@ import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { db } from "./db"; // your drizzle instance
 import * as schema from "./db/schema";
 import { fromNodeHeaders } from "better-auth/node";
+import type { NextFunction, Response } from "express";
+import type { RequestWithSession } from ".";
 
 export const auth = betterAuth({
   database: drizzleAdapter(db, {
@@ -20,7 +22,11 @@ export const auth = betterAuth({
   },
 });
 
-export const getSessionMiddleware = async (req, res, next) => {
+export const getSessionMiddleware = async (
+  req: RequestWithSession,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const sessionData = await auth.api.getSession({
       headers: fromNodeHeaders(req.headers),
@@ -35,7 +41,11 @@ export const getSessionMiddleware = async (req, res, next) => {
   }
 };
 
-export const requireSessionOrRedirect = async (req, res, next) => {
+export const requireSessionOrRedirect = async (
+  req: RequestWithSession,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     if (!req.user) {
       res.redirect("/");
