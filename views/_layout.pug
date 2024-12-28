@@ -6,6 +6,10 @@ html
   body
     nav
       if user
+        a(href="/today") Today
+        .
+          &nbsp;
+        a(href="/exercises") Manage exercises
         button(data-on-click="exerciseTracker.signOut()") Sign out
       else
         button(data-on-click="exerciseTracker.signIn()") Sign in with Github

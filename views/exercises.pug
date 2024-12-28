@@ -1,0 +1,10 @@
+extends _layout.pug
+
+block content
+  h1 Exercises
+  ul
+    each exercise in exercises
+      li= exercise.name
+  form(action="/exercises", method="POST")
+    input#name(type="text", name="name")
+    input(type="submit", value="Add")
