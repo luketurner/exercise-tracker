@@ -1,0 +1,12 @@
+html
+  head
+    title= title
+    script(src="/main.js")
+    script(type="module", src="/datastar-0-21-3-2209181e385dd588.js")
+  body
+    nav
+      if user
+        button(data-on-click="exerciseTracker.signOut()") Sign out
+      else
+        button(data-on-click="exerciseTracker.signIn()") Sign in with Github
+    block content

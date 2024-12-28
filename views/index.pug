@@ -1,14 +1,11 @@
-html
-  head
-    title= title
-    script(src="/main.js")
-    script(type="module", src="/datastar-0-21-3-2209181e385dd588.js")
-  body
-    h1= message
-    h1 Exercises
-    ul
-      li= exercise.name
-    input#name(type="text", name="name", data-bind="name")
-    input#email(type="text", name="email", data-bind="email")
-    input#password(type="password", name="password", data-bind="password")
-    button(data-on-click="exerciseTracker.signUp(name.value, email.value, password.value)") Login
+extends _layout.pug
+
+block content
+  h1= message
+  h1 Exercises
+  ul
+    li= exercise.name
+  if user
+    button(data-on-click="exerciseTracker.signOut()") Sign out
+  else
+    button(data-on-click="exerciseTracker.signIn()") Sign in with Github
