@@ -10,6 +10,12 @@ import {
 export const exercisesTable = pgTable("exercises", {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
   name: varchar({ length: 255 }).notNull(),
+  user: text("userId")
+    .notNull()
+    .references(() => user.id, {
+      onDelete: "cascade",
+      onUpdate: "cascade",
+    }),
 });
 
 export const user = pgTable("user", {

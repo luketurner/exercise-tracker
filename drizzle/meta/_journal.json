@@ -15,6 +15,20 @@
       "when": 1734812373326,
       "tag": "0001_magical_mercury",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1735418990377,
+      "tag": "0002_add_user_to_exercises",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1735419340073,
+      "tag": "0003_add_user_to_exercises",
+      "breakpoints": true
     }
   ]
 }
