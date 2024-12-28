@@ -1,7 +1,7 @@
-import { toNodeHandler } from "better-auth/node";
+import { toNodeHandler, fromNodeHeaders } from "better-auth/node";
 import { db } from "./db";
 import { exercisesTable } from "./db/schema";
-import { auth } from "./auth";
+import { auth, getSessionMiddleware, requireSessionOrRedirect } from "./auth";
 
 const express = require("express");
 const app = express();
@@ -14,12 +14,31 @@ app.use(express.static("public"));
 
 app.set("view engine", "pug");
 
+app.use(getSessionMiddleware);
+
 app.get("/", async (req, res) => {
   const exercise = (await db.select().from(exercisesTable).limit(1))[0];
+
+  const { user } = req;
+
   res.render("index", {
     title: "Exercise Tracker",
     message: "Hello world!",
     exercise,
+    user,
+  });
+});
+
+const authenticatedRouter = express.Router();
+
+authenticatedRouter.use(requireSessionOrRedirect);
+
+authenticatedRouter.get("/today", async (req, res) => {
+  const { user } = req;
+
+  res.render("today", {
+    title: "Today",
+    user,
   });
 });
 
@@ -29,6 +48,8 @@ if ((await db.$count(exercisesTable)) == 0) {
     name: "Demo exercise",
   });
 }
+
+app.use(authenticatedRouter);
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
