@@ -29,6 +29,13 @@
       "when": 1735419340073,
       "tag": "0003_add_user_to_exercises",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1736026146302,
+      "tag": "0004_add_sets_table",
+      "breakpoints": true
     }
   ]
 }

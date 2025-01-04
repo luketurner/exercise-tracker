@@ -1,3 +1,4 @@
+import { sql } from "drizzle-orm";
 import {
   pgTable,
   text,
@@ -5,6 +6,10 @@ import {
   timestamp,
   boolean,
   varchar,
+  interval,
+  check,
+  date,
+  unique,
 } from "drizzle-orm/pg-core";
 
 export const exercisesTable = pgTable("exercises", {
@@ -17,6 +22,42 @@ export const exercisesTable = pgTable("exercises", {
       onUpdate: "cascade",
     }),
 });
+
+export const setsTable = pgTable(
+  "sets",
+  {
+    id: integer().primaryKey().generatedAlwaysAsIdentity(),
+    user: text("userId")
+      .notNull()
+      .references(() => user.id, {
+        onDelete: "cascade",
+        onUpdate: "cascade",
+      }),
+    exercise: integer("exerciseId")
+      .notNull()
+      .references(() => exercisesTable.id, {
+        onDelete: "cascade",
+        onUpdate: "cascade",
+      }),
+    reps: integer(),
+    duration: interval(),
+    date: date().notNull(),
+    order: integer().notNull(),
+  },
+  (table) => [
+    {
+      durationOrReps: check(
+        "duration_or_reps_exist",
+        sql`${table.duration} IS NOT NULL OR ${table.reps} IS NOT NULL`
+      ),
+      uniqueOrder: unique("unique_order_per_day").on(
+        table.user,
+        table.date,
+        table.order
+      ),
+    },
+  ]
+);
 
 export const user = pgTable("user", {
   id: text("id").primaryKey(),
