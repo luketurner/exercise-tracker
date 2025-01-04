@@ -2,5 +2,8 @@ extends _layout.pug
 
 block content
   h1= exercise.name
+  form(action="/exercises/"+exercise.id, method="POST")
+    input#name(type="text", name="name")
+    input(type="submit", value="Update")
   form(action="/exercises/"+exercise.id+"/delete", method="POST")
     input(type="submit", value="Delete")

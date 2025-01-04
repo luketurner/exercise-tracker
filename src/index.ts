@@ -84,7 +84,7 @@ authenticatedRouter.post(
     const { user } = req;
 
     if (!req.body.name) {
-      throw new Error("Must specify a name");
+      return res.status(400).send("Must specify a name");
     }
 
     await db.insert(exercisesTable).values({
@@ -123,6 +123,30 @@ authenticatedRouter.get(
       user,
       exercise,
     });
+  }
+);
+
+authenticatedRouter.post(
+  "/exercises/:id",
+  async (req: RequestWithGuaranteedSession, res: Response) => {
+    const { user } = req;
+    const id = req.params.id;
+
+    if (!req.body.name) {
+      return res.status(400).send("Must specify a name");
+    }
+
+    const exercise = await db
+      .update(exercisesTable)
+      .set({ name: req.body.name })
+      .where(
+        and(
+          eq(exercisesTable.user, user.id),
+          eq(exercisesTable.id, parseInt(id, 10))
+        )
+      );
+
+    res.redirect(`/exercises/${id}`);
   }
 );
 
