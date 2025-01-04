@@ -4,7 +4,7 @@ import type { Request, Response } from "express";
 import type { Session, User } from "better-auth";
 import { exercisesTable } from "./db/schema";
 import { db } from "./db";
-import { eq } from "drizzle-orm";
+import { eq, and } from "drizzle-orm";
 
 export interface RequestWithSession extends Request {
   user?: User;
@@ -91,6 +91,55 @@ authenticatedRouter.post(
       name: req.body.name,
       user: user.id,
     });
+
+    res.redirect("/exercises");
+  }
+);
+
+authenticatedRouter.get(
+  "/exercises/:id",
+  async (req: RequestWithGuaranteedSession, res: Response) => {
+    const { user } = req;
+    const id = req.params.id;
+
+    const exercise = (
+      await db
+        .select()
+        .from(exercisesTable)
+        .where(
+          and(
+            eq(exercisesTable.user, user.id),
+            eq(exercisesTable.id, parseInt(id, 10))
+          )
+        )
+    )?.[0];
+
+    if (!exercise) {
+      return res.sendStatus(404);
+    }
+
+    res.render("exercise", {
+      title: `Exercise: ${exercise.name}`,
+      user,
+      exercise,
+    });
+  }
+);
+
+authenticatedRouter.post(
+  "/exercises/:id/delete",
+  async (req: RequestWithGuaranteedSession, res: Response) => {
+    const { user } = req;
+    const id = req.params.id;
+
+    await db
+      .delete(exercisesTable)
+      .where(
+        and(
+          eq(exercisesTable.user, user.id),
+          eq(exercisesTable.id, parseInt(id, 10))
+        )
+      );
 
     res.redirect("/exercises");
   }
