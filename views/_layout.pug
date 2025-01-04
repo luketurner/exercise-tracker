@@ -5,13 +5,18 @@ html
     script(type="module", src="/datastar-0-21-3-2209181e385dd588.js")
     link(rel="stylesheet", href="/bulma.min.css")
   body
-    nav
-      if user
-        a(href="/today") Today
-        .
-          &nbsp;
-        a(href="/exercises") Manage exercises
-        button(data-on-click="exerciseTracker.signOut()") Sign out
-      else
-        button(data-on-click="exerciseTracker.signIn()") Sign in with Github
-    block content
+    div.container
+      nav(class="navbar", role="navigation", aria-label="main navigation")
+        div.navbar-brand
+          a.navbar-item(href="/") Exercise Tracker
+        div.navbar-menu
+          div.navbar-start
+            if user
+              a.navbar-item(href="/today") Today
+              a.navbar-item(href="/exercises") Manage exercises
+          div.navbar-end
+            if user
+              button.navbar-item(data-on-click="exerciseTracker.signOut()") Sign out
+            else
+              button.navbar-item(data-on-click="exerciseTracker.signIn()") Sign in with Github
+      block content
