@@ -2,9 +2,10 @@ import { toNodeHandler } from "better-auth/node";
 import { auth, getSessionMiddleware, requireSessionOrRedirect } from "./auth";
 import type { Request, Response } from "express";
 import type { Session, User } from "better-auth";
-import { exercisesTable } from "./db/schema";
+import { exercisesTable, setsTable } from "./db/schema";
 import { db } from "./db";
-import { eq, and } from "drizzle-orm";
+import { eq, and, asc } from "drizzle-orm";
+import { getExercisesForUser } from "./models/exercises";
 
 export interface RequestWithSession extends Request {
   user?: User;
@@ -50,13 +51,48 @@ authenticatedRouter.use(requireSessionOrRedirect);
 
 authenticatedRouter.get(
   "/today",
-  async (req: RequestWithSession, res: Response) => {
+  async (req: RequestWithGuaranteedSession, res: Response) => {
     const { user } = req;
+
+    const exercises = await getExercisesForUser(user.id);
+
+    const today = new Date().toLocaleDateString();
+
+    const sets = await db
+      .select()
+      .from(setsTable)
+      .where(and(eq(setsTable.user, user.id), eq(setsTable.date, today)))
+      .orderBy(asc(setsTable.order));
+
+    const nextSetOrder = (sets[sets.length - 1]?.order ?? 0) + 1;
 
     res.render("today", {
       title: "Today",
       user,
+      exercises,
+      today,
+      sets,
+      nextSetOrder,
     });
+  }
+);
+
+authenticatedRouter.post(
+  "/sets",
+  async (req: RequestWithGuaranteedSession, res: Response) => {
+    const { user } = req;
+
+    const { exercise, reps, date, order } = req.body;
+
+    await db.insert(setsTable).values({
+      user: user.id,
+      exercise,
+      reps,
+      date,
+      order,
+    });
+
+    res.redirect("/today");
   }
 );
 
@@ -65,10 +101,7 @@ authenticatedRouter.get(
   async (req: RequestWithGuaranteedSession, res: Response) => {
     const { user } = req;
 
-    const exercises = await db
-      .select()
-      .from(exercisesTable)
-      .where(eq(exercisesTable.user, user.id));
+    const exercises = await getExercisesForUser(user.id);
 
     res.render("exercises", {
       title: "Exercises",

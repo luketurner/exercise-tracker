@@ -1,4 +1,27 @@
 extends _layout.pug
 
 block content
-  h1 Today
+  h1.title= today
+
+  ul
+    each set in sets
+      li= set.id
+
+  div.box
+    h1.title Log an exercise
+    form(action="/sets", method="POST")
+      div.field
+        label.label Exercise
+        div.control
+          select(name="exercise")
+            each exercise in exercises
+              option(value=exercise.id)= exercise.name
+      div.field
+        label.label Reps
+        div.control
+          input#reps(type="number", name="reps")
+      input(type="hidden", name="date", value=today)
+      input(type="hidden", name="order", value=nextSetOrder)
+      div.field
+        div.control
+          input.button(type="submit", value="Add")
