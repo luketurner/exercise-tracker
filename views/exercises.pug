@@ -1,11 +1,23 @@
 extends _layout.pug
 
 block content
-  h1 Exercises
-  ul
+  h1.title Manage Exercises
+  div.grid
     each exercise in exercises
-      li
-        a(href="/exercises/"+exercise.id)= exercise.name
-  form(action="/exercises", method="POST")
-    input#name(type="text", name="name")
-    input(type="submit", value="Add")
+      div.cell
+        div.card
+          header.card-header
+            p.card-header-title= exercise.name
+              
+          footer.card-footer
+            a.card-footer-item(href="/exercises/"+exercise.id) Edit
+  div.box
+    h1.title Create new exercise
+    form(action="/exercises", method="POST")
+      div.field
+        label.label Name
+        div.control
+          input#name(type="text", name="name")
+      div.field
+        div.control
+          input.button(type="submit", value="Add")
