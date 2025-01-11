@@ -3,9 +3,18 @@ extends _layout.pug
 block content
   h1.title= today
 
-  ul
-    each set in sets
-      li= set.id
+  each set in sets
+    .card
+      header.card-header
+        p.card-header-title= set.exercise.name
+      .card-content
+        .content
+          p= set.reps + " reps"
+          p= JSON.stringify(set.parameters, null, 2)
+      footer.card-footer
+        a.card-footer-item(href="/sets/"+set.id+"/edit") Edit
+        a.card-footer-item(href="/sets/"+set.id+"/delete") Delete
+
 
   div.box
     h1.title Log an exercise
