@@ -6,15 +6,49 @@ block content
   each set in sets
     .card
       header.card-header
-        p.card-header-title= set.exercise.name
+        p.card-header-title= set.exercise.name + " (" + set.id + ")"
       .card-content
         .content
-          p= set.reps + " reps"
-          p= JSON.stringify(set.parameters, null, 2)
-          form(id="delete-"+set.id, action="/sets/"+set.id+"/delete", method="POST")
-
+          if editingSet === set.id
+            form(action="/sets/" + set.id, method="POST", id="edit-"+set.id)
+              div.field
+                label.label Exercise
+                div.control
+                  select(name="exercise")
+                    each exercise in exercises
+                      option(value=exercise.id, selected=(set.exercise.id === exercise.id))= exercise.name
+              div.field
+                label.label Reps
+                div.control
+                  input#reps(type="number", name="reps", value=set.reps)
+              div.field
+                label.label Weight
+                div.control
+                  input#weight(type="number", name="weight", value=set.parameters.weight)
+              div.field
+                label.label Assistance
+                div.control
+                  input#assisted(type="number", name="assisted", value=set.parameters.assisted)
+              div.field
+                label.label Distance
+                div.control
+                  input#reps(type="number", name="distance", value=set.parameters.distance)
+              div.field
+                label.label Intensity
+                div.control
+                  select(name="intensity")
+                    option(value="low", selected=(set.parameters.intensity === "low")) Low
+                    option(value="medium", selected=(set.parameters.intensity === "medium")) Medium
+                    option(value="high", selected=(set.parameters.intensity === "high")) High
+          else
+            p= set.reps + " reps"
+            p= JSON.stringify(set.parameters, null, 2)
+            form(id="delete-"+set.id, action="/sets/"+set.id+"/delete", method="POST")
       footer.card-footer
-        a.card-footer-item(href="/sets/"+set.id+"/edit") Edit
+        if editingSet === set.id
+          button.card-footer-item(form="edit-"+set.id) Submit
+        else
+          a.card-footer-item(href="?editingSet="+set.id) Edit
         button.card-footer-item(form="delete-"+set.id) Delete
 
 

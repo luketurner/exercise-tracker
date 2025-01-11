@@ -59,6 +59,15 @@ authenticatedRouter.get(
   async (req: RequestWithGuaranteedSession, res: Response) => {
     const { user } = req;
 
+    if (Array.isArray(req.query.editingSet)) {
+      return res.status(400).send("Cannot edit multiple sets at once");
+    }
+
+    const editingSet =
+      typeof req.query.editingSet === "string"
+        ? parseInt(req.query.editingSet, 10)
+        : undefined;
+
     const exercises = await getExercisesForUser(user.id);
 
     const today = new Date().toLocaleDateString();
@@ -74,6 +83,7 @@ authenticatedRouter.get(
       today,
       sets,
       nextSetOrder,
+      editingSet,
     });
   }
 );
@@ -107,6 +117,44 @@ authenticatedRouter.post(
       order,
       parameters,
     });
+
+    res.redirect("/today");
+  }
+);
+
+authenticatedRouter.post(
+  "/sets/:id",
+  async (req: RequestWithGuaranteedSession, res: Response) => {
+    const { user } = req;
+
+    const id = req.params.id;
+
+    const { exercise: exerciseId, reps } = req.body;
+
+    const exercise = await getExercise(parseInt(exerciseId, 10), user.id);
+
+    const maybeParameter = (id: string) =>
+      exercise?.parameters?.find((p) => p.id === id)
+        ? { [id]: req.body[id] }
+        : null;
+
+    const parameters = {
+      ...maybeParameter("weight"),
+      ...maybeParameter("assisted"),
+      ...maybeParameter("distance"),
+      ...maybeParameter("intensity"),
+    };
+
+    await db
+      .update(setsTable)
+      .set({
+        exercise: exerciseId,
+        reps,
+        parameters,
+      })
+      .where(
+        and(eq(setsTable.user, user.id), eq(setsTable.id, parseInt(id, 10)))
+      );
 
     res.redirect("/today");
   }
