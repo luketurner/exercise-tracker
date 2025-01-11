@@ -3,7 +3,32 @@ extends _layout.pug
 block content
   h1= exercise.name
   form(action="/exercises/"+exercise.id, method="POST")
-    input#name(type="text", name="name")
-    input(type="submit", value="Update")
+    div.field
+      label.label Name
+      div.control
+        input#name(type="text", name="name", value=exercise.name)
+    div.field
+      div.control
+        label.checkbox(name="weighted")
+          input#weighted(type="checkbox", name="weighted", checked=exercise.parameters.find(p => p.id === 'weight'))
+          | Weighted
+    div.field
+      div.control
+        label.checkbox(name="assisted")
+          input#assisted(type="checkbox", name="assisted", checked=exercise.parameters.find(p => p.id === 'assisted'))
+          | Assisted
+    div.field
+      div.control
+        label.checkbox(name="distance")
+          input#distance(type="checkbox", name="distance", checked=exercise.parameters.find(p => p.id === 'distance'))
+          | Distance 
+    div.field
+      div.control
+        label.checkbox(name="intensity")
+          input#intensity(type="checkbox", name="intensity", checked=exercise.parameters.find(p => p.id === 'intensity'))
+          | Intensity
+    div.field
+      div.control
+        input.button(type="submit", value="Update")
   form(action="/exercises/"+exercise.id+"/delete", method="POST")
     input(type="submit", value="Delete")

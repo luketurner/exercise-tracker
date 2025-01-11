@@ -2,7 +2,11 @@ import { toNodeHandler } from "better-auth/node";
 import { auth, getSessionMiddleware, requireSessionOrRedirect } from "./auth";
 import type { Request, Response } from "express";
 import type { Session, User } from "better-auth";
-import { exercisesTable, setsTable } from "./db/schema";
+import {
+  exercisesTable,
+  setsTable,
+  type ParameterDefinition,
+} from "./db/schema";
 import { db } from "./db";
 import { eq, and, asc } from "drizzle-orm";
 import { getExercisesForUser } from "./models/exercises";
@@ -169,9 +173,45 @@ authenticatedRouter.post(
       return res.status(400).send("Must specify a name");
     }
 
+    const parameters: ParameterDefinition[] = [];
+    if (req.body.weighted) {
+      parameters.push({
+        name: "Weight",
+        id: "weight",
+        dataType: "weight",
+      });
+    }
+
+    if (req.body.assisted) {
+      parameters.push({
+        name: "Assisted",
+        id: "assisted",
+        dataType: "weight",
+      });
+    }
+
+    if (req.body.distance) {
+      parameters.push({
+        name: "Distance",
+        id: "distance",
+        dataType: "distance",
+      });
+    }
+
+    if (req.body.intensity) {
+      parameters.push({
+        name: "Intensity",
+        id: "intensity",
+        dataType: "intensity",
+      });
+    }
+
     const exercise = await db
       .update(exercisesTable)
-      .set({ name: req.body.name })
+      .set({
+        name: req.body.name,
+        parameters,
+      })
       .where(
         and(
           eq(exercisesTable.user, user.id),
