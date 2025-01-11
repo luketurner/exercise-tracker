@@ -29,6 +29,25 @@ block content
         label.label Reps
         div.control
           input#reps(type="number", name="reps")
+      div.field
+        label.label Weight
+        div.control
+          input#weight(type="number", name="weight")
+      div.field
+        label.label Assistance
+        div.control
+          input#assisted(type="number", name="assisted")
+      div.field
+        label.label Distance
+        div.control
+          input#reps(type="number", name="distance")
+      div.field
+        label.label Intensity
+        div.control
+          select(name="intensity")
+            option(value="low") Low
+            option(value="medium") Medium
+            option(value="high") High
       input(type="hidden", name="date", value=today)
       input(type="hidden", name="order", value=nextSetOrder)
       div.field

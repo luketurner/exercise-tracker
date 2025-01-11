@@ -9,7 +9,8 @@ import {
 } from "./db/schema";
 import { db } from "./db";
 import { eq, and, asc } from "drizzle-orm";
-import { getExercisesForUser } from "./models/exercises";
+import { getExercise, getExercisesForUser } from "./models/exercises";
+import { getSetsForDay } from "./models/sets";
 
 export interface RequestWithSession extends Request {
   user?: User;
@@ -82,14 +83,29 @@ authenticatedRouter.post(
   async (req: RequestWithGuaranteedSession, res: Response) => {
     const { user } = req;
 
-    const { exercise, reps, date, order } = req.body;
+    const { exercise: exerciseId, reps, date, order } = req.body;
+
+    const exercise = await getExercise(parseInt(exerciseId, 10), user.id);
+
+    const maybeParameter = (id: string) =>
+      exercise?.parameters?.find((p) => p.id === id)
+        ? { [id]: req.body[id] }
+        : null;
+
+    const parameters = {
+      ...maybeParameter("weight"),
+      ...maybeParameter("assisted"),
+      ...maybeParameter("distance"),
+      ...maybeParameter("intensity"),
+    };
 
     await db.insert(setsTable).values({
       user: user.id,
-      exercise,
+      exercise: exerciseId,
       reps,
       date,
       order,
+      parameters,
     });
 
     res.redirect("/today");
