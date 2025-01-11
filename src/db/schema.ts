@@ -10,7 +10,14 @@ import {
   check,
   date,
   unique,
+  jsonb,
 } from "drizzle-orm/pg-core";
+
+export interface ParameterDefinition {
+  name: string;
+  id: string;
+  dataType: "weight" | "distance" | "intensity";
+}
 
 export const exercisesTable = pgTable("exercises", {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
@@ -21,6 +28,7 @@ export const exercisesTable = pgTable("exercises", {
       onDelete: "cascade",
       onUpdate: "cascade",
     }),
+  parameters: jsonb().$type<ParameterDefinition[]>(),
 });
 
 export const setsTable = pgTable(
@@ -43,6 +51,7 @@ export const setsTable = pgTable(
     duration: interval(),
     date: date().notNull(),
     order: integer().notNull(),
+    parameters: jsonb().$type<Record<string, string | number>>(),
   },
   (table) => [
     {
