@@ -132,3 +132,5 @@ dist
 # compiled js files
 public/main.js
 public/main.js.map
+
+NOTES.md
