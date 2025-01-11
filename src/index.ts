@@ -139,17 +139,7 @@ authenticatedRouter.get(
     const { user } = req;
     const id = req.params.id;
 
-    const exercise = (
-      await db
-        .select()
-        .from(exercisesTable)
-        .where(
-          and(
-            eq(exercisesTable.user, user.id),
-            eq(exercisesTable.id, parseInt(id, 10))
-          )
-        )
-    )?.[0];
+    const exercise = await getExercise(parseInt(id, 10), user.id);
 
     if (!exercise) {
       return res.sendStatus(404);
