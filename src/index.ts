@@ -62,11 +62,7 @@ authenticatedRouter.get(
 
     const today = new Date().toLocaleDateString();
 
-    const sets = await db
-      .select()
-      .from(setsTable)
-      .where(and(eq(setsTable.user, user.id), eq(setsTable.date, today)))
-      .orderBy(asc(setsTable.order));
+    const sets = await getSetsForDay(today, user.id);
 
     const nextSetOrder = (sets[sets.length - 1]?.order ?? 0) + 1;
 
