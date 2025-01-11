@@ -11,9 +11,11 @@ block content
         .content
           p= set.reps + " reps"
           p= JSON.stringify(set.parameters, null, 2)
+          form(id="delete-"+set.id, action="/sets/"+set.id+"/delete", method="POST")
+
       footer.card-footer
         a.card-footer-item(href="/sets/"+set.id+"/edit") Edit
-        a.card-footer-item(href="/sets/"+set.id+"/delete") Delete
+        button.card-footer-item(form="delete-"+set.id) Delete
 
 
   div.box

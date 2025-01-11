@@ -112,6 +112,22 @@ authenticatedRouter.post(
   }
 );
 
+authenticatedRouter.post(
+  "/sets/:id/delete",
+  async (req: RequestWithGuaranteedSession, res: Response) => {
+    const { user } = req;
+    const id = req.params.id;
+
+    await db
+      .delete(setsTable)
+      .where(
+        and(eq(setsTable.user, user.id), eq(setsTable.id, parseInt(id, 10)))
+      );
+
+    res.redirect("/today");
+  }
+);
+
 authenticatedRouter.get(
   "/exercises",
   async (req: RequestWithGuaranteedSession, res: Response) => {
