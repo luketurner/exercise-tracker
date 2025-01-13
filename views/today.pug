@@ -54,30 +54,30 @@ block content
 
   div.box
     h1.title Log an exercise
-    form(action="/sets", method="POST")
+    form(action="/sets", method="POST", data-signals-exercises=JSON.stringify(exercises), data-signals-newexerciseid="''")
       div.field
         label.label Exercise
         div.control
-          select(name="exercise")
+          select(name="exercise", data-bind="newexerciseid")
             each exercise in exercises
               option(value=exercise.id)= exercise.name
-      div.field
+      div.field(data-show="!!$newexerciseid")
         label.label Reps
         div.control
           input#reps(type="number", name="reps")
-      div.field
+      div.field(data-show="!!$exercises.find(v => v.id == $newexerciseid)?.parameters?.find(p => p.id === 'weight')")
         label.label Weight
         div.control
           input#weight(type="number", name="weight")
-      div.field
+      div.field(data-show="!!$exercises.find(v => v.id == $newexerciseid)?.parameters?.find(p => p.id === 'assisted')")
         label.label Assistance
         div.control
           input#assisted(type="number", name="assisted")
-      div.field
+      div.field(data-show="!!$exercises.find(v => v.id == $newexerciseid)?.parameters?.find(p => p.id === 'distance')")
         label.label Distance
         div.control
           input#reps(type="number", name="distance")
-      div.field
+      div.field(data-show="!!$exercises.find(v => v.id == $newexerciseid)?.parameters?.find(p => p.id === 'intensity')")
         label.label Intensity
         div.control
           select(name="intensity")
