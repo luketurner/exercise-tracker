@@ -32,8 +32,9 @@ block content
                     else
                       input(id=parameter.id, type="number", name=parameter.id, value=set.parameters[parameter.id])
           else
-            p= set.reps + " reps"
-            p= JSON.stringify(set.parameters, null, 2)
+            each parameter in allParameters
+              if set.parameters[parameter.id]
+                p= parameter.name + ": " + set.parameters[parameter.id]
             form(id="delete-"+set.id, action="/sets/"+set.id+"/delete", method="POST")
       footer.card-footer
         if editingSet === set.id
