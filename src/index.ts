@@ -9,7 +9,11 @@ import {
 } from "./db/schema";
 import { db } from "./db";
 import { eq, and, asc } from "drizzle-orm";
-import { getExercise, getExercisesForUser } from "./models/exercises";
+import {
+  allParameters,
+  getExercise,
+  getExercisesForUser,
+} from "./models/exercises";
 import { getSetsForDay } from "./models/sets";
 
 export interface RequestWithSession extends Request {
@@ -84,6 +88,7 @@ authenticatedRouter.get(
       sets,
       nextSetOrder,
       editingSet,
+      allParameters: allParameters(),
     });
   }
 );
@@ -93,26 +98,19 @@ authenticatedRouter.post(
   async (req: RequestWithGuaranteedSession, res: Response) => {
     const { user } = req;
 
-    const { exercise: exerciseId, reps, date, order } = req.body;
+    const { exercise: exerciseId, date, order } = req.body;
 
     const exercise = await getExercise(parseInt(exerciseId, 10), user.id);
 
-    const maybeParameter = (id: string) =>
-      exercise?.parameters?.find((p) => p.id === id)
-        ? { [id]: req.body[id] }
-        : null;
+    const parameters: Record<string, string> = {};
 
-    const parameters = {
-      ...maybeParameter("weight"),
-      ...maybeParameter("assisted"),
-      ...maybeParameter("distance"),
-      ...maybeParameter("intensity"),
-    };
+    for (const parameter of exercise.parameters ?? []) {
+      parameters[parameter.id] = req.body[parameter.id];
+    }
 
     await db.insert(setsTable).values({
       user: user.id,
       exercise: exerciseId,
-      reps,
       date,
       order,
       parameters,
@@ -129,27 +127,20 @@ authenticatedRouter.post(
 
     const id = req.params.id;
 
-    const { exercise: exerciseId, reps } = req.body;
+    const { exercise: exerciseId } = req.body;
 
     const exercise = await getExercise(parseInt(exerciseId, 10), user.id);
 
-    const maybeParameter = (id: string) =>
-      exercise?.parameters?.find((p) => p.id === id)
-        ? { [id]: req.body[id] }
-        : null;
+    const parameters: Record<string, string> = {};
 
-    const parameters = {
-      ...maybeParameter("weight"),
-      ...maybeParameter("assisted"),
-      ...maybeParameter("distance"),
-      ...maybeParameter("intensity"),
-    };
+    for (const parameter of exercise.parameters ?? []) {
+      parameters[parameter.id] = req.body[parameter.id];
+    }
 
     await db
       .update(setsTable)
       .set({
         exercise: exerciseId,
-        reps,
         parameters,
       })
       .where(
@@ -240,37 +231,14 @@ authenticatedRouter.post(
     }
 
     const parameters: ParameterDefinition[] = [];
-    if (req.body.weighted) {
-      parameters.push({
-        name: "Weight",
-        id: "weight",
-        dataType: "weight",
-      });
+
+    for (const parameter of allParameters()) {
+      if (req.body[parameter.id]) {
+        parameters.push(parameter);
+      }
     }
 
-    if (req.body.assisted) {
-      parameters.push({
-        name: "Assisted",
-        id: "assisted",
-        dataType: "weight",
-      });
-    }
-
-    if (req.body.distance) {
-      parameters.push({
-        name: "Distance",
-        id: "distance",
-        dataType: "distance",
-      });
-    }
-
-    if (req.body.intensity) {
-      parameters.push({
-        name: "Intensity",
-        id: "intensity",
-        dataType: "intensity",
-      });
-    }
+    console.log(parameters);
 
     const exercise = await db
       .update(exercisesTable)

@@ -16,7 +16,7 @@ import {
 export interface ParameterDefinition {
   name: string;
   id: string;
-  dataType: "weight" | "distance" | "intensity";
+  dataType: "weight" | "distance" | "intensity" | "number" | "duration";
 }
 
 export const exercisesTable = pgTable("exercises", {

@@ -9,14 +9,24 @@ block content
         input#name(type="text", name="name", value=exercise.name)
     div.field
       div.control
-        label.checkbox(name="weighted")
-          input#weighted(type="checkbox", name="weighted", checked=exercise.parameters.find(p => p.id === 'weight'))
-          | Weighted
+        label.checkbox(name="reps")
+          input#weighted(type="checkbox", name="reps", checked=exercise.parameters.find(p => p.id === 'reps'))
+          | Reps
+    div.field
+      div.control
+        label.checkbox(name="duration")
+          input#weighted(type="checkbox", name="duration", checked=exercise.parameters.find(p => p.id === 'duration'))
+          | Duration
+    div.field
+      div.control
+        label.checkbox(name="weight")
+          input#weighted(type="checkbox", name="weight", checked=exercise.parameters.find(p => p.id === 'weight'))
+          | Weight
     div.field
       div.control
         label.checkbox(name="assisted")
           input#assisted(type="checkbox", name="assisted", checked=exercise.parameters.find(p => p.id === 'assisted'))
-          | Assisted
+          | Assisted weight
     div.field
       div.control
         label.checkbox(name="distance")

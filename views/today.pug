@@ -20,29 +20,17 @@ block content
                   select(name="exercise", data-bind="editingexerciseid")
                     each exercise in exercises
                       option(value=exercise.id, selected=(set.exercise.id === exercise.id))= exercise.name
-              div.field
-                label.label Reps
-                div.control
-                  input#reps(type="number", name="reps", value=set.reps)
-              div.field(data-show="!!$editingexercise?.parameters?.find(p => p.id === 'weight')")
-                label.label Weight
-                div.control
-                  input#weight(type="number", name="weight", value=set.parameters.weight)
-              div.field(data-show="!!$editingexercise?.parameters?.find(p => p.id === 'assisted')")
-                label.label Assistance
-                div.control
-                  input#assisted(type="number", name="assisted", value=set.parameters.assisted)
-              div.field(data-show="!!$editingexercise?.parameters?.find(p => p.id === 'distance')")
-                label.label Distance
-                div.control
-                  input#reps(type="number", name="distance", value=set.parameters.distance)
-              div.field(data-show="!!$editingexercise?.parameters?.find(p => p.id === 'intensity')")
-                label.label Intensity
-                div.control
-                  select(name="intensity")
-                    option(value="low", selected=(set.parameters.intensity === "low")) Low
-                    option(value="medium", selected=(set.parameters.intensity === "medium")) Medium
-                    option(value="high", selected=(set.parameters.intensity === "high")) High
+              each parameter in allParameters
+                div.field(data-show="!!$editingexercise?.parameters?.find(p => p.id === '"+parameter.id+"')")
+                  label.label= parameter.name
+                  div.control
+                    if parameter.dataType === 'intensity'
+                      select(name="intensity")
+                        option(value="low", selected=(set.parameters.intensity === "low")) Low
+                        option(value="medium", selected=(set.parameters.intensity === "medium")) Medium
+                        option(value="high", selected=(set.parameters.intensity === "high")) High
+                    else
+                      input(id=parameter.id, type="number", name=parameter.id, value=set.parameters[parameter.id])
           else
             p= set.reps + " reps"
             p= JSON.stringify(set.parameters, null, 2)
@@ -67,29 +55,17 @@ block content
           select(name="exercise", data-bind="newexerciseid")
             each exercise in exercises
               option(value=exercise.id)= exercise.name
-      div.field(data-show="!!$newexerciseid")
-        label.label Reps
-        div.control
-          input#reps(type="number", name="reps")
-      div.field(data-show="!!$newexercise?.parameters?.find(p => p.id === 'weight')")
-        label.label Weight
-        div.control
-          input#weight(type="number", name="weight")
-      div.field(data-show="!!$newexercise?.parameters?.find(p => p.id === 'assisted')")
-        label.label Assistance
-        div.control
-          input#assisted(type="number", name="assisted")
-      div.field(data-show="!!$newexercise?.parameters?.find(p => p.id === 'distance')")
-        label.label Distance
-        div.control
-          input#reps(type="number", name="distance")
-      div.field(data-show="!!$newexercise?.parameters?.find(p => p.id === 'intensity')")
-        label.label Intensity
-        div.control
-          select(name="intensity")
-            option(value="low") Low
-            option(value="medium") Medium
-            option(value="high") High
+      each parameter in allParameters
+        div.field(data-show="!!$newexercise?.parameters?.find(p => p.id === '"+parameter.id+"')")
+          label.label= parameter.name
+          div.control
+            if parameter.dataType === 'intensity'
+              select(name="intensity")
+                option(value="low") Low
+                option(value="medium") Medium
+                option(value="high") High
+            else
+              input(id=parameter.id, type="number", name=parameter.id)
       input(type="hidden", name="date", value=today)
       input(type="hidden", name="order", value=nextSetOrder)
       div.field
