@@ -6,7 +6,7 @@ html()
     link(rel="stylesheet", href="/bulma.min.css")
     meta(name="viewport", content="width=device-width, initial-scale=1")
   body
-    div.container
+    div.container.is-flex.is-flex-direction-column(style="min-height: 100vh")
       nav(class="navbar", role="navigation", aria-label="main navigation", data-signals-theme="'light'")
         div.navbar-brand
           a.navbar-item(href="/") Exercise Tracker
@@ -25,7 +25,14 @@ html()
               button.navbar-item(data-on-click="exerciseTracker.signOut()") Sign out
             else
               button.navbar-item(data-on-click="exerciseTracker.signIn()") Sign in with Github
-            button.navbar-item(data-show="$theme === 'light'", data-on-click="document.querySelector('html').setAttribute('data-theme', 'dark'); $theme = 'dark'") 🌙
-            button.navbar-item(data-show="$theme === 'dark'", data-on-click="document.querySelector('html').setAttribute('data-theme', 'light'); $theme = 'light'") ☀
-          
-      block content
+      
+      div.is-flex-grow-1
+        block content
+
+      footer.footer.mt-6
+        div.content.has-text-centered
+          p
+            a.mr-1(href="https://github.com/luketurner/exercise-tracker") Source code
+            | Copyright 2025 Luke Turner
+            button.ml-1(data-show="$theme === 'light'", data-on-click="document.querySelector('html').setAttribute('data-theme', 'dark'); $theme = 'dark'") 🌙
+            button.ml-1(data-show="$theme === 'dark'", data-on-click="document.querySelector('html').setAttribute('data-theme', 'light'); $theme = 'light'") ☀
