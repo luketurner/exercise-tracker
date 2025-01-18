@@ -4,12 +4,18 @@ html
     script(src="/main.js")
     script(type="module", src="/datastar-1-0-0-beta-1-709a1d5426cfe2c0.js")
     link(rel="stylesheet", href="/bulma.min.css")
+    meta(name="viewport", content="width=device-width, initial-scale=1")
   body
     div.container
       nav(class="navbar", role="navigation", aria-label="main navigation")
         div.navbar-brand
           a.navbar-item(href="/") Exercise Tracker
-        div.navbar-menu
+          a.navbar-burger(role="button", aria-label="menu", aria-expanded="false", data-attr-aria-expanded="$shownavmenu.toString()", data-signals-shownavmenu="false" data-on-click="$shownavmenu = !$shownavmenu", data-class-is-active="$shownavmenu")
+            span(aria-hidden="true")
+            span(aria-hidden="true")
+            span(aria-hidden="true")
+            span(aria-hidden="true")
+        div.navbar-menu(data-class-is-active="$shownavmenu")
           div.navbar-start
             if user
               a.navbar-item(href="/today") Today
@@ -19,4 +25,5 @@ html
               button.navbar-item(data-on-click="exerciseTracker.signOut()") Sign out
             else
               button.navbar-item(data-on-click="exerciseTracker.signIn()") Sign in with Github
+          
       block content
