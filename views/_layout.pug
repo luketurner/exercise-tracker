@@ -1,4 +1,4 @@
-html
+html()
   head
     title= title
     script(src="/main.js")
@@ -7,7 +7,7 @@ html
     meta(name="viewport", content="width=device-width, initial-scale=1")
   body
     div.container
-      nav(class="navbar", role="navigation", aria-label="main navigation")
+      nav(class="navbar", role="navigation", aria-label="main navigation", data-signals-theme="'light'")
         div.navbar-brand
           a.navbar-item(href="/") Exercise Tracker
           a.navbar-burger(role="button", aria-label="menu", aria-expanded="false", data-attr-aria-expanded="$shownavmenu.toString()", data-signals-shownavmenu="false" data-on-click="$shownavmenu = !$shownavmenu", data-class-is-active="$shownavmenu")
@@ -25,5 +25,7 @@ html
               button.navbar-item(data-on-click="exerciseTracker.signOut()") Sign out
             else
               button.navbar-item(data-on-click="exerciseTracker.signIn()") Sign in with Github
+            button.navbar-item(data-show="$theme === 'light'", data-on-click="document.querySelector('html').setAttribute('data-theme', 'dark'); $theme = 'dark'") 🌙
+            button.navbar-item(data-show="$theme === 'dark'", data-on-click="document.querySelector('html').setAttribute('data-theme', 'light'); $theme = 'light'") ☀
           
       block content
