@@ -1,7 +1,7 @@
 extends _layout.pug
 
 block content
-  h1.title= today
+  h1.title(data-signals-exercises=JSON.stringify(exercises))= today
 
   each set in sets
     .card
@@ -10,30 +10,33 @@ block content
       .card-content
         .content
           if editingSet === set.id
-            form(action="/sets/" + set.id, method="POST", id="edit-"+set.id)
+            form(action="/sets/" + set.id, method="POST", id="edit-"+set.id,
+              data-signals-editingexerciseid="'"+set.exercise.id+"'",
+              data-computed-editingexercise="$exercises.find(v => v.id == $editingexerciseid)"
+            )
               div.field
                 label.label Exercise
                 div.control
-                  select(name="exercise")
+                  select(name="exercise", data-bind="editingexerciseid")
                     each exercise in exercises
                       option(value=exercise.id, selected=(set.exercise.id === exercise.id))= exercise.name
               div.field
                 label.label Reps
                 div.control
                   input#reps(type="number", name="reps", value=set.reps)
-              div.field
+              div.field(data-show="!!$editingexercise?.parameters?.find(p => p.id === 'weight')")
                 label.label Weight
                 div.control
                   input#weight(type="number", name="weight", value=set.parameters.weight)
-              div.field
+              div.field(data-show="!!$editingexercise?.parameters?.find(p => p.id === 'assisted')")
                 label.label Assistance
                 div.control
                   input#assisted(type="number", name="assisted", value=set.parameters.assisted)
-              div.field
+              div.field(data-show="!!$editingexercise?.parameters?.find(p => p.id === 'distance')")
                 label.label Distance
                 div.control
                   input#reps(type="number", name="distance", value=set.parameters.distance)
-              div.field
+              div.field(data-show="!!$editingexercise?.parameters?.find(p => p.id === 'intensity')")
                 label.label Intensity
                 div.control
                   select(name="intensity")
@@ -54,7 +57,10 @@ block content
 
   div.box
     h1.title Log an exercise
-    form(action="/sets", method="POST", data-signals-exercises=JSON.stringify(exercises), data-signals-newexerciseid="''")
+    form(action="/sets", method="POST",
+      data-signals-newexerciseid="''",
+      data-computed-newexercise="$exercises.find(v => v.id == $newexerciseid)"
+    )
       div.field
         label.label Exercise
         div.control
@@ -65,19 +71,19 @@ block content
         label.label Reps
         div.control
           input#reps(type="number", name="reps")
-      div.field(data-show="!!$exercises.find(v => v.id == $newexerciseid)?.parameters?.find(p => p.id === 'weight')")
+      div.field(data-show="!!$newexercise?.parameters?.find(p => p.id === 'weight')")
         label.label Weight
         div.control
           input#weight(type="number", name="weight")
-      div.field(data-show="!!$exercises.find(v => v.id == $newexerciseid)?.parameters?.find(p => p.id === 'assisted')")
+      div.field(data-show="!!$newexercise?.parameters?.find(p => p.id === 'assisted')")
         label.label Assistance
         div.control
           input#assisted(type="number", name="assisted")
-      div.field(data-show="!!$exercises.find(v => v.id == $newexerciseid)?.parameters?.find(p => p.id === 'distance')")
+      div.field(data-show="!!$newexercise?.parameters?.find(p => p.id === 'distance')")
         label.label Distance
         div.control
           input#reps(type="number", name="distance")
-      div.field(data-show="!!$exercises.find(v => v.id == $newexerciseid)?.parameters?.find(p => p.id === 'intensity')")
+      div.field(data-show="!!$newexercise?.parameters?.find(p => p.id === 'intensity')")
         label.label Intensity
         div.control
           select(name="intensity")
