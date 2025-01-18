@@ -47,18 +47,12 @@ export const setsTable = pgTable(
         onDelete: "cascade",
         onUpdate: "cascade",
       }),
-    reps: integer(),
-    duration: interval(),
     date: date().notNull(),
     order: integer().notNull(),
     parameters: jsonb().$type<Record<string, string | number>>(),
   },
   (table) => [
     {
-      durationOrReps: check(
-        "duration_or_reps_exist",
-        sql`${table.duration} IS NOT NULL OR ${table.reps} IS NOT NULL`
-      ),
       uniqueOrder: unique("unique_order_per_day").on(
         table.user,
         table.date,
