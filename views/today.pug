@@ -3,9 +3,10 @@ extends _layout.pug
 block content
   h1.title(data-signals-exercises=JSON.stringify(exercises))
     a(href="/"+yesterday)= "<<"
-    = today
+    = date
     if !isToday
       a(href="/"+tomorrow)= ">>"
+    input#date(type="date", name="date", value=date, max=today, data-on-change="window.location.pathname = `/${evt.target.value}`")
 
   each set in sets
     .card
@@ -71,7 +72,7 @@ block content
                 option(value="high") High
             else
               input(id=parameter.id, type="number", name=parameter.id)
-      input(type="hidden", name="date", value=today)
+      input(type="hidden", name="date", value=date)
       input(type="hidden", name="order", value=nextSetOrder)
       div.field
         div.control
