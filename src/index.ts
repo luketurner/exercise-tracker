@@ -15,6 +15,7 @@ import {
   getExercisesForUser,
 } from "./models/exercises";
 import { getSetsForDay } from "./models/sets";
+import { toDateString } from "./util";
 
 export interface RequestWithSession extends Request {
   user?: User;
@@ -59,7 +60,7 @@ const authenticatedRouter = express.Router();
 authenticatedRouter.use(requireSessionOrRedirect);
 
 authenticatedRouter.get(
-  "/today",
+  "/:date(today|\\d{4}-\\d{2}-\\d{2})",
   async (req: RequestWithGuaranteedSession, res: Response) => {
     const { user } = req;
 
@@ -72,19 +73,26 @@ authenticatedRouter.get(
         ? parseInt(req.query.editingSet, 10)
         : undefined;
 
+    const date =
+      req.params.date === "today" ? new Date() : new Date(req.params.date);
+
+    const dateString = toDateString(date);
+    const today = toDateString(new Date());
+
+    if (dateString === today && req.params.date !== "today") {
+      res.redirect("/today");
+    }
+
     const exercises = await getExercisesForUser(user.id);
-
-    const today = new Date().toLocaleDateString();
-
-    const sets = await getSetsForDay(today, user.id);
+    const sets = await getSetsForDay(dateString, user.id);
 
     const nextSetOrder = (sets[sets.length - 1]?.order ?? 0) + 1;
 
     res.render("today", {
-      title: "Today",
+      title: dateString,
       user,
       exercises,
-      today,
+      today: dateString,
       sets,
       nextSetOrder,
       editingSet,
@@ -116,7 +124,7 @@ authenticatedRouter.post(
       parameters,
     });
 
-    res.redirect("/today");
+    res.redirect(`/${date}`);
   }
 );
 
@@ -137,7 +145,7 @@ authenticatedRouter.post(
       parameters[parameter.id] = req.body[parameter.id];
     }
 
-    await db
+    const updatedSets = await db
       .update(setsTable)
       .set({
         exercise: exerciseId,
@@ -145,9 +153,9 @@ authenticatedRouter.post(
       })
       .where(
         and(eq(setsTable.user, user.id), eq(setsTable.id, parseInt(id, 10)))
-      );
-
-    res.redirect("/today");
+      )
+      .returning();
+    res.redirect(`/${updatedSets?.[0]?.date}`);
   }
 );
 
@@ -157,13 +165,13 @@ authenticatedRouter.post(
     const { user } = req;
     const id = req.params.id;
 
-    await db
+    const deletedSets = await db
       .delete(setsTable)
       .where(
         and(eq(setsTable.user, user.id), eq(setsTable.id, parseInt(id, 10)))
-      );
-
-    res.redirect("/today");
+      )
+      .returning();
+    res.redirect(`/${deletedSets?.[0]?.date}`);
   }
 );
 
@@ -237,8 +245,6 @@ authenticatedRouter.post(
         parameters.push(parameter);
       }
     }
-
-    console.log(parameters);
 
     const exercise = await db
       .update(exercisesTable)
