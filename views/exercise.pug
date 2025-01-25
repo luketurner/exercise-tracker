@@ -42,6 +42,9 @@ block content
         input.button(type="submit", value="Update")
   form(action="/exercises/"+exercise.id+"/delete", method="POST")
     input(type="submit", value="Delete")
+  each param of exercise.parameters
+    canvas(id="chart-"+param.id)
+  script!= "window.exerciseTracker.buildChart("+JSON.stringify(exercise)+","+JSON.stringify(historicalSets)+");"
   table.table
     thead
       tr
