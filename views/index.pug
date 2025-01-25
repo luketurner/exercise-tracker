@@ -1,5 +1,17 @@
 extends _layout.pug
 
 block content
-  h1 Exercise Tracker
-  p This app is a work in progress, use at your own risk!
+  section.hero.is-warning
+    .hero-body
+      p.title Work in progress!
+      p.body This app is a work in progress, use at your own risk!
+  section.section
+    h1.title Exercise Tracker
+    div.content
+      p Exercise-tracker is an open-source Web application that users can use to track their exercises over time.
+    h1.title Features
+    div.content
+      ul
+        li Sign-in with your Github account.
+        li Define your own exercises and track them over time. Exercises can be tracked with reps, weight, assisted weight, duration, distance, and/or intensity.
+        li Mobile-friendly UI.
