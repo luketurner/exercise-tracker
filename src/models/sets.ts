@@ -1,4 +1,4 @@
-import { and, eq, asc } from "drizzle-orm";
+import { and, eq, asc, gte } from "drizzle-orm";
 import { db } from "../db";
 import { setsTable } from "../db/schema";
 import { getExercise } from "./exercises";
@@ -17,4 +17,20 @@ export async function getSetsForDay(date: string, userId: string) {
       };
     })
   );
+}
+
+export async function getSetsForExercise(
+  exerciseId: number,
+  userId: string,
+  startingDate: string
+) {
+  const sets = await db.query.setsTable.findMany({
+    where: and(
+      eq(setsTable.user, userId),
+      eq(setsTable.exercise, exerciseId),
+      gte(setsTable.date, startingDate)
+    ),
+    orderBy: [asc(setsTable.date), asc(setsTable.order)],
+  });
+  return sets;
 }

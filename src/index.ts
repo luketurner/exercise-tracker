@@ -14,8 +14,8 @@ import {
   getExercise,
   getExercisesForUser,
 } from "./models/exercises";
-import { getSetsForDay } from "./models/sets";
-import { toDateString } from "./util";
+import { getSetsForDay, getSetsForExercise } from "./models/sets";
+import { relativeDate, toDateString } from "./util";
 
 export interface RequestWithSession extends Request {
   user?: User;
@@ -80,13 +80,8 @@ authenticatedRouter.get(
     const dateString = toDateString(date);
     const today = toDateString(new Date());
 
-    const yesterday = new Date(date);
-    yesterday.setUTCDate(date.getUTCDate() - 1);
-    const yesterdayString = toDateString(yesterday);
-
-    const tomorrow = new Date(date);
-    tomorrow.setUTCDate(date.getUTCDate() + 1);
-    const tomorrowString = toDateString(tomorrow);
+    const yesterdayString = toDateString(relativeDate(date, -1));
+    const tomorrowString = toDateString(relativeDate(date, 1));
 
     if (dateString === today && !isToday) {
       res.redirect("/today");
@@ -224,18 +219,25 @@ authenticatedRouter.get(
   "/exercises/:id",
   async (req: RequestWithGuaranteedSession, res: Response) => {
     const { user } = req;
-    const id = req.params.id;
+    const id = parseInt(req.params.id, 10);
 
-    const exercise = await getExercise(parseInt(id, 10), user.id);
+    const exercise = await getExercise(id, user.id);
 
     if (!exercise) {
       return res.sendStatus(404);
     }
 
+    const historicalSets = await getSetsForExercise(
+      id,
+      user.id,
+      toDateString(relativeDate(new Date(), -365))
+    );
+
     res.render("exercise", {
       title: `Exercise: ${exercise.name}`,
       user,
       exercise,
+      historicalSets,
     });
   }
 );
