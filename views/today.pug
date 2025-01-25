@@ -1,7 +1,11 @@
 extends _layout.pug
 
 block content
-  h1.title(data-signals-exercises=JSON.stringify(exercises))= today
+  h1.title(data-signals-exercises=JSON.stringify(exercises))
+    a(href="/"+yesterday)= "<<"
+    = today
+    if !isToday
+      a(href="/"+tomorrow)= ">>"
 
   each set in sets
     .card

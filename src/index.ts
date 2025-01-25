@@ -73,13 +73,22 @@ authenticatedRouter.get(
         ? parseInt(req.query.editingSet, 10)
         : undefined;
 
+    const isToday = req.params.date === "today";
     const date =
       req.params.date === "today" ? new Date() : new Date(req.params.date);
 
     const dateString = toDateString(date);
     const today = toDateString(new Date());
 
-    if (dateString === today && req.params.date !== "today") {
+    const yesterday = new Date(date);
+    yesterday.setUTCDate(date.getUTCDate() - 1);
+    const yesterdayString = toDateString(yesterday);
+
+    const tomorrow = new Date(date);
+    tomorrow.setUTCDate(date.getUTCDate() + 1);
+    const tomorrowString = toDateString(tomorrow);
+
+    if (dateString === today && !isToday) {
       res.redirect("/today");
     }
 
@@ -97,6 +106,9 @@ authenticatedRouter.get(
       nextSetOrder,
       editingSet,
       allParameters: allParameters(),
+      isToday,
+      yesterday: yesterdayString,
+      tomorrow: tomorrowString,
     });
   }
 );
