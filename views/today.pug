@@ -34,12 +34,18 @@ block content
                         option(value="low", selected=(set.parameters.intensity === "low")) Low
                         option(value="medium", selected=(set.parameters.intensity === "medium")) Medium
                         option(value="high", selected=(set.parameters.intensity === "high")) High
+                    else if parameter.dataType === 'duration'
+                      input(id=parameter.id, type="number", name=parameter.id, value=set.parameters[parameter.id].minutes)
+                      span minutes
+                    else if parameter.dataType === 'weight' || parameter.dataType === 'assisted' || parameter.dataType === 'distance'
+                      input(id=parameter.id, type="number", name=parameter.id, value=set.parameters[parameter.id].value)
+                      span= set.parameters[parameter.id].unit
                     else
                       input(id=parameter.id, type="number", name=parameter.id, value=set.parameters[parameter.id])
           else
             each parameter in allParameters
               if set.parameters[parameter.id]
-                p= parameter.name + ": " + set.parameters[parameter.id]
+                p= parameter.name + ": " + JSON.stringify(set.parameters[parameter.id])
             form(id="delete-"+set.id, action="/sets/"+set.id+"/delete", method="POST")
       footer.card-footer
         if editingSet === set.id
@@ -70,6 +76,12 @@ block content
                 option(value="low") Low
                 option(value="medium") Medium
                 option(value="high") High
+            else if parameter.dataType === 'duration'
+              input(id=parameter.id, type="number", name=parameter.id)
+              span minutes
+            else if parameter.dataType === 'weight' || parameter.dataType === 'assisted' || parameter.dataType === 'distance'
+              input(id=parameter.id, type="number", name=parameter.id)
+              span= defaultUnit(parameter.dataType, user)
             else
               input(id=parameter.id, type="number", name=parameter.id)
       input(type="hidden", name="date", value=date)

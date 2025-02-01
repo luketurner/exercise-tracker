@@ -19,6 +19,28 @@ export interface ParameterDefinition {
   dataType: "weight" | "distance" | "intensity" | "number" | "duration";
 }
 
+export interface Weight {
+  value: number;
+  unit: "pound" | "kg";
+}
+
+export interface Distance {
+  value: number;
+  unit: "mile" | "km";
+}
+
+export interface Duration {
+  seconds?: number;
+  minutes?: number;
+  hours?: number;
+}
+
+export type Intensity = "low" | "medium" | "high";
+
+export type ParameterValue = Weight | Intensity | Duration | Distance;
+
+export type User = typeof user.$inferSelect;
+
 export const exercisesTable = pgTable("exercises", {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
   name: varchar({ length: 255 }).notNull(),
@@ -49,7 +71,7 @@ export const setsTable = pgTable(
       }),
     date: date().notNull(),
     order: integer().notNull(),
-    parameters: jsonb().$type<Record<string, string | number>>(),
+    parameters: jsonb().$type<Record<string, ParameterValue>>(),
   },
   (table) => [
     {

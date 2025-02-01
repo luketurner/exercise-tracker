@@ -1,16 +1,19 @@
 import { toNodeHandler } from "better-auth/node";
 import { auth, getSessionMiddleware, requireSessionOrRedirect } from "./auth";
 import type { Request, Response } from "express";
-import type { Session, User } from "better-auth";
+import type { Session } from "better-auth";
 import {
   exercisesTable,
   setsTable,
   type ParameterDefinition,
+  type ParameterValue,
+  type User,
 } from "./db/schema";
 import { db } from "./db";
 import { eq, and, asc } from "drizzle-orm";
 import {
   allParameters,
+  defaultUnit,
   getExercise,
   getExercisesForUser,
 } from "./models/exercises";
@@ -105,6 +108,7 @@ authenticatedRouter.get(
       isToday,
       yesterday: yesterdayString,
       tomorrow: tomorrowString,
+      defaultUnit,
     });
   }
 );
@@ -118,10 +122,32 @@ authenticatedRouter.post(
 
     const exercise = await getExercise(parseInt(exerciseId, 10), user.id);
 
-    const parameters: Record<string, string> = {};
+    const parameters: Record<string, ParameterValue> = {};
 
     for (const parameter of exercise.parameters ?? []) {
-      parameters[parameter.id] = req.body[parameter.id];
+      const value = req.body[parameter.id];
+      switch (parameter.dataType) {
+        case "distance":
+          parameters[parameter.id] = {
+            value,
+            unit: defaultUnit(parameter.dataType, user) as any,
+          };
+          break;
+        case "duration":
+          parameters[parameter.id] = {
+            minutes: value,
+          };
+          break;
+        case "weight":
+          parameters[parameter.id] = {
+            value,
+            unit: defaultUnit(parameter.dataType, user) as any,
+          };
+          break;
+        default:
+          parameters[parameter.id] = value;
+          break;
+      }
     }
 
     await db.insert(setsTable).values({
@@ -147,10 +173,32 @@ authenticatedRouter.post(
 
     const exercise = await getExercise(parseInt(exerciseId, 10), user.id);
 
-    const parameters: Record<string, string> = {};
+    const parameters: Record<string, ParameterValue> = {};
 
     for (const parameter of exercise.parameters ?? []) {
-      parameters[parameter.id] = req.body[parameter.id];
+      const value = req.body[parameter.id];
+      switch (parameter.dataType) {
+        case "distance":
+          parameters[parameter.id] = {
+            value,
+            unit: defaultUnit(parameter.dataType, user) as any,
+          };
+          break;
+        case "duration":
+          parameters[parameter.id] = {
+            minutes: value,
+          };
+          break;
+        case "weight":
+          parameters[parameter.id] = {
+            value,
+            unit: defaultUnit(parameter.dataType, user) as any,
+          };
+          break;
+        default:
+          parameters[parameter.id] = value;
+          break;
+      }
     }
 
     const updatedSets = await db

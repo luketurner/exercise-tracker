@@ -1,5 +1,9 @@
 import { eq, and } from "drizzle-orm";
-import { exercisesTable, type ParameterDefinition } from "../db/schema";
+import {
+  exercisesTable,
+  type ParameterDefinition,
+  type User,
+} from "../db/schema";
 import { db } from "../db";
 
 export async function getExercisesForUser(userId: string) {
@@ -16,6 +20,18 @@ export async function getExercise(id: number, userId: string) {
       .from(exercisesTable)
       .where(and(eq(exercisesTable.user, userId), eq(exercisesTable.id, id)))
   )?.[0];
+}
+
+export function defaultUnit(
+  dataType: ParameterDefinition["dataType"],
+  user: User
+): string | undefined {
+  if (dataType === "weight") {
+    return user.preferredUnits?.["weight"] ?? "pound";
+  }
+  if (dataType === "distance") {
+    return user.preferredUnits?.["distance"] ?? "mile";
+  }
 }
 
 export function allParameters(): ParameterDefinition[] {
