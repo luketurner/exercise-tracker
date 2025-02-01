@@ -14,6 +14,7 @@ import { db } from "./db";
 import { eq, and, asc } from "drizzle-orm";
 import {
   allParameters,
+  convertUnit,
   defaultUnit,
   getExercise,
   getExercisesForUser,
@@ -110,6 +111,7 @@ authenticatedRouter.get(
       yesterday: yesterdayString,
       tomorrow: tomorrowString,
       defaultUnit,
+      convertUnit,
     });
   }
 );

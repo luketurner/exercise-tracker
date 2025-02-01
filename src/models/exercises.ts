@@ -34,6 +34,26 @@ export function defaultUnit(
   }
 }
 
+export function convertUnit(
+  value: number,
+  from: string,
+  to: string,
+  precision: number = 1
+): string {
+  if (from === to) {
+    return Number(value).toFixed(precision);
+  }
+  if (from === "mile" && to === "km")
+    return (value * 1.60934).toFixed(precision);
+  if (from === "km" && to === "mile")
+    return (value * 0.621371).toFixed(precision);
+  if (from === "pound" && to === "kg")
+    return (value * 0.453592).toFixed(precision);
+  if (from === "kg" && to === "pound")
+    return (value * 2.20462).toFixed(precision);
+  throw new Error(`Cannot convert ${from} to ${to}.`);
+}
+
 export function allParameters(): ParameterDefinition[] {
   return [
     {

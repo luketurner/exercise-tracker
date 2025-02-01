@@ -27,6 +27,7 @@ block content
                       option(value=exercise.id, selected=(set.exercise.id === exercise.id))= exercise.name
               each parameter in allParameters
                 div.field(data-show="!!$editingexercise?.parameters?.find(p => p.id === '"+parameter.id+"')")
+                  - var paramValue = set.parameters[parameter.id]
                   label.label= parameter.name
                   div.control
                     if parameter.dataType === 'intensity'
@@ -35,17 +36,25 @@ block content
                         option(value="medium", selected=(set.parameters.intensity === "medium")) Medium
                         option(value="high", selected=(set.parameters.intensity === "high")) High
                     else if parameter.dataType === 'duration'
-                      input(id=parameter.id, type="number", name=parameter.id, value=set.parameters[parameter.id].minutes)
+                      input(id=parameter.id, type="number", name=parameter.id, value=paramValue.minutes)
                       span minutes
                     else if parameter.dataType === 'weight' || parameter.dataType === 'assisted' || parameter.dataType === 'distance'
-                      input(id=parameter.id, type="number", name=parameter.id, value=set.parameters[parameter.id].value)
-                      span= set.parameters[parameter.id].unit
+                      - var unit = defaultUnit(parameter.dataType, user)
+                      input(id=parameter.id, type="number", name=parameter.id, min="0", step="0.1" value=convertUnit(paramValue.value, paramValue.unit, unit, 1))
+                      span= unit
                     else
-                      input(id=parameter.id, type="number", name=parameter.id, value=set.parameters[parameter.id])
+                      input(id=parameter.id, type="number", name=parameter.id, value=paramValue)
           else
             each parameter in allParameters
-              if set.parameters[parameter.id]
-                p= parameter.name + ": " + JSON.stringify(set.parameters[parameter.id])
+              - var paramValue = set.parameters[parameter.id]
+              if paramValue
+                if parameter.dataType === 'weight' || parameter.dataType === 'assisted' || parameter.dataType === 'distance'
+                  - var unit = defaultUnit(parameter.dataType, user)
+                  p= parameter.name + ": " + convertUnit(paramValue.value, paramValue.unit, unit, 1) + " " + unit
+                else if parameter.dataType === 'duration'
+                  p= parameter.name + ": " + paramValue.minutes + " minutes"
+                else
+                  p= parameter.name + ": " + paramValue
             form(id="delete-"+set.id, action="/sets/"+set.id+"/delete", method="POST")
       footer.card-footer
         if editingSet === set.id
@@ -80,7 +89,7 @@ block content
               input(id=parameter.id, type="number", name=parameter.id)
               span minutes
             else if parameter.dataType === 'weight' || parameter.dataType === 'assisted' || parameter.dataType === 'distance'
-              input(id=parameter.id, type="number", name=parameter.id)
+              input(id=parameter.id, type="number", name=parameter.id, min="0", step="0.1")
               span= defaultUnit(parameter.dataType, user)
             else
               input(id=parameter.id, type="number", name=parameter.id)
