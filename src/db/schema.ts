@@ -92,8 +92,7 @@ export const user = pgTable("user", {
   image: text("image"),
   createdAt: timestamp("createdAt").notNull(),
   updatedAt: timestamp("updatedAt").notNull(),
-  preferredUnits:
-    jsonb().$type<Record<ParameterDefinition["dataType"], string>>(),
+  preferredUnits: jsonb().$type<Record<"weight" | "distance", string>>(),
 });
 
 export const session = pgTable("session", {

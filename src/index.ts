@@ -5,6 +5,7 @@ import type { Session } from "better-auth";
 import {
   exercisesTable,
   setsTable,
+  user as userTable,
   type ParameterDefinition,
   type ParameterValue,
   type User,
@@ -342,6 +343,37 @@ authenticatedRouter.post(
       );
 
     res.redirect("/exercises");
+  }
+);
+
+authenticatedRouter.get(
+  "/settings",
+  async (req: RequestWithGuaranteedSession, res: Response) => {
+    const { user } = req;
+
+    res.render("settings", {
+      title: "Settings",
+      user,
+    });
+  }
+);
+
+authenticatedRouter.post(
+  "/settings",
+  async (req: RequestWithGuaranteedSession, res: Response) => {
+    const { user } = req;
+
+    await db
+      .update(userTable)
+      .set({
+        preferredUnits: {
+          weight: req.body.preferredUnits.weight,
+          distance: req.body.preferredUnits.distance,
+        },
+      })
+      .where(eq(userTable.id, user.id));
+
+    res.redirect("/settings");
   }
 );
 

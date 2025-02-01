@@ -5,6 +5,7 @@ import * as schema from "./db/schema";
 import { fromNodeHeaders } from "better-auth/node";
 import type { NextFunction, Response } from "express";
 import type { RequestWithSession } from ".";
+import { eq } from "drizzle-orm";
 
 export const auth = betterAuth({
   database: drizzleAdapter(db, {
@@ -33,7 +34,12 @@ export const getSessionMiddleware = async (
     });
     if (sessionData) {
       req.session = sessionData.session;
-      req.user = sessionData.user;
+      req.user = (
+        await db
+          .select()
+          .from(schema.user)
+          .where(eq(schema.user.id, sessionData.user.id))
+      )?.[0];
     }
     next();
   } catch (error) {
