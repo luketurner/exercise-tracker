@@ -163,7 +163,7 @@ authenticatedRouter.post(
       parameters,
     });
 
-    res.redirect(`/${date}`);
+    res.send(200);
   }
 );
 
@@ -206,7 +206,7 @@ authenticatedRouter.post(
       }
     }
 
-    const updatedSets = await db
+    await db
       .update(setsTable)
       .set({
         exercise: exerciseId,
@@ -214,9 +214,9 @@ authenticatedRouter.post(
       })
       .where(
         and(eq(setsTable.user, user.id), eq(setsTable.id, parseInt(id, 10)))
-      )
-      .returning();
-    res.redirect(`/${updatedSets?.[0]?.date}`);
+      );
+
+    res.send(200);
   }
 );
 

@@ -68,7 +68,7 @@ export function allParameters(): ParameterDefinition[] {
     },
     {
       id: "assisted",
-      name: "Assisted weight",
+      name: "Assisted",
       dataType: "weight",
     },
     {
