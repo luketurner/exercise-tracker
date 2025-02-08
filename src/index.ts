@@ -21,6 +21,7 @@ import {
 } from "./models/exercises";
 import { getSetsForDay, getSetsForExercise } from "./models/sets";
 import { relativeDate, toDateString } from "./util";
+import multer from "multer";
 
 export interface RequestWithSession extends Request {
   user?: User;
@@ -41,6 +42,7 @@ app.all("/api/auth/*", toNodeHandler(auth));
 
 app.use(express.static("public"));
 app.use(express.urlencoded({ extended: true }));
+app.use(multer().none());
 
 app.set("view engine", "pug");
 
