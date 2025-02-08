@@ -17,6 +17,8 @@
     "@flydotio/dockerfile": "^0.5.9",
     "@starfederation/datastar": "^0.21.3",
     "@types/bun": "latest",
+    "@types/busboy": "^1.5.4",
+    "@types/connect-busboy": "^1.0.3",
     "@types/express": "^5.0.0",
     "@types/pg": "^8.11.10",
     "drizzle-kit": "^0.29.1",
@@ -28,7 +30,9 @@
   },
   "dependencies": {
     "better-auth": "^1.1.1",
+    "busboy": "^1.6.0",
     "chart.js": "^4.4.7",
+    "connect-busboy": "^1.0.0",
     "dotenv": "^16.4.7",
     "drizzle-orm": "^0.37.0",
     "express": "^4.21.2",
