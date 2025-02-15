@@ -1,70 +1,110 @@
 extends _layout.pug
 
 block content
-  h1.title(data-signals-exercises=JSON.stringify(exercises))
-    a(href="/"+yesterday)= "<<"
-    = date
+  div.field.has-addons.has-addons-centered.mb-5(data-signals-exercises=JSON.stringify(exercises))
+    div.control
+      a.button.is-large(href="/"+yesterday)
+        span.icon.icon-small
+          i.ti.ti-chevron-left
+    div.control
+      input.input.is-large#date(type="date", name="date", value=date, max=today, data-on-change="window.location.pathname = `/${evt.target.value}`")
     if !isToday
-      a(href="/"+tomorrow)= ">>"
-    input#date(type="date", name="date", value=date, max=today, data-on-change="window.location.pathname = `/${evt.target.value}`")
-
+      div.control
+        a.button.is-large(href="/"+tomorrow)
+          span.icon.icon-small
+            i.ti.ti-chevron-right
   each set in sets
-    form.grid
-      select.cell(
-        name="exercise",
-        data-on-change="@post('/sets/"+set.id+"', {contentType: 'form'})",
-        data-signals="{'set"+set.id+"exerciseid': "+set.exercise.id+"}"
-        data-bind="set"+set.id+"exerciseid"
-      )
-        each exercise in exercises
-          option(value=exercise.id, selected=(set.exercise.id === exercise.id))= exercise.name
-      each parameter in allParameters
-        - var paramValue = set.parameters[parameter.id]
-        div.cell(
-          data-show="!!$exercises.find(v => v.id == $set"+set.id+"exerciseid)?.parameters?.find(p => p.id === '"+parameter.id+"')"
-        )
-          span.mr-1.param-name= parameter.name
-          if parameter.dataType === 'weight' || parameter.dataType === 'distance'
-            - var unit = defaultUnit(parameter.dataType, user)
-            input.today-input(
-              id=parameter.id,
-              type="number",
-              name=parameter.id,
-              min="0", step="0.1"
-              value=paramValue ? convertUnit(paramValue.value, paramValue.unit, unit, 1) : null,
-              data-on-input__debounce.500ms.leading="@post('/sets/"+set.id+"', {contentType: 'form'})"
-            )
-            span= unit
-          else if parameter.dataType === 'duration'
-            input.today-input(
-              id=parameter.id,
-              type="number",
-              name=parameter.id,
-              value=paramValue ? paramValue.minutes : null,
-              data-on-input__debounce.500ms.leading="@post('/sets/"+set.id+"', {contentType: 'form'})"
-            )
-            span min
-          else if parameter.dataType === 'intensity'
-            select(name="intensity", data-on-change="@post('/sets/"+set.id+"', {contentType: 'form'})")
-              option(value="low", selected=(set.parameters.intensity === "low")) Low
-              option(value="medium", selected=(set.parameters.intensity === "medium")) Medium
-              option(value="high", selected=(set.parameters.intensity === "high")) High
-          else
-            input.today-input(
-              id=parameter.id,
-              type="number",
-              name=parameter.id,
-              value=paramValue,
-              data-on-input__debounce.500ms.leading="@post('/sets/"+set.id+"', {contentType: 'form'})"
-            )
-  form.is-flex.is-flex-direction-row.is-flex-wrap-wrap.mb-5
-    select.mr-4(
-      name="exercise",
-      data-on-change="@post('/sets', {contentType: 'form'}).then(() => window.location.reload())",
-      data-signals="{'setnewexerciseid': ''}"
-      data-bind="setnewexerciseid"
-    )
-      each exercise in exercises
-        option(value=exercise.id)= exercise.name
+    form(action="/sets/"+set.id+"/delete", method="POST", id="set-"+set.id+"-delete")
+    div.fixed-grid.has-7-cols-desktop.has-4-cols-tablet.has-2-cols-mobile
+      form.grid
+        div.cell
+          div.field.has-addons
+            div.control
+              button.button.is-danger.is-light(form="set-"+set.id+"-delete")
+                span.icon.icon-small
+                  i.ti.ti-x
+            div.control
+              span.select
+                select(
+                  name="exercise",
+                  data-on-change="@post('/sets/"+set.id+"', {contentType: 'form'})",
+                  data-signals="{'set"+set.id+"exerciseid': "+set.exercise.id+"}"
+                  data-bind="set"+set.id+"exerciseid"
+                )
+                  each exercise in exercises
+                    option(value=exercise.id, selected=(set.exercise.id === exercise.id))= exercise.name
+        each parameter in allParameters
+          - var paramValue = set.parameters[parameter.id]
+          div.cell(
+            data-show="!!$exercises.find(v => v.id == $set"+set.id+"exerciseid)?.parameters?.find(p => p.id === '"+parameter.id+"')"
+          )
+            div.field
+              div.control.has-icons-right.has-icons-left
+                if parameter.dataType === 'weight' || parameter.dataType === 'distance'
+                  - var unit = defaultUnit(parameter.dataType, user)
+                  input.input(
+                    id=parameter.id,
+                    type="number",
+                    name=parameter.id,
+                    min="0", step="0.1"
+                    value=paramValue ? convertUnit(paramValue.value, paramValue.unit, unit, 1) : null,
+                    data-on-input__debounce.500ms.leading="@post('/sets/"+set.id+"', {contentType: 'form'})"
+                  )
+                  span.icon.is-small.is-left
+                    if parameter.id === 'weight'
+                      i.ti.ti-weight
+                    else if parameter.id === 'assisted'
+                      i.ti.ti-lifebuoy
+                    else if parameter.id === 'distance'
+                      i.ti.ti-ruler-3
+                  span.icon.is-small.is-right
+                    span= unit
+                else if parameter.dataType === 'duration'
+                  input.input(
+                    id=parameter.id,
+                    type="number",
+                    name=parameter.id,
+                    value=paramValue ? paramValue.minutes : null,
+                    data-on-input__debounce.500ms.leading="@post('/sets/"+set.id+"', {contentType: 'form'})"
+                  )
+                  span.icon.is-small.is-left
+                    if parameter.id === 'duration'
+                      i.ti.ti-clock
+                  span.icon.is-small.is-right
+                    span min
+                else if parameter.dataType === 'intensity'
+                  .select
+                    select(name="intensity", data-on-change="@post('/sets/"+set.id+"', {contentType: 'form'})")
+                      option(value="low", selected=(set.parameters.intensity === "low")) Low
+                      option(value="medium", selected=(set.parameters.intensity === "medium")) Medium
+                      option(value="high", selected=(set.parameters.intensity === "high")) High
+                  span.icon.is-small.is-left
+                      i.ti.ti-activity
+                else
+                  input.input(
+                    id=parameter.id,
+                    type="number",
+                    name=parameter.id,
+                    value=paramValue,
+                    data-on-input__debounce.500ms.leading="@post('/sets/"+set.id+"', {contentType: 'form'})"
+                  )
+                  span.icon.is-small.is-left
+                    span #
+                  span.icon.is-small.is-right
+                    span reps
+  form.add-set-form
+    div.field.is-horizontal
+      div.field-label.is-normal
+        label.label Add new set
+      div.control
+        div.select
+          select(
+            name="exercise",
+            data-on-change="@post('/sets', {contentType: 'form'}).then(() => window.location.reload())",
+            data-signals="{'setnewexerciseid': ''}"
+            data-bind="setnewexerciseid"
+          )
+            each exercise in exercises
+              option(value=exercise.id)= exercise.name
     input(type="hidden", name="date", value=date)
     input(type="hidden", name="order", value=nextSetOrder)

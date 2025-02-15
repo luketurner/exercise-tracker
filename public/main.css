@@ -1,23 +1,7 @@
-.today-input {
-  width: 4em;
-}
-
-.today-input {
-  -moz-appearance: textfield;
-  appearance: textfield;
-}
-
-.today-input::-webkit-outer-spin-button,
-.today-input::-webkit-inner-spin-button {
-  -webkit-appearance: none;
-}
-
 .flex {
   display: flex;
 }
 
-.param-name {
-  display: inline-block;
-  width: 5em;
-  text-align: right;
+.add-set-form {
+  width: max-content;
 }
