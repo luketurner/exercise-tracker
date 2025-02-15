@@ -9,7 +9,7 @@ html()
     link(rel="stylesheet", href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css")
   body
     div.container.is-flex.is-flex-direction-column(style="min-height: 100vh")
-      nav(class="navbar", role="navigation", aria-label="main navigation", data-signals-theme="'light'")
+      nav.navbar.mb-4(role="navigation", aria-label="main navigation", data-signals-theme="'light'")
         div.navbar-brand
           a.navbar-item(href="/") Exercise Tracker
           a.navbar-burger(role="button", aria-label="menu", aria-expanded="false", data-attr-aria-expanded="$shownavmenu.toString()", data-signals-shownavmenu="false" data-on-click="$shownavmenu = !$shownavmenu", data-class-is-active="$shownavmenu")
@@ -29,7 +29,7 @@ html()
             else
               button.navbar-item(data-on-click="exerciseTracker.signIn()") Sign in with Github
       
-      div.is-flex-grow-1
+      div.is-flex-grow-1.mx-2
         block content
 
       footer.footer.mt-6
