@@ -263,6 +263,7 @@ authenticatedRouter.post(
     await db.insert(exercisesTable).values({
       name: req.body.name,
       user: user.id,
+      parameters: [],
     });
 
     res.redirect("/exercises");
