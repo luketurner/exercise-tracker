@@ -5,16 +5,24 @@ block content
   form(action="/settings", method="POST")
     div.field
       label.label Weight unit
-      div.control
-        select(name="preferredUnits[weight]")
-          option(value="pound", selected=(user.preferredUnits && user.preferredUnits.weight === "pound")) Pounds
-          option(value="kg", selected=(user.preferredUnits && user.preferredUnits.weight === "kg")) Kilograms
+      +control()
+        +select(
+          "preferredUnits[weight]",
+          null,
+          user.preferredUnits && user.preferredUnits.weight,
+          null,
+          [{ id: 'pound', name: 'Pounds' }, { id: 'kg', name: 'Kilograms' }]
+        )
     div.field
       label.label Distance unit
-      div.control
-        select(name="preferredUnits[distance]")
-          option(value="mile", selected=(user.preferredUnits && user.preferredUnits.distance === "mile")) Miles
-          option(value="km", selected=(user.preferredUnits && user.preferredUnits.distance === "km")) Kilometers
+      +control()
+        +select(
+          "preferredUnits[distance]",
+          null,
+          user.preferredUnits && user.preferredUnits.distance,
+          null,
+          [{ id: 'mile', name: 'Miles' }, { id: 'km', name: 'Kilometers' }]
+        )
     div.field
       div.control
         input.button(type="submit", value="Update")

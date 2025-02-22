@@ -1,0 +1,43 @@
+mixin icon(iconName)
+  -
+    var iconClass = {
+      assisted: "lifebuoy",
+      weight: "weight",
+      distance: "ruler-3",
+      duration: "clock",
+      intensity: "activity"
+    }[iconName];
+    if (!iconClass) iconClass = iconName;
+  i.ti(class="ti-"+iconClass)
+
+mixin control(leftIcon, rightIcon)
+  div.field
+    div(class={ 'control': true, 'has-icons-right': !!rightIcon, 'has-icons-left': !!leftIcon })
+      block
+      if leftIcon
+        span.icon.is-small.is-left
+          if leftIcon === 'reps'
+            span #
+          else
+            +icon(leftIcon)
+      if rightIcon
+        span.icon.is-small.is-right
+          if ['min', 'kg', 'km', 'reps'].includes(rightIcon)
+            span= rightIcon
+          else if rightIcon === 'mile'
+            span mi
+          else if rightIcon === 'pound'
+            span lb
+          else
+            +icon(rightIcon)
+
+mixin select(name, signalName, defaultValue, onChange, values)
+  span.select
+    select(
+      name=name,
+      data-on-change=onChange,
+      data-signals=signalName ? "{'"+signalName+"': '"+defaultValue+"'}" : false
+      data-bind=signalName || false
+    )
+      each value in values
+        option(value=value.id, selected=(defaultValue === value.id))= value.name
