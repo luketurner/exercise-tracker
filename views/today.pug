@@ -4,15 +4,15 @@ block content
   div.field.has-addons.has-addons-centered.mb-5(data-signals-exercises=JSON.stringify(exercises))
     div.control
       a.button.is-large(href="/"+yesterday)
-        span.icon.icon-small
+        span.icon
           +icon("chevron-left")
     div.control
       input.input.is-large#date(type="date", name="date", value=date, max=today, data-on-change="window.location.pathname = `/${evt.target.value}`")
     if !isToday
       div.control
         a.button.is-large(href="/"+tomorrow)
-          span.icon.icon-small
-            i.ti.ti-chevron-right
+          span.icon
+            +icon("chevron-right")
   each set in sets
     form(action="/sets/"+set.id+"/delete", method="POST", id="set-"+set.id+"-delete")
     div.fixed-grid.has-7-cols-desktop.has-4-cols-tablet.has-2-cols-mobile
@@ -21,8 +21,8 @@ block content
           div.field.has-addons
             div.control
               button.button.is-danger.is-light(form="set-"+set.id+"-delete")
-                span.icon.icon-small
-                  i.ti.ti-x
+                span.icon
+                  +icon("x")
             +control(null, null)
               +select(
                 "exercise",
