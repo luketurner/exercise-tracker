@@ -4,23 +4,26 @@ block content
   h1.title Settings
   form(action="/settings", method="POST")
     +horizontalField("Weight unit")
-      +control()
-        +select(
-          "preferredUnits[weight]",
-          null,
-          user.preferredUnits && user.preferredUnits.weight,
-          null,
-          weightUnits
-        )
+      .field
+        +control()
+          +select(
+            "preferredUnits[weight]",
+            null,
+            user.preferredUnits && user.preferredUnits.weight,
+            null,
+            weightUnits
+          )
     +horizontalField("Distance unit")
-      +control()
-        +select(
-          "preferredUnits[distance]",
-          null,
-          user.preferredUnits && user.preferredUnits.distance,
-          null,
-          distanceUnits
-        )
+      .field
+        +control()
+          +select(
+            "preferredUnits[distance]",
+            null,
+            user.preferredUnits && user.preferredUnits.distance,
+            null,
+            distanceUnits
+          )
     +horizontalField()
-      +control()
-        input.button(type="submit", value="Update")
+      .field
+        +control()
+          input.button(type="submit", value="Update")

@@ -76,13 +76,14 @@ block content
                 )
   form
     +horizontalField("Add new set")
-      +control()
-        +select(
-          "exercise",
-          "setnewexerciseid",
-          "",
-          "@post('/sets', {contentType: 'form'}).then(() => window.location.reload())",
-          exercises
-        )
+      .field
+        +control()
+          +select(
+            "exercise",
+            "setnewexerciseid",
+            "",
+            "@post('/sets', {contentType: 'form'}).then(() => window.location.reload())",
+            exercises
+          )
     input(type="hidden", name="date", value=date)
     input(type="hidden", name="order", value=nextSetOrder)

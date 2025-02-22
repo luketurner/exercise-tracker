@@ -11,13 +11,11 @@ block content
               
           footer.card-footer
             a.card-footer-item(href="/exercises/"+exercise.id) Edit
-  div.box
-    h1.title Create new exercise
-    form(action="/exercises", method="POST")
-      div.field
-        label.label Name
-        div.control
-          input#name(type="text", name="name")
-      div.field
-        div.control
-          input.button(type="submit", value="Add")
+  form(action="/exercises", method="POST")
+    +horizontalField("Exercise name")
+      .field
+        +control()
+          input.input#name(type="text", name="name")
+      .field
+        +control()
+          input.button(type="submit", value="Create new exercise")
