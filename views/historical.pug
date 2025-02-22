@@ -1,0 +1,19 @@
+extends _layout.pug
+
+block content
+  h1.title= exercise.name
+  each param of exercise.parameters
+    canvas(id="chart-"+param.id)
+  script!= "window.exerciseTracker.buildChart("+JSON.stringify(exercise)+","+JSON.stringify(historicalSets)+");"
+  table.table
+    thead
+      tr
+        td Date
+        each param of exercise.parameters
+            td= param.name
+    tbody
+      each set of historicalSets
+        tr
+          td= set.date
+          each param of exercise.parameters
+            td= set.parameters[param.id]

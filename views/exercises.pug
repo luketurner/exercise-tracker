@@ -6,9 +6,13 @@ block content
     div.grid
       each exercise in exercises
         div.cell= exercise.name
-        div.cell(style="width: 5em;")
+        div.cell(style="width: 7em;")
+          a.button.is-white(href="/exercises/"+exercise.id+"/historical")
+            span.icon
+              +icon("chart-line")
           a.button.is-white(href="/exercises/"+exercise.id)
-            +icon("edit")
+            span.icon
+              +icon("edit")
   form(action="/exercises", method="POST")
     +horizontalField("Exercise name")
       .field

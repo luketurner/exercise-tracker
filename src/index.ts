@@ -295,15 +295,36 @@ authenticatedRouter.get(
       return res.sendStatus(404);
     }
 
+    res.render("exercise", {
+      ...req.viewBag,
+      title: `Exercise: ${exercise.name}`,
+      user,
+      exercise,
+    });
+  }
+);
+
+authenticatedRouter.get(
+  "/exercises/:id/historical",
+  async (req: RequestWithGuaranteedSession, res: Response) => {
+    const { user } = req;
+    const id = parseInt(req.params.id, 10);
+
+    const exercise = await getExercise(id, user.id);
+
+    if (!exercise) {
+      return res.sendStatus(404);
+    }
+
     const historicalSets = await getSetsForExercise(
       id,
       user.id,
       toDateString(relativeDate(new Date(), -365))
     );
 
-    res.render("exercise", {
+    res.render("historical", {
       ...req.viewBag,
-      title: `Exercise: ${exercise.name}`,
+      title: `Historical data: ${exercise.name}`,
       user,
       exercise,
       historicalSets,
