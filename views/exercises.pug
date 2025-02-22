@@ -2,15 +2,13 @@ extends _layout.pug
 
 block content
   h1.title Manage Exercises
-  div.grid
-    each exercise in exercises
-      div.cell
-        div.card
-          header.card-header
-            p.card-header-title= exercise.name
-              
-          footer.card-footer
-            a.card-footer-item(href="/exercises/"+exercise.id) Edit
+  div.fixed-grid.has-2-cols
+    div.grid
+      each exercise in exercises
+        div.cell= exercise.name
+        div.cell(style="width: 5em;")
+          a.button.is-white(href="/exercises/"+exercise.id)
+            +icon("edit")
   form(action="/exercises", method="POST")
     +horizontalField("Exercise name")
       .field
