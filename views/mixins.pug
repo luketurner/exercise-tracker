@@ -39,3 +39,11 @@ mixin select(name, signalName, defaultValue, onChange, values)
     )
       each value in values
         option(value=value.id, selected=(defaultValue === value.id))= value.name
+
+mixin horizontalField(label)
+  div.field.is-horizontal
+    div.field-label.is-normal
+      label.label= label
+    div.field-body
+      div.field
+        block

@@ -3,8 +3,7 @@ extends _layout.pug
 block content
   h1.title Settings
   form(action="/settings", method="POST")
-    div.field
-      label.label Weight unit
+    +horizontalField("Weight unit")
       +control()
         +select(
           "preferredUnits[weight]",
@@ -13,8 +12,7 @@ block content
           null,
           weightUnits
         )
-    div.field
-      label.label Distance unit
+    +horizontalField("Distance unit")
       +control()
         +select(
           "preferredUnits[distance]",
@@ -23,6 +21,6 @@ block content
           null,
           distanceUnits
         )
-    div.field
-      div.control
+    +horizontalField()
+      +control()
         input.button(type="submit", value="Update")

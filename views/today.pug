@@ -74,10 +74,8 @@ block content
                   value=paramValue,
                   data-on-input__debounce.500ms.leading="@post('/sets/"+set.id+"', {contentType: 'form'})"
                 )
-  form.add-set-form
-    div.field.is-horizontal
-      div.field-label.is-normal
-        label.label Add new set
+  form
+    +horizontalField("Add new set")
       +control()
         +select(
           "exercise",
