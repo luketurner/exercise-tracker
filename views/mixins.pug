@@ -22,12 +22,10 @@ mixin control(leftIcon, rightIcon)
             +icon(leftIcon)
       if rightIcon
         span.icon.is-small.is-right
-          if ['min', 'kg', 'km', 'reps'].includes(rightIcon)
+          if ['min', 'reps'].includes(rightIcon)
             span= rightIcon
-          else if rightIcon === 'mile'
-            span mi
-          else if rightIcon === 'pound'
-            span lb
+          else if allUnits && allUnits.find(unit => unit.id === rightIcon)
+            span= allUnits.find(unit => unit.id === rightIcon).short
           else
             +icon(rightIcon)
 

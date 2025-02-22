@@ -11,7 +11,7 @@ block content
           null,
           user.preferredUnits && user.preferredUnits.weight,
           null,
-          [{ id: 'pound', name: 'Pounds' }, { id: 'kg', name: 'Kilograms' }]
+          weightUnits
         )
     div.field
       label.label Distance unit
@@ -21,7 +21,7 @@ block content
           null,
           user.preferredUnits && user.preferredUnits.distance,
           null,
-          [{ id: 'mile', name: 'Miles' }, { id: 'km', name: 'Kilometers' }]
+          distanceUnits
         )
     div.field
       div.control

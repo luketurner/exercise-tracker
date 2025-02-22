@@ -1,6 +1,6 @@
 import { toNodeHandler } from "better-auth/node";
 import { auth, getSessionMiddleware, requireSessionOrRedirect } from "./auth";
-import type { Request, Response } from "express";
+import type { NextFunction, Request, Response } from "express";
 import type { Session } from "better-auth";
 import {
   exercisesTable,
@@ -14,6 +14,7 @@ import { db } from "./db";
 import { eq, and, asc } from "drizzle-orm";
 import {
   allParameters,
+  allUnits,
   convertUnit,
   defaultUnit,
   getExercise,
@@ -26,6 +27,7 @@ import multer from "multer";
 export interface RequestWithSession extends Request {
   user?: User;
   session?: Session;
+  viewBag?: Record<string, any>;
 }
 
 export interface RequestWithGuaranteedSession extends RequestWithSession {
@@ -44,6 +46,15 @@ app.use(express.static("public"));
 app.use(express.urlencoded({ extended: true }));
 app.use(multer().none());
 
+app.use((req: RequestWithSession, res: Response, next: NextFunction) => {
+  req.viewBag = {
+    allParameters: allParameters(),
+    allUnits: allUnits(),
+  };
+
+  next();
+});
+
 app.set("view engine", "pug");
 
 app.use(getSessionMiddleware);
@@ -56,6 +67,7 @@ app.get("/", async (req: RequestWithSession, res: Response) => {
   }
 
   res.render("index", {
+    ...req.viewBag,
     title: "Exercise Tracker",
     message: "Hello world!",
     user,
@@ -100,6 +112,7 @@ authenticatedRouter.get(
     const nextSetOrder = (sets[sets.length - 1]?.order ?? 0) + 1;
 
     res.render("today", {
+      ...req.viewBag,
       title: dateString,
       user,
       exercises,
@@ -108,7 +121,6 @@ authenticatedRouter.get(
       sets,
       nextSetOrder,
       editingSet,
-      allParameters: allParameters(),
       isToday,
       yesterday: yesterdayString,
       tomorrow: tomorrowString,
@@ -244,6 +256,7 @@ authenticatedRouter.get(
     const exercises = await getExercisesForUser(user.id);
 
     res.render("exercises", {
+      ...req.viewBag,
       title: "Exercises",
       user,
       exercises,
@@ -289,6 +302,7 @@ authenticatedRouter.get(
     );
 
     res.render("exercise", {
+      ...req.viewBag,
       title: `Exercise: ${exercise.name}`,
       user,
       exercise,
@@ -356,8 +370,13 @@ authenticatedRouter.get(
   async (req: RequestWithGuaranteedSession, res: Response) => {
     const { user } = req;
 
+    const units = allUnits();
+
     res.render("settings", {
+      ...req.viewBag,
       title: "Settings",
+      weightUnits: units.filter((unit) => unit.type === "weight"),
+      distanceUnits: units.filter((unit) => unit.type === "distance"),
       user,
     });
   }

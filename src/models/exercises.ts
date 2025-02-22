@@ -54,6 +54,15 @@ export function convertUnit(
   throw new Error(`Cannot convert ${from} to ${to}.`);
 }
 
+export function allUnits() {
+  return [
+    { name: "Miles", id: "mile", type: "distance", short: "mi" },
+    { name: "Kilometers", id: "km", type: "distance", short: "km" },
+    { name: "Kilograms", id: "kg", type: "weight", short: "kg" },
+    { name: "Pounds", id: "pound", type: "weight", short: "lb" },
+  ];
+}
+
 export function allParameters(): ParameterDefinition[] {
   return [
     {
