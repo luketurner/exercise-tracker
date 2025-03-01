@@ -50,6 +50,8 @@ app.use((req: RequestWithSession, res: Response, next: NextFunction) => {
   req.viewBag = {
     allParameters: allParameters(),
     allUnits: allUnits(),
+    defaultUnit,
+    convertUnit,
   };
 
   next();
@@ -124,8 +126,6 @@ authenticatedRouter.get(
       isToday,
       yesterday: yesterdayString,
       tomorrow: tomorrowString,
-      defaultUnit,
-      convertUnit,
     });
   }
 );
