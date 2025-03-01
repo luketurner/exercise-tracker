@@ -44,5 +44,5 @@ mixin horizontalField(label)
   div.field.is-horizontal
     div.field-label.is-normal
       label.label= label
-    div.field-body
+    div.field-body&attributes(attributes)
       block

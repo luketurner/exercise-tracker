@@ -3,42 +3,36 @@ extends _layout.pug
 block content
   h1.title= exercise.name
   form(action="/exercises/"+exercise.id, method="POST")
-    div.field
-      label.label Name
-      div.control
-        input#name(type="text", name="name", value=exercise.name)
-    div.field
-      div.control
-        label.checkbox(name="reps")
-          input#weighted(type="checkbox", name="reps", checked=exercise.parameters.find(p => p.id === 'reps'))
-          | Reps
-    div.field
-      div.control
-        label.checkbox(name="duration")
-          input#weighted(type="checkbox", name="duration", checked=exercise.parameters.find(p => p.id === 'duration'))
-          | Duration
-    div.field
-      div.control
-        label.checkbox(name="weight")
-          input#weighted(type="checkbox", name="weight", checked=exercise.parameters.find(p => p.id === 'weight'))
-          | Weight
-    div.field
-      div.control
-        label.checkbox(name="assisted")
-          input#assisted(type="checkbox", name="assisted", checked=exercise.parameters.find(p => p.id === 'assisted'))
-          | Assisted weight
-    div.field
-      div.control
-        label.checkbox(name="distance")
-          input#distance(type="checkbox", name="distance", checked=exercise.parameters.find(p => p.id === 'distance'))
-          | Distance 
-    div.field
-      div.control
-        label.checkbox(name="intensity")
-          input#intensity(type="checkbox", name="intensity", checked=exercise.parameters.find(p => p.id === 'intensity'))
-          | Intensity
-    div.field
-      div.control
+    +horizontalField("Exercise name")
+      +control()
+        input#name.input(type="text", name="name", value=exercise.name)
+    +horizontalField("Parameters")(class="is-align-items-center")
+      each param in allParameters
+        +control()
+          label.checkbox(name=param.id)
+            input#weighted(type="checkbox", name=param.id, checked=exercise.parameters.find(p => p.id === param.id))
+            = " " + param.name
+    +horizontalField()
+      +control()
         input.button(type="submit", value="Update")
-  form(action="/exercises/"+exercise.id+"/delete", method="POST")
-    input(type="submit", value="Delete")
+  .notification.is-danger.is-light
+    h1.subtitle Danger Zone
+    
+    +horizontalField("Delete exercise")
+      +control()
+        button.button.is-danger(data-on-click="$deletemodal = true", data-signals-deletemodal="false") Delete
+
+block modal
+  div.modal(data-class-is-active="$deletemodal")
+    .modal-background(data-on-click="$deletemodal = false")
+    .modal-card
+      header.modal-card-head
+        p.modal-card-title Delete exercise
+        button.delete(aria-label="close", data-on-click="$deletemodal = false")
+      section.modal-card-body
+        p Are you sure you want to delete this exercise and all associated historical data? This cannot be undone.
+        form#deleteexercise(name="deleteexercise", action="/exercises/"+exercise.id+"/delete", method="POST")
+      footer.modal-card-foot
+        .buttons
+          input.button.is-danger(type="submit", value="Delete", form="deleteexercise")
+          button.button(data-on-click="$deletemodal = false") Cancel
