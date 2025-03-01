@@ -175,7 +175,7 @@ authenticatedRouter.post(
       parameters,
     });
 
-    res.send(200);
+    res.sendStatus(200);
   }
 );
 
@@ -228,7 +228,7 @@ authenticatedRouter.post(
         and(eq(setsTable.user, user.id), eq(setsTable.id, parseInt(id, 10)))
       );
 
-    res.send(200);
+    res.sendStatus(200);
   }
 );
 
