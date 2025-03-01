@@ -16,4 +16,10 @@ block content
         tr
           td= set.date
           each param of exercise.parameters
-            td= set.parameters[param.id]
+            -
+              var paramValue = set.parameters[param.id]
+              function hasValue(v) {
+                if (v === 0 || v === "") return true;
+                return !!v;
+              }
+            td= hasValue(paramValue.value) ? paramValue.value : hasValue(paramValue.minutes) ? paramValue.minutes : paramValue
