@@ -22,13 +22,13 @@ export async function getSetsForDay(date: string, userId: string) {
 export async function getSetsForExercise(
   exerciseId: number,
   userId: string,
-  startingDate: string
+  startingDate?: string
 ) {
   const sets = await db.query.setsTable.findMany({
     where: and(
       eq(setsTable.user, userId),
       eq(setsTable.exercise, exerciseId),
-      gte(setsTable.date, startingDate)
+      startingDate ? gte(setsTable.date, startingDate) : undefined
     ),
     orderBy: [asc(setsTable.date), asc(setsTable.order)],
   });

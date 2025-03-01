@@ -309,6 +309,12 @@ authenticatedRouter.get(
   async (req: RequestWithGuaranteedSession, res: Response) => {
     const { user } = req;
     const id = parseInt(req.params.id, 10);
+    const lookback =
+      req.query.lookback === "all"
+        ? "all"
+        : typeof req.query.lookback === "string"
+        ? parseInt(req.query.lookback, 10)
+        : 365;
 
     const exercise = await getExercise(id, user.id);
 
@@ -319,7 +325,9 @@ authenticatedRouter.get(
     const historicalSets = await getSetsForExercise(
       id,
       user.id,
-      toDateString(relativeDate(new Date(), -365))
+      lookback === "all"
+        ? undefined
+        : toDateString(relativeDate(new Date(), -lookback))
     );
 
     res.render("historical", {
