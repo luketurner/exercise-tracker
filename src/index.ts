@@ -11,13 +11,14 @@ import {
   type User,
 } from "./db/schema";
 import { db } from "./db";
-import { eq, and, asc } from "drizzle-orm";
+import { eq, and } from "drizzle-orm";
 import {
   allIntensities,
   allParameters,
   allUnits,
   convertUnit,
   defaultUnit,
+  displayString,
   getExercise,
   getExercisesForUser,
 } from "./models/exercises";
@@ -54,6 +55,7 @@ app.use((req: RequestWithSession, res: Response, next: NextFunction) => {
     allIntensities: allIntensities(),
     defaultUnit,
     convertUnit,
+    displayString,
   };
 
   next();

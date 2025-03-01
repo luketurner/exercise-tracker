@@ -35,13 +35,5 @@ block content
         tr
           td= set.date
           each param of exercise.parameters
-            -
-              var paramData = set.parameters[param.id]
-              function hasValue(v) {
-                if (v === 0 || v === "") return true;
-                return !!v;
-              }
-              var paramValue = hasValue(paramData.value) ? paramData.value : hasValue(paramData.minutes) ? paramData.minutes : paramData
-              var unit = paramData.unit ? " " + defaultUnit(param.dataType, user) : paramData.minutes ? " min" : ""
-              var convertedValue = paramData.unit ? convertUnit(paramValue, paramData.unit, defaultUnit(param.dataType, user), 1) : paramValue
-            td= paramValue === "" ? "" : paramValue + unit
+            - var display = displayString(param, set.parameters[param.id], user)
+            td= display.value && display.unit ? display.value + ' ' + display.unit : display.value ? display.value : ""

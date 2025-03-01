@@ -1,8 +1,12 @@
 import { eq, and } from "drizzle-orm";
 import {
   exercisesTable,
+  type Distance,
+  type Duration,
   type ParameterDefinition,
+  type ParameterValue,
   type User,
+  type Weight,
 } from "../db/schema";
 import { db } from "../db";
 
@@ -104,4 +108,46 @@ export function allIntensities() {
     { id: "medium", name: "Medium" },
     { id: "high", name: "High" },
   ];
+}
+
+export function displayString(
+  param: ParameterDefinition,
+  value: ParameterValue,
+  user: User
+): { value?: string; unit?: string } {
+  console.log("param", param, value);
+  if (!value && value !== 0) return {};
+  switch (param.dataType) {
+    case "distance":
+      return {
+        value: convertUnit(
+          (value as Distance).value,
+          (value as Distance).unit,
+          defaultUnit(param.dataType, user)!
+        ),
+        unit: defaultUnit(param.dataType, user),
+      };
+    case "weight":
+      return {
+        value: convertUnit(
+          (value as Weight).value,
+          (value as Weight).unit,
+          defaultUnit(param.dataType, user)!
+        ),
+        unit: defaultUnit(param.dataType, user),
+      };
+    case "duration":
+      return {
+        value: (value as Duration).minutes?.toString(),
+        unit: "min",
+      };
+    case "intensity":
+      const display =
+        (allIntensities().find((i) => i.id === value) || {}).name || "";
+      return { value: display, unit: undefined };
+    case "number":
+      return { value: (value as number)?.toString(), unit: undefined };
+    default:
+      throw new Error("Invalid dataType");
+  }
 }
