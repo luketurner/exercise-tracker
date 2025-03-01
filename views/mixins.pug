@@ -11,7 +11,7 @@ mixin icon(iconName)
   i.ti(class="ti-"+iconClass)
 
 mixin control(leftIcon, rightIcon)
-  div.field
+  div.field&attributes(attributes)
     div(class={ 'control': true, 'has-icons-right': !!rightIcon, 'has-icons-left': !!leftIcon })
       block
       if leftIcon
@@ -22,7 +22,7 @@ mixin control(leftIcon, rightIcon)
             +icon(leftIcon)
       if rightIcon
         span.icon.is-small.is-right
-          if ['min', 'reps'].includes(rightIcon)
+          if ['min', 'reps', 'days'].includes(rightIcon)
             span= rightIcon
           else if allUnits && allUnits.find(unit => unit.id === rightIcon)
             span= allUnits.find(unit => unit.id === rightIcon).short

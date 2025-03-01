@@ -1,9 +1,28 @@
 extends _layout.pug
 
 block content
-  h1.title= exercise.name
-  each param of exercise.parameters
-    canvas(id="chart-"+param.id)
+  .dropdown(data-class-is-active="$lookbackpicker", data-signals-lookbackpicker="false", style="float: right")
+    .dropdown-trigger
+      button.button(aria-haspopup="true", aria-controls="lookback-picker", data-on-click="$lookbackpicker = !$lookbackpicker")
+        span Lookback
+        +icon("chevron-down")
+    .dropdown-menu#lookback-picker(role="menu")
+      .dropdown-content
+        button.dropdown-item(data-on-click="window.location.search = 'lookback=7'") 7d
+        button.dropdown-item(data-on-click="window.location.search = 'lookback=30'") 30d
+        button.dropdown-item(data-on-click="window.location.search = 'lookback=365'") 1y
+        button.dropdown-item(data-on-click="window.location.search = 'lookback=all'") All time
+        +control("clock", "days")(class="dropdown-item")
+          input.input(type="number", min="0", data-on-change="window.location.search = 'lookback='+ evt.target.value")
+  h1.title= "History of " + exercise.name
+
+  .fixed-grid.has-1-cols-mobile.has-2-cols-desktop.has-3-cols-widescreen
+    .grid
+      each param of exercise.parameters
+        .cell
+          .box
+            h1.title(style="text-align: center;")= param.name
+            canvas(id="chart-"+param.id)
   script!= "window.exerciseTracker.buildChart("+JSON.stringify(exercise)+","+JSON.stringify(historicalSets)+");"
   table.table
     thead
@@ -17,9 +36,12 @@ block content
           td= set.date
           each param of exercise.parameters
             -
-              var paramValue = set.parameters[param.id]
+              var paramData = set.parameters[param.id]
               function hasValue(v) {
                 if (v === 0 || v === "") return true;
                 return !!v;
               }
-            td= hasValue(paramValue.value) ? paramValue.value : hasValue(paramValue.minutes) ? paramValue.minutes : paramValue
+              var paramValue = hasValue(paramData.value) ? paramData.value : hasValue(paramData.minutes) ? paramData.minutes : paramData
+              var unit = paramData.unit ? " " + defaultUnit(param.dataType, user) : paramData.minutes ? " min" : ""
+              var convertedValue = paramData.unit ? convertUnit(paramValue, paramData.unit, defaultUnit(param.dataType, user), 1) : paramValue
+            td= paramValue === "" ? "" : paramValue + unit
