@@ -64,7 +64,7 @@ block content
                   null,
                   set.parameters.intensity,
                   "@post('/sets/"+set.id+"', {contentType: 'form'})",
-                  [{ id: 'low', name: 'Low' }, { id: 'medium', name: 'Medium' }, { id: 'high', name: 'High' }]
+                  allIntensities
                 )
               else
                 input.input(

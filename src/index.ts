@@ -13,6 +13,7 @@ import {
 import { db } from "./db";
 import { eq, and, asc } from "drizzle-orm";
 import {
+  allIntensities,
   allParameters,
   allUnits,
   convertUnit,
@@ -50,6 +51,7 @@ app.use((req: RequestWithSession, res: Response, next: NextFunction) => {
   req.viewBag = {
     allParameters: allParameters(),
     allUnits: allUnits(),
+    allIntensities: allIntensities(),
     defaultUnit,
     convertUnit,
   };

@@ -97,3 +97,11 @@ export function allParameters(): ParameterDefinition[] {
     },
   ];
 }
+
+export function allIntensities() {
+  return [
+    { id: "low", name: "Low" },
+    { id: "medium", name: "Medium" },
+    { id: "high", name: "High" },
+  ];
+}
