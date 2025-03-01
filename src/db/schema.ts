@@ -37,7 +37,7 @@ export interface Duration {
 
 export type Intensity = "low" | "medium" | "high";
 
-export type ParameterValue = Weight | Intensity | Duration | Distance;
+export type ParameterValue = Weight | Intensity | Duration | Distance | number;
 
 export type User = typeof user.$inferSelect;
 
