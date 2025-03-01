@@ -1,5 +1,6 @@
 import { createAuthClient } from "better-auth/client";
 import Chart from "chart.js/auto";
+import "chartjs-adapter-luxon";
 
 // import "@starfederation/datastar";
 export const authClient = createAuthClient({
@@ -40,6 +41,11 @@ export async function buildChart(exercise, sets) {
         ],
       },
       options: {
+        plugins: {
+          legend: {
+            display: false,
+          },
+        },
         scales: {
           y:
             param.dataType === "intensity"
@@ -50,6 +56,9 @@ export async function buildChart(exercise, sets) {
               : {
                   type: "linear",
                 },
+          x: {
+            type: "time",
+          },
         },
       },
     });
