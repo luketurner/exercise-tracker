@@ -73,7 +73,7 @@ export function allUnits() {
     { name: "Kilometers", id: "km", type: "distance", short: "km" },
     { name: "Kilograms", id: "kg", type: "weight", short: "kg" },
     { name: "Pounds", id: "pound", type: "weight", short: "lb" },
-  ];
+  ] as const;
 }
 
 export function allParameters(): ParameterDefinition[] {
@@ -108,7 +108,7 @@ export function allParameters(): ParameterDefinition[] {
       name: "Intensity",
       dataType: "intensity",
     },
-  ];
+  ] as const;
 }
 
 export function allIntensities() {
@@ -116,7 +116,7 @@ export function allIntensities() {
     { id: "low", name: "Low" },
     { id: "medium", name: "Medium" },
     { id: "high", name: "High" },
-  ];
+  ] as const;
 }
 
 export function displayString(

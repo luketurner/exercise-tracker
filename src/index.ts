@@ -28,8 +28,19 @@ import {
   getSetsForExercise,
   getSetsForUserExport,
 } from "./models/sets";
-import { relativeDate, toDateString } from "./util";
+import { controllerMethod, relativeDate, toDateString } from "./util";
 import multer from "multer";
+import { z } from "zod";
+import {
+  allDistanceUnitsEnumSchema,
+  allParametersDeclarationSchema,
+  allParametersInputSchema,
+  allWeightUnitsEnumSchema,
+  dateSchema,
+  nameSchema,
+  numericStringSchema,
+  validateRequest,
+} from "./validation";
 
 export interface RequestWithSession extends Request {
   user?: User;
@@ -70,20 +81,23 @@ app.set("view engine", "pug");
 
 app.use(getSessionMiddleware);
 
-app.get("/", async (req: RequestWithSession, res: Response) => {
-  const { user } = req;
+app.get(
+  "/",
+  controllerMethod(async (req: RequestWithSession, res: Response) => {
+    const { user } = req;
 
-  if (user) {
-    return res.redirect("/today");
-  }
+    if (user) {
+      return res.redirect("/today");
+    }
 
-  res.render("index", {
-    ...req.viewBag,
-    title: "Exercise Tracker",
-    message: "Hello world!",
-    user,
-  });
-});
+    res.render("index", {
+      ...req.viewBag,
+      title: "Exercise Tracker",
+      message: "Hello world!",
+      user,
+    });
+  })
+);
 
 const authenticatedRouter = express.Router();
 
@@ -91,21 +105,20 @@ authenticatedRouter.use(requireSessionOrRedirect);
 
 authenticatedRouter.get(
   "/:date(today|\\d{4}-\\d{2}-\\d{2})",
-  async (req: RequestWithGuaranteedSession, res: Response) => {
+  controllerMethod(async (req: RequestWithGuaranteedSession, res: Response) => {
     const { user } = req;
 
-    if (Array.isArray(req.query.editingSet)) {
-      return res.status(400).send("Cannot edit multiple sets at once");
-    }
+    const { params } = validateRequest(
+      req,
+      z.object({
+        date: z.string().regex(/^today|\d{4}-\d{2}-\d{2}$/),
+      }),
+      z.unknown(),
+      z.unknown()
+    );
 
-    const editingSet =
-      typeof req.query.editingSet === "string"
-        ? parseInt(req.query.editingSet, 10)
-        : undefined;
-
-    const isToday = req.params.date === "today";
-    const date =
-      req.params.date === "today" ? new Date() : new Date(req.params.date);
+    const isToday = params.date === "today";
+    const date = params.date === "today" ? new Date() : new Date(params.date);
 
     const dateString = toDateString(date);
     const today = toDateString(new Date());
@@ -131,20 +144,30 @@ authenticatedRouter.get(
       today,
       sets,
       nextSetOrder,
-      editingSet,
       isToday,
       yesterday: yesterdayString,
       tomorrow: tomorrowString,
     });
-  }
+  })
 );
 
 authenticatedRouter.post(
   "/sets",
-  async (req: RequestWithGuaranteedSession, res: Response) => {
+  controllerMethod(async (req: RequestWithGuaranteedSession, res: Response) => {
     const { user } = req;
 
-    const { exercise: exerciseId, date, order } = req.body;
+    const {
+      body: { exercise: exerciseId, date, order },
+    } = validateRequest(
+      req,
+      z.unknown(),
+      z.unknown(),
+      z.object({
+        exercise: numericStringSchema,
+        date: dateSchema,
+        order: numericStringSchema,
+      })
+    );
 
     const exercise = await getExercise(parseInt(exerciseId, 10), user.id);
 
@@ -178,31 +201,40 @@ authenticatedRouter.post(
 
     await db.insert(setsTable).values({
       user: user.id,
-      exercise: exerciseId,
+      exercise: parseInt(exerciseId, 10),
       date,
-      order,
+      order: parseInt(order, 10),
       parameters,
     });
 
     res.sendStatus(200);
-  }
+  })
 );
 
 authenticatedRouter.post(
   "/sets/:id",
-  async (req: RequestWithGuaranteedSession, res: Response) => {
+  controllerMethod(async (req: RequestWithGuaranteedSession, res: Response) => {
     const { user } = req;
 
-    const id = req.params.id;
-
-    const { exercise: exerciseId } = req.body;
+    const {
+      params: { id },
+      body: { exercise: exerciseId, ...parametersInBody },
+    } = validateRequest(
+      req,
+      z.object({ id: numericStringSchema }),
+      z.unknown(),
+      z.object({
+        exercise: numericStringSchema,
+        ...allParametersInputSchema,
+      })
+    );
 
     const exercise = await getExercise(parseInt(exerciseId, 10), user.id);
 
     const parameters: Record<string, ParameterValue> = {};
 
     for (const parameter of exercise.parameters ?? []) {
-      const value = req.body[parameter.id];
+      const value = (parametersInBody as any)[parameter.id];
       switch (parameter.dataType) {
         case "distance":
           parameters[parameter.id] = {
@@ -230,7 +262,7 @@ authenticatedRouter.post(
     await db
       .update(setsTable)
       .set({
-        exercise: exerciseId,
+        exercise: parseInt(exerciseId, 10),
         parameters,
       })
       .where(
@@ -238,14 +270,22 @@ authenticatedRouter.post(
       );
 
     res.sendStatus(200);
-  }
+  })
 );
 
 authenticatedRouter.post(
   "/sets/:id/delete",
-  async (req: RequestWithGuaranteedSession, res: Response) => {
+  controllerMethod(async (req: RequestWithGuaranteedSession, res: Response) => {
     const { user } = req;
-    const id = req.params.id;
+
+    const {
+      params: { id },
+    } = validateRequest(
+      req,
+      z.object({ id: numericStringSchema }),
+      z.unknown(),
+      z.unknown()
+    );
 
     const deletedSets = await db
       .delete(setsTable)
@@ -254,12 +294,12 @@ authenticatedRouter.post(
       )
       .returning();
     res.redirect(`/${deletedSets?.[0]?.date}`);
-  }
+  })
 );
 
 authenticatedRouter.get(
   "/exercises",
-  async (req: RequestWithGuaranteedSession, res: Response) => {
+  controllerMethod(async (req: RequestWithGuaranteedSession, res: Response) => {
     const { user } = req;
 
     const exercises = await getExercisesForUser(user.id);
@@ -270,35 +310,50 @@ authenticatedRouter.get(
       user,
       exercises,
     });
-  }
+  })
 );
 
 authenticatedRouter.post(
   "/exercises",
-  async (req: RequestWithGuaranteedSession, res: Response) => {
+  controllerMethod(async (req: RequestWithGuaranteedSession, res: Response) => {
     const { user } = req;
 
-    if (!req.body.name) {
-      return res.status(400).send("Must specify a name");
-    }
+    const {
+      body: { name },
+    } = validateRequest(
+      req,
+      z.unknown(),
+      z.unknown(),
+      z.object({
+        name: nameSchema,
+      })
+    );
 
     await db.insert(exercisesTable).values({
-      name: req.body.name,
+      name,
       user: user.id,
       parameters: [],
     });
 
     res.redirect("/exercises");
-  }
+  })
 );
 
 authenticatedRouter.get(
   "/exercises/:id",
-  async (req: RequestWithGuaranteedSession, res: Response) => {
+  controllerMethod(async (req: RequestWithGuaranteedSession, res: Response) => {
     const { user } = req;
-    const id = parseInt(req.params.id, 10);
 
-    const exercise = await getExercise(id, user.id);
+    const {
+      params: { id },
+    } = validateRequest(
+      req,
+      z.object({ id: numericStringSchema }),
+      z.unknown(),
+      z.unknown()
+    );
+
+    const exercise = await getExercise(parseInt(id, 10), user.id);
 
     if (!exercise) {
       return res.sendStatus(404);
@@ -310,19 +365,33 @@ authenticatedRouter.get(
       user,
       exercise,
     });
-  }
+  })
 );
 
 authenticatedRouter.get(
   "/exercises/:id/historical",
-  async (req: RequestWithGuaranteedSession, res: Response) => {
+  controllerMethod(async (req: RequestWithGuaranteedSession, res: Response) => {
     const { user } = req;
-    const id = parseInt(req.params.id, 10);
+
+    const { params, query } = validateRequest(
+      req,
+      z.object({ id: numericStringSchema }),
+      z.object({
+        lookback: z
+          .string()
+          .regex(/^all|\d+$/)
+          .optional(),
+      }),
+      z.unknown()
+    );
+
+    const id = parseInt(params.id, 10);
+
     const lookback =
-      req.query.lookback === "all"
+      query.lookback === "all"
         ? "all"
-        : typeof req.query.lookback === "string"
-        ? parseInt(req.query.lookback, 10)
+        : typeof query.lookback === "string"
+        ? parseInt(query.lookback, 10)
         : 365;
 
     const exercise = await getExercise(id, user.id);
@@ -346,28 +415,36 @@ authenticatedRouter.get(
       exercise,
       historicalSets,
     });
-  }
+  })
 );
 
 authenticatedRouter.post(
   "/exercises/:id",
-  async (req: RequestWithGuaranteedSession, res: Response) => {
+  controllerMethod(async (req: RequestWithGuaranteedSession, res: Response) => {
     const { user } = req;
-    const id = req.params.id;
 
-    if (!req.body.name) {
-      return res.status(400).send("Must specify a name");
-    }
+    const {
+      params: { id },
+      body,
+    } = validateRequest(
+      req,
+      z.object({ id: numericStringSchema }),
+      z.unknown(),
+      z.object({
+        name: nameSchema,
+        ...allParametersDeclarationSchema,
+      })
+    );
 
     const parameters: ParameterDefinition[] = [];
 
     for (const parameter of allParameters()) {
-      if (req.body[parameter.id]) {
+      if ((body as any)[parameter.id]) {
         parameters.push(parameter);
       }
     }
 
-    const exercise = await db
+    await db
       .update(exercisesTable)
       .set({
         name: req.body.name,
@@ -381,14 +458,22 @@ authenticatedRouter.post(
       );
 
     res.redirect(`/exercises/${id}`);
-  }
+  })
 );
 
 authenticatedRouter.post(
   "/exercises/:id/delete",
-  async (req: RequestWithGuaranteedSession, res: Response) => {
+  controllerMethod(async (req: RequestWithGuaranteedSession, res: Response) => {
     const { user } = req;
-    const id = req.params.id;
+
+    const {
+      params: { id },
+    } = validateRequest(
+      req,
+      z.object({ id: numericStringSchema }),
+      z.unknown(),
+      z.unknown()
+    );
 
     await db
       .delete(exercisesTable)
@@ -400,12 +485,12 @@ authenticatedRouter.post(
       );
 
     res.redirect("/exercises");
-  }
+  })
 );
 
 authenticatedRouter.get(
   "/settings",
-  async (req: RequestWithGuaranteedSession, res: Response) => {
+  controllerMethod(async (req: RequestWithGuaranteedSession, res: Response) => {
     const { user } = req;
 
     const units = allUnits();
@@ -417,42 +502,53 @@ authenticatedRouter.get(
       distanceUnits: units.filter((unit) => unit.type === "distance"),
       user,
     });
-  }
+  })
 );
 
 authenticatedRouter.post(
   "/settings",
-  async (req: RequestWithGuaranteedSession, res: Response) => {
+  controllerMethod(async (req: RequestWithGuaranteedSession, res: Response) => {
     const { user } = req;
+
+    const {
+      body: { preferredUnits },
+    } = validateRequest(
+      req,
+      z.unknown(),
+      z.unknown(),
+      z.object({
+        preferredUnits: z.object({
+          weight: allWeightUnitsEnumSchema,
+          distance: allDistanceUnitsEnumSchema,
+        }),
+      })
+    );
 
     await db
       .update(userTable)
       .set({
-        preferredUnits: {
-          weight: req.body.preferredUnits.weight,
-          distance: req.body.preferredUnits.distance,
-        },
+        preferredUnits,
       })
       .where(eq(userTable.id, user.id));
 
     res.redirect("/settings");
-  }
+  })
 );
 
 authenticatedRouter.post(
   "/user/delete",
-  async (req: RequestWithGuaranteedSession, res: Response) => {
+  controllerMethod(async (req: RequestWithGuaranteedSession, res: Response) => {
     const { user } = req;
 
     await db.delete(userTable).where(eq(userTable.id, user.id));
 
     res.redirect("/");
-  }
+  })
 );
 
 authenticatedRouter.get(
   "/user/export",
-  async (req: RequestWithGuaranteedSession, res: Response) => {
+  controllerMethod(async (req: RequestWithGuaranteedSession, res: Response) => {
     const { user } = req;
 
     const userData = { preferredUnits: user.preferredUnits };
@@ -470,7 +566,7 @@ authenticatedRouter.get(
       `attachment; filename="user_${user.id}_${Date.now()}.json"`
     );
     res.send(exportData);
-  }
+  })
 );
 
 app.use(authenticatedRouter);
