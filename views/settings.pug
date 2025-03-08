@@ -31,3 +31,24 @@ block content
     +control()
       button.button(data-on-click="window.location = '/user/export'") Export
 
+  .notification.is-danger.is-light
+    h1.subtitle Danger Zone
+    
+    +horizontalField("Delete my account")
+      +control()
+        button.button.is-danger(data-on-click="$deletemodal = true", data-signals-deletemodal="false") Delete
+
+block modal
+  div.modal(data-class-is-active="$deletemodal")
+    .modal-background(data-on-click="$deletemodal = false")
+    .modal-card
+      header.modal-card-head
+        p.modal-card-title Delete my account
+        button.delete(aria-label="close", data-on-click="$deletemodal = false")
+      section.modal-card-body
+        p Are you sure you want to delete this account and all data associated with it? This cannot be undone.
+        form#deleteaccount(name="deleteaccount", action="/user/delete", method="POST")
+      footer.modal-card-foot
+        .buttons
+          input.button.is-danger(type="submit", value="Delete", form="deleteaccount")
+          button.button(data-on-click="$deletemodal = false") Cancel

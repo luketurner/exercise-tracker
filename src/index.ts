@@ -438,6 +438,18 @@ authenticatedRouter.post(
     res.redirect("/settings");
   }
 );
+
+authenticatedRouter.post(
+  "/user/delete",
+  async (req: RequestWithGuaranteedSession, res: Response) => {
+    const { user } = req;
+
+    await db.delete(userTable).where(eq(userTable.id, user.id));
+
+    res.redirect("/");
+  }
+);
+
 authenticatedRouter.get(
   "/user/export",
   async (req: RequestWithGuaranteedSession, res: Response) => {
