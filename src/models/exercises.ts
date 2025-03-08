@@ -124,7 +124,6 @@ export function displayString(
   value: ParameterValue,
   user: User
 ): { value?: string; unit?: string } {
-  console.log("param", param, value);
   if (!value && value !== 0) return {};
   switch (param.dataType) {
     case "distance":
