@@ -17,6 +17,15 @@ export async function getExercisesForUser(userId: string) {
     .where(eq(exercisesTable.user, userId));
 }
 
+export async function getExercisesForUserExport(userId: string) {
+  const exercises = await getExercisesForUser(userId);
+  return exercises.map((e) => ({
+    id: e.id,
+    name: e.name,
+    parameters: e.parameters,
+  }));
+}
+
 export async function getExercise(id: number, userId: string) {
   return (
     await db

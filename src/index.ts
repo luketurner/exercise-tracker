@@ -21,8 +21,13 @@ import {
   displayString,
   getExercise,
   getExercisesForUser,
+  getExercisesForUserExport,
 } from "./models/exercises";
-import { getSetsForDay, getSetsForExercise } from "./models/sets";
+import {
+  getSetsForDay,
+  getSetsForExercise,
+  getSetsForUserExport,
+} from "./models/sets";
 import { relativeDate, toDateString } from "./util";
 import multer from "multer";
 
@@ -431,6 +436,28 @@ authenticatedRouter.post(
       .where(eq(userTable.id, user.id));
 
     res.redirect("/settings");
+  }
+);
+authenticatedRouter.get(
+  "/user/export",
+  async (req: RequestWithGuaranteedSession, res: Response) => {
+    const { user } = req;
+
+    const userData = { preferredUnits: user.preferredUnits };
+    const exercises = await getExercisesForUserExport(user.id);
+    const sets = await getSetsForUserExport(user.id);
+
+    const exportData = {
+      user: userData,
+      exercises,
+      sets,
+    };
+
+    res.set(
+      "content-disposition",
+      `attachment; filename="user_${user.id}_${Date.now()}.json"`
+    );
+    res.send(exportData);
   }
 );
 

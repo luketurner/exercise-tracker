@@ -34,3 +34,17 @@ export async function getSetsForExercise(
   });
   return sets;
 }
+
+export async function getSetsForUserExport(userId: string) {
+  return await db
+    .select({
+      id: setsTable.id,
+      exerciseId: setsTable.exercise,
+      date: setsTable.date,
+      order: setsTable.order,
+      parameters: setsTable.parameters,
+    })
+    .from(setsTable)
+    .where(eq(setsTable.user, userId))
+    .orderBy(asc(setsTable.date), asc(setsTable.order));
+}
