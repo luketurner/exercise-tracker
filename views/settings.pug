@@ -1,6 +1,8 @@
 extends _layout.pug
 
 block content
+  +control()
+    a.button.is-light(href="/today") Back
   h1.title Settings
   form(action="/settings", method="POST")
     +horizontalField("Weight unit")
@@ -26,10 +28,11 @@ block content
     +horizontalField()
       .field
         +control()
-          input.button(type="submit", value="Update")
-  +horizontalField("Export my data")
-    +control()
-      button.button(data-on-click="window.location = '/user/export'") Export
+          input.button.is-primary(type="submit", value="Save changes")
+  .notification
+    +horizontalField("Export my data")
+      +control()
+        button.button(data-on-click="window.location = '/user/export'") Export
 
   .notification.is-danger.is-light
     h1.subtitle Danger Zone

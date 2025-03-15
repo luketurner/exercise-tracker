@@ -536,7 +536,7 @@ authenticatedRouter.post(
       })
       .where(eq(userTable.id, user.id));
 
-    res.redirect("/settings");
+    res.redirect("/today");
   })
 );
 
