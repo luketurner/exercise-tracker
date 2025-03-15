@@ -4,31 +4,29 @@ block content
   +control()
     a.button.is-light(href="/today") Back
   h1.title Settings
-  form(action="/settings", method="POST")
-    +horizontalField("Weight unit")
-      .field
-        +control()
-          +select(
-            "preferredUnits[weight]",
-            null,
-            defaultUnit("weight", user),
-            null,
-            weightUnits
-          )
-    +horizontalField("Distance unit")
-      .field
-        +control()
-          +select(
-            "preferredUnits[distance]",
-            null,
-            defaultUnit("distance", user),
-            null,
-            distanceUnits
-          )
-    +horizontalField()
-      .field
-        +control()
-          input.button.is-primary(type="submit", value="Save changes")
+  .block
+    form
+      +horizontalField("Weight unit")
+        .field
+          +control()
+            +select(
+              "preferredUnits[weight]",
+              "weightSelect",
+              defaultUnit("weight", user),
+              "@post('/settings', {contentType: 'form'})",
+              weightUnits
+            )
+    form
+      +horizontalField("Distance unit")
+        .field
+          +control()
+            +select(
+              "preferredUnits[distance]",
+              "distanceSelect",
+              defaultUnit("distance", user),
+              "@post('/settings', {contentType: 'form'})",
+              distanceUnits
+            )
   .notification
     +horizontalField("Export my data")
       +control()

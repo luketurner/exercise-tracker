@@ -523,8 +523,8 @@ authenticatedRouter.post(
       z.unknown(),
       z.object({
         preferredUnits: z.object({
-          weight: allWeightUnitsEnumSchema,
-          distance: allDistanceUnitsEnumSchema,
+          weight: allWeightUnitsEnumSchema.optional(),
+          distance: allDistanceUnitsEnumSchema.optional(),
         }),
       })
     );
@@ -532,11 +532,14 @@ authenticatedRouter.post(
     await db
       .update(userTable)
       .set({
-        preferredUnits,
+        preferredUnits: {
+          weight: preferredUnits.weight ?? defaultUnit("weight", user),
+          distance: preferredUnits.distance ?? defaultUnit("distance", user),
+        },
       })
       .where(eq(userTable.id, user.id));
 
-    res.redirect("/today");
+    res.sendStatus(200);
   })
 );
 

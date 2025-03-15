@@ -38,13 +38,14 @@ export async function getExercise(id: number, userId: string) {
 export function defaultUnit(
   dataType: ParameterDefinition["dataType"],
   user: User
-): string | undefined {
+): string {
   if (dataType === "weight") {
     return user.preferredUnits?.["weight"] ?? "pound";
   }
   if (dataType === "distance") {
     return user.preferredUnits?.["distance"] ?? "mile";
   }
+  throw new Error(`${dataType} does not have units.`);
 }
 
 export function convertUnit(
