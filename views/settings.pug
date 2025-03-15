@@ -11,7 +11,7 @@ block content
           +select(
             "preferredUnits[weight]",
             null,
-            user.preferredUnits && user.preferredUnits.weight,
+            defaultUnit("weight", user),
             null,
             weightUnits
           )
@@ -21,7 +21,7 @@ block content
           +select(
             "preferredUnits[distance]",
             null,
-            user.preferredUnits && user.preferredUnits.distance,
+            defaultUnit("distance", user),
             null,
             distanceUnits
           )
