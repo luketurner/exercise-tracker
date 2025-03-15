@@ -8,7 +8,11 @@ mixin icon(iconName)
       intensity: "activity"
     }[iconName];
     if (!iconClass) iconClass = iconName;
-  i.ti(class="ti-"+iconClass)
+  if iconName === 'reps'
+    i #
+  else
+    i.ti(class="ti-"+iconClass)
+
 
 mixin control(leftIcon, rightIcon)
   div.field&attributes(attributes)
@@ -16,10 +20,7 @@ mixin control(leftIcon, rightIcon)
       block
       if leftIcon
         span.icon.is-small.is-left
-          if leftIcon === 'reps'
-            span #
-          else
-            +icon(leftIcon)
+          +icon(leftIcon)
       if rightIcon
         span.icon.is-small.is-right
           if ['min', 'reps', 'days'].includes(rightIcon)

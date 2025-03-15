@@ -13,7 +13,9 @@ block content
         +control()
           label.checkbox(name=param.id)
             input#weighted(type="checkbox", name=param.id, checked=exercise.parameters.find(p => p.id === param.id))
-            = " " + param.name
+            span.tag.is-white.is-medium
+              +icon(param.id)
+              span.pl-1= param.name
     +horizontalField()
       +control()
         input.button.is-primary(type="submit", value="Save changes")
