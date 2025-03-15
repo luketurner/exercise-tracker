@@ -70,9 +70,9 @@ export function convertUnit(
 export function allUnits() {
   return [
     { name: "Miles", id: "mile", type: "distance", short: "mi" },
+    { name: "Pounds", id: "pound", type: "weight", short: "lb" },
     { name: "Kilometers", id: "km", type: "distance", short: "km" },
     { name: "Kilograms", id: "kg", type: "weight", short: "kg" },
-    { name: "Pounds", id: "pound", type: "weight", short: "lb" },
   ] as const;
 }
 
