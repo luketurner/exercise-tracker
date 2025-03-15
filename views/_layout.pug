@@ -10,15 +10,15 @@ html()
     link(rel="stylesheet", href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css")
   body
     div.container.is-flex.is-flex-direction-column(style="min-height: 100vh")
-      nav.navbar.mb-4(role="navigation", aria-label="main navigation", data-signals-theme="'light'")
+      nav.navbar.mb-4(role="navigation", aria-label="main navigation", data-signals-_theme="'light'")
         div.navbar-brand
           a.navbar-item(href="/") Exercise Tracker
-          a.navbar-burger(style="color: inherit;", role="button", aria-label="menu", aria-expanded="false", data-attr-aria-expanded="$shownavmenu.toString()", data-signals-shownavmenu="false" data-on-click="$shownavmenu = !$shownavmenu", data-class-is-active="$shownavmenu")
+          a.navbar-burger(style="color: inherit;", role="button", aria-label="menu", aria-expanded="false", data-attr-aria-expanded="$_shownavmenu.toString()", data-signals-_shownavmenu="false" data-on-click="$_shownavmenu = !$_shownavmenu", data-class-is-active="$_shownavmenu")
             span(aria-hidden="true")
             span(aria-hidden="true")
             span(aria-hidden="true")
             span(aria-hidden="true")
-        div.navbar-menu(data-class-is-active="$shownavmenu")
+        div.navbar-menu(data-class-is-active="$_shownavmenu")
           div.navbar-start
             if user
               a.navbar-item(href="/today") Today
@@ -38,7 +38,7 @@ html()
           p
             a.mr-1(href="https://github.com/luketurner/exercise-tracker") Source code
             | Copyright 2025 Luke Turner
-            button.ml-1(data-show="$theme === 'light'", data-on-click="document.querySelector('html').setAttribute('data-theme', 'dark'); $theme = 'dark'") 🌙
-            button.ml-1(data-show="$theme === 'dark'", data-on-click="document.querySelector('html').setAttribute('data-theme', 'light'); $theme = 'light'") ☀
+            button.ml-1(data-show="$_theme === 'light'", data-on-click="document.querySelector('html').setAttribute('data-theme', 'dark'); $_theme = 'dark'") 🌙
+            button.ml-1(data-show="$_theme === 'dark'", data-on-click="document.querySelector('html').setAttribute('data-theme', 'light'); $_theme = 'light'") ☀
 
     block modal

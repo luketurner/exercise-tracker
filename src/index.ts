@@ -62,6 +62,7 @@ app.all("/api/auth/*", toNodeHandler(auth));
 
 app.use(express.static("public"));
 app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
 app.use(multer().none());
 
 app.use((req: RequestWithSession, res: Response, next: NextFunction) => {
@@ -452,7 +453,7 @@ authenticatedRouter.post(
     await db
       .update(exercisesTable)
       .set({
-        name: req.body.name,
+        name: body.name,
         parameters,
       })
       .where(
@@ -462,7 +463,7 @@ authenticatedRouter.post(
         )
       );
 
-    res.redirect(`/exercises`);
+    res.sendStatus(200);
   })
 );
 

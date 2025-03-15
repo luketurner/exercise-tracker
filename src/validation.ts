@@ -21,7 +21,7 @@ export const allParametersInputSchema = allParameters().reduce(
 );
 
 export const allParametersDeclarationSchema = allParameters().reduce(
-  (m, p) => ({ ...m, [p.id]: z.enum(["on"]).optional() }),
+  (m, p) => ({ ...m, [p.id]: z.boolean() }),
   {}
 );
 
