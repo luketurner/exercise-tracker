@@ -329,13 +329,18 @@ authenticatedRouter.post(
       })
     );
 
-    await db.insert(exercisesTable).values({
-      name,
-      user: user.id,
-      parameters: [],
-    });
+    const exercise = (
+      await db
+        .insert(exercisesTable)
+        .values({
+          name,
+          user: user.id,
+          parameters: [],
+        })
+        .returning()
+    )[0];
 
-    res.redirect("/exercises");
+    res.redirect(`/exercises/${exercise.id}`);
   })
 );
 
@@ -457,7 +462,7 @@ authenticatedRouter.post(
         )
       );
 
-    res.redirect(`/exercises/${id}`);
+    res.redirect(`/exercises`);
   })
 );
 
