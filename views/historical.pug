@@ -1,6 +1,8 @@
 extends _layout.pug
 
 block content
+  +control()
+    a.button.is-light(href="/exercises") Back
   .dropdown(data-class-is-active="$lookbackpicker", data-signals-lookbackpicker="false", style="float: right")
     .dropdown-trigger
       button.button(aria-haspopup="true", aria-controls="lookback-picker", data-on-click="$lookbackpicker = !$lookbackpicker")
@@ -15,7 +17,6 @@ block content
         +control("clock", "days")(class="dropdown-item")
           input.input(type="number", min="0", data-on-change="window.location.search = 'lookback='+ evt.target.value")
   h1.title= "History of " + exercise.name
-
   .fixed-grid.has-1-cols-mobile.has-2-cols-desktop.has-3-cols-widescreen
     .grid
       each param of exercise.parameters

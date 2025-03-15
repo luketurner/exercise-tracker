@@ -1,6 +1,8 @@
 extends _layout.pug
 
 block content
+  +control()
+    a.button.is-light(href="/exercises") Back
   h1.title= exercise.name
   form(action="/exercises/"+exercise.id, method="POST")
     +horizontalField("Exercise name")
