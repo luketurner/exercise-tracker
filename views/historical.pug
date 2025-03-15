@@ -22,7 +22,10 @@ block content
       each param of exercise.parameters
         .cell
           .box
-            h1.title(style="text-align: center;")= param.name
+            h1.title(style="text-align: center;")
+              +icon(param.id)
+              |  
+              = param.name
             canvas(id="chart-"+param.id)
   script!= "window.exerciseTracker.buildChart("+JSON.stringify(exercise)+","+JSON.stringify(historicalSets)+");"
   table.table
@@ -30,7 +33,10 @@ block content
       tr
         td Date
         each param of exercise.parameters
-            td= param.name
+            td
+              +icon(param.id)
+              |  
+              = param.name
     tbody
       each set of historicalSets
         tr
