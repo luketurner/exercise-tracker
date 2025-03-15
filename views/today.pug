@@ -13,6 +13,16 @@ block content
         a.button.is-large(href="/"+tomorrow)
           span.icon
             +icon("chevron-right")
+  if exercises.length === 0
+    .notification.is-primary.is-light.content(data-signals-onboardingnotification="true", data-show="$onboardingnotification")
+      button.delete(data-on-click="$onboardingnotification = false")
+      p Hi, welcome to exercise-tracker! This is an app that helps you track exercises, but it looks like you don't have any exercises to track yet.
+
+      p
+        | The first step is to open the 
+        a(href="/exercises") Manage Exercises page
+        |  and create the exercises that you want to track.
+        | Then, when you want to track your exercises, come back to the Today page (the one you're currently on) to log your sets.
   each set in sets
     form(action="/sets/"+set.id+"/delete", method="POST", id="set-"+set.id+"-delete")
     div.fixed-grid.has-7-cols-desktop.has-4-cols-tablet.has-2-cols-mobile
@@ -74,16 +84,17 @@ block content
                   value=paramValue,
                   data-on-input__debounce.500ms.leading="@post('/sets/"+set.id+"', {contentType: 'form'})"
                 )
-  form
-    +horizontalField("Add new set")
-      .field
-        +control()
-          +select(
-            "exercise",
-            "setnewexerciseid",
-            "",
-            "@post('/sets', {contentType: 'form'}).then(() => window.location.reload())",
-            exercises
-          )
-    input(type="hidden", name="date", value=date)
-    input(type="hidden", name="order", value=nextSetOrder)
+  if exercises.length !== 0
+    form
+      +horizontalField("Add new set")
+        .field
+          +control()
+            +select(
+              "exercise",
+              "setnewexerciseid",
+              "",
+              "@post('/sets', {contentType: 'form'}).then(() => window.location.reload())",
+              exercises
+            )
+      input(type="hidden", name="date", value=date)
+      input(type="hidden", name="order", value=nextSetOrder)
