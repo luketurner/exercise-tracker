@@ -1,6 +1,7 @@
 import { createAuthClient } from "better-auth/client";
 import Chart from "chart.js/auto";
 import "chartjs-adapter-luxon";
+import Sortable from "sortablejs";
 
 // import "@starfederation/datastar";
 export const authClient = createAuthClient({
@@ -65,4 +66,46 @@ export async function buildChart(exercise, sets) {
   }
 }
 
-window.exerciseTracker = { signIn, signOut, buildChart };
+export function makeSortable(id, onEnd) {
+  return new Sortable(document.getElementById(id), {
+    animation: 150,
+    handle: ".handle",
+    ghostClass: "blue-background-class",
+    async onEnd(evt, originalEvent) {
+      console.log(evt.item);
+      const id = evt.item.getAttribute("data-id");
+      if (evt.newIndex === evt.oldIndex) {
+        return;
+      }
+      try {
+        return await onEnd(id, evt.newIndex, evt.oldIndex);
+      } catch (e) {
+        // TODO -- toast?
+        window.location.reload();
+      }
+    },
+  });
+}
+
+export function makeSortableSetList(id) {
+  return makeSortable(id, async function (id, newIndex, oldIndex) {
+    const resp = await fetch("/sets/" + id + "/move", {
+      method: "POST",
+      body: new URLSearchParams({
+        newOrder: newIndex + 1,
+        oldOrder: oldIndex + 1,
+      }),
+    });
+    if (resp.status !== 200) {
+      throw new Error("Could not move set");
+    }
+  });
+}
+
+window.exerciseTracker = {
+  signIn,
+  signOut,
+  buildChart,
+  makeSortable,
+  makeSortableSetList,
+};

@@ -23,67 +23,75 @@ block content
         a(href="/exercises") Manage Exercises page
         |  and create the exercises that you want to track.
         | Then, when you want to track your exercises, come back to the Today page (the one you're currently on) to log your sets.
-  each set in sets
-    form(action="/sets/"+set.id+"/delete", method="POST", id="set-"+set.id+"-delete")
-    div.fixed-grid.has-7-cols-desktop.has-4-cols-tablet.has-2-cols-mobile
-      form.grid
-        div.cell
-          div.field.has-addons
-            div.control
-              button.button.is-danger.is-light(form="set-"+set.id+"-delete")
-                span.icon
-                  +icon("x")
-            +control(null, null)
-              +select(
-                "exercise",
-                "set"+set.id+"exerciseid",
-                set.exercise.id,
-                "@post('/sets/"+set.id+"', {contentType: 'form'})",
-                exercises
+
+  div.set-list#set-list
+    each set in sets
+      .is-flex.is-flex-direction-row(data-id=set.id)
+        form(action="/sets/"+set.id+"/delete", method="POST", id="set-"+set.id+"-delete")
+        div.handle.button.is-white.mb-4
+          +icon("grip-vertical")
+
+        div.fixed-grid.has-7-cols-desktop.has-4-cols-tablet.has-2-cols-mobile.is-flex-grow-1
+          form.grid
+            div.cell
+              div.field.has-addons
+                div.control
+                  button.button.is-danger.is-light(form="set-"+set.id+"-delete")
+                    span.icon
+                      +icon("x")
+                +control(null, null)
+                  +select(
+                    "exercise",
+                    "set"+set.id+"exerciseid",
+                    set.exercise.id,
+                    "@post('/sets/"+set.id+"', {contentType: 'form'})",
+                    exercises
+                  )
+            each parameter in allParameters
+              - var paramValue = set.parameters[parameter.id]
+              div.cell(
+                data-show="!!$exercises.find(v => v.id == $set"+set.id+"exerciseid)?.parameters?.find(p => p.id === '"+parameter.id+"')"
               )
-        each parameter in allParameters
-          - var paramValue = set.parameters[parameter.id]
-          div.cell(
-            data-show="!!$exercises.find(v => v.id == $set"+set.id+"exerciseid)?.parameters?.find(p => p.id === '"+parameter.id+"')"
-          )
-            +control(
-              parameter.id,
-              parameter.dataType === 'weight' || parameter.dataType === 'distance' ? defaultUnit(parameter.dataType, user) : parameter.dataType === 'duration' ? 'min' : parameter.id === 'reps' ? 'reps' : null,
-            )
-              if parameter.dataType === 'weight' || parameter.dataType === 'distance'
-                - var unit = defaultUnit(parameter.dataType, user)
-                input.input(
-                  id=parameter.id,
-                  type="number",
-                  name=parameter.id,
-                  min="0", step="0.1"
-                  value=paramValue ? convertUnit(paramValue.value, paramValue.unit, unit, 1) : null,
-                  data-on-input__debounce.500ms.leading="@post('/sets/"+set.id+"', {contentType: 'form'})"
+                +control(
+                  parameter.id,
+                  parameter.dataType === 'weight' || parameter.dataType === 'distance' ? defaultUnit(parameter.dataType, user) : parameter.dataType === 'duration' ? 'min' : parameter.id === 'reps' ? 'reps' : null,
                 )
-              else if parameter.dataType === 'duration'
-                input.input(
-                  id=parameter.id,
-                  type="number",
-                  name=parameter.id,
-                  value=paramValue ? paramValue.minutes : null,
-                  data-on-input__debounce.500ms.leading="@post('/sets/"+set.id+"', {contentType: 'form'})"
-                )
-              else if parameter.dataType === 'intensity'
-                +select(
-                  "intensity",
-                  null,
-                  set.parameters.intensity,
-                  "@post('/sets/"+set.id+"', {contentType: 'form'})",
-                  allIntensities
-                )
-              else
-                input.input(
-                  id=parameter.id,
-                  type="number",
-                  name=parameter.id,
-                  value=paramValue,
-                  data-on-input__debounce.500ms.leading="@post('/sets/"+set.id+"', {contentType: 'form'})"
-                )
+                  if parameter.dataType === 'weight' || parameter.dataType === 'distance'
+                    - var unit = defaultUnit(parameter.dataType, user)
+                    input.input(
+                      id=parameter.id,
+                      type="number",
+                      name=parameter.id,
+                      min="0", step="0.1"
+                      value=paramValue ? convertUnit(paramValue.value, paramValue.unit, unit, 1) : null,
+                      data-on-input__debounce.500ms.leading="@post('/sets/"+set.id+"', {contentType: 'form'})"
+                    )
+                  else if parameter.dataType === 'duration'
+                    input.input(
+                      id=parameter.id,
+                      type="number",
+                      name=parameter.id,
+                      value=paramValue ? paramValue.minutes : null,
+                      data-on-input__debounce.500ms.leading="@post('/sets/"+set.id+"', {contentType: 'form'})"
+                    )
+                  else if parameter.dataType === 'intensity'
+                    +select(
+                      "intensity",
+                      null,
+                      set.parameters.intensity,
+                      "@post('/sets/"+set.id+"', {contentType: 'form'})",
+                      allIntensities
+                    )
+                  else
+                    input.input(
+                      id=parameter.id,
+                      type="number",
+                      name=parameter.id,
+                      value=paramValue,
+                      data-on-input__debounce.500ms.leading="@post('/sets/"+set.id+"', {contentType: 'form'})"
+                    )
+  script
+    | exerciseTracker.makeSortableSetList("set-list") 
   if exercises.length !== 0
     form
       +horizontalField("Add new set")
