@@ -3,6 +3,15 @@ import { db } from "../db";
 import { setsTable } from "../db/schema";
 import { getExercise } from "./exercises";
 
+export async function getSetById(setId: number, userId: string) {
+  return (
+    await db
+      .select()
+      .from(setsTable)
+      .where(and(eq(setsTable.user, userId), eq(setsTable.id, setId)))
+  )[0];
+}
+
 export async function getSetsForDay(date: string, userId: string) {
   const sets = await db.query.setsTable.findMany({
     where: and(eq(setsTable.user, userId), eq(setsTable.date, date)),

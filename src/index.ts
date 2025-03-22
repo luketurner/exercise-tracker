@@ -11,7 +11,7 @@ import {
   type User,
 } from "./db/schema";
 import { db } from "./db";
-import { eq, and } from "drizzle-orm";
+import { eq, and, sql, gt, lte, gte, lt } from "drizzle-orm";
 import {
   allIntensities,
   allParameters,
@@ -24,6 +24,7 @@ import {
   getExercisesForUserExport,
 } from "./models/exercises";
 import {
+  getSetById,
   getSetsForDay,
   getSetsForExercise,
   getSetsForUserExport,
@@ -295,6 +296,81 @@ authenticatedRouter.post(
       )
       .returning();
     res.redirect(`/${deletedSets?.[0]?.date}`);
+  })
+);
+
+authenticatedRouter.post(
+  "/sets/:id/move",
+  controllerMethod(async (req: RequestWithGuaranteedSession, res: Response) => {
+    const { user } = req;
+
+    const {
+      params: { id },
+      body,
+    } = validateRequest(
+      req,
+      z.object({ id: numericStringSchema }),
+      z.unknown(),
+      z.object({
+        oldOrder: numericStringSchema,
+        newOrder: numericStringSchema,
+      })
+    );
+
+    const oldOrder = parseInt(body.oldOrder, 10);
+    const newOrder = parseInt(body.newOrder, 10);
+
+    const existingSet = await getSetById(parseInt(id, 10), user.id);
+
+    if (oldOrder !== existingSet.order) {
+      throw new Error("Cannot move set, please refresh the page.");
+    }
+
+    if (oldOrder === newOrder) {
+      return res.sendStatus(200);
+    }
+
+    await db.transaction(async (tx) => {
+      if (oldOrder < newOrder) {
+        await tx
+          .update(setsTable)
+          .set({
+            order: sql`${setsTable.order} - 1`,
+          })
+          .where(
+            and(
+              eq(setsTable.user, user.id),
+              eq(setsTable.date, existingSet.date),
+              gt(setsTable.order, oldOrder),
+              lte(setsTable.order, newOrder)
+            )
+          );
+      } else {
+        await tx
+          .update(setsTable)
+          .set({
+            order: sql`${setsTable.order} + 1`,
+          })
+          .where(
+            and(
+              eq(setsTable.user, user.id),
+              eq(setsTable.date, existingSet.date),
+              gte(setsTable.order, newOrder),
+              lt(setsTable.order, oldOrder)
+            )
+          );
+      }
+
+      await tx
+        .update(setsTable)
+        .set({
+          order: newOrder,
+        })
+        .where(
+          and(eq(setsTable.user, user.id), eq(setsTable.id, parseInt(id, 10)))
+        );
+    });
+    res.sendStatus(200);
   })
 );
 
