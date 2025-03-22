@@ -72,7 +72,6 @@ export function makeSortable(id, onEnd) {
     handle: ".handle",
     ghostClass: "blue-background-class",
     async onEnd(evt, originalEvent) {
-      console.log(evt.item);
       const id = evt.item.getAttribute("data-id");
       if (evt.newIndex === evt.oldIndex) {
         return;
