@@ -6,6 +6,7 @@ import {
   exercisesTable,
   setsTable,
   user as userTable,
+  type ExerciseSet,
   type ParameterDefinition,
   type ParameterValue,
   type User,
@@ -24,6 +25,7 @@ import {
   getExercisesForUserExport,
 } from "./models/exercises";
 import {
+  getLatestDaySetsForExercise,
   getSetById,
   getSetsForDay,
   getSetsForExercise,
@@ -137,6 +139,15 @@ authenticatedRouter.get(
 
     const nextSetOrder = (sets[sets.length - 1]?.order ?? 0) + 1;
 
+    const historicalSets: Record<string, ExerciseSet[]> = {};
+    for (const exercise of exercises) {
+      historicalSets[exercise.id] = await getLatestDaySetsForExercise(
+        exercise.id,
+        user.id,
+        dateString
+      );
+    }
+
     res.render("today", {
       ...req.viewBag,
       title: dateString,
@@ -149,6 +160,7 @@ authenticatedRouter.get(
       isToday,
       yesterday: yesterdayString,
       tomorrow: tomorrowString,
+      historicalSets,
     });
   })
 );

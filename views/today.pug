@@ -26,19 +26,17 @@ block content
 
   div.set-list#set-list
     each set in sets
+      -
+        var historical = historicalSets[set.exercise.id]
+        var hasHistorical = historical.length > 0
       .is-flex.is-flex-direction-row(data-id=set.id)
         form(action="/sets/"+set.id+"/delete", method="POST", id="set-"+set.id+"-delete")
         div.handle.button.is-white.mb-4
           +icon("grip-vertical")
-
-        div.fixed-grid.has-7-cols-desktop.has-4-cols-tablet.has-2-cols-mobile.is-flex-grow-1
-          form.grid
-            div.cell
-              div.field.has-addons
-                div.control
-                  button.button.is-danger.is-light(form="set-"+set.id+"-delete")
-                    span.icon
-                      +icon("x")
+        .is-flex.is-flex-direction-column.is-flex-grow-1
+          div.fixed-grid.has-7-cols-desktop.has-4-cols-tablet.has-2-cols-mobile
+            form.grid
+              .cell
                 +control(null, null)
                   +select(
                     "exercise",
@@ -47,49 +45,71 @@ block content
                     "@post('/sets/"+set.id+"', {contentType: 'form'})",
                     exercises
                   )
-            each parameter in allParameters
-              - var paramValue = set.parameters[parameter.id]
-              div.cell(
-                data-show="!!$exercises.find(v => v.id == $set"+set.id+"exerciseid)?.parameters?.find(p => p.id === '"+parameter.id+"')"
-              )
-                +control(
-                  parameter.id,
-                  parameter.dataType === 'weight' || parameter.dataType === 'distance' ? defaultUnit(parameter.dataType, user) : parameter.dataType === 'duration' ? 'min' : parameter.id === 'reps' ? 'reps' : null,
+              each parameter in allParameters
+                - var paramValue = set.parameters[parameter.id]
+                div.cell(
+                  data-show="!!$exercises.find(v => v.id == $set"+set.id+"exerciseid)?.parameters?.find(p => p.id === '"+parameter.id+"')"
                 )
-                  if parameter.dataType === 'weight' || parameter.dataType === 'distance'
-                    - var unit = defaultUnit(parameter.dataType, user)
-                    input.input(
-                      id=parameter.id,
-                      type="number",
-                      name=parameter.id,
-                      min="0", step="0.1"
-                      value=paramValue ? convertUnit(paramValue.value, paramValue.unit, unit, 1) : null,
-                      data-on-input__debounce.500ms.leading="@post('/sets/"+set.id+"', {contentType: 'form'})"
-                    )
-                  else if parameter.dataType === 'duration'
-                    input.input(
-                      id=parameter.id,
-                      type="number",
-                      name=parameter.id,
-                      value=paramValue ? paramValue.minutes : null,
-                      data-on-input__debounce.500ms.leading="@post('/sets/"+set.id+"', {contentType: 'form'})"
-                    )
-                  else if parameter.dataType === 'intensity'
-                    +select(
-                      "intensity",
-                      null,
-                      set.parameters.intensity,
-                      "@post('/sets/"+set.id+"', {contentType: 'form'})",
-                      allIntensities
-                    )
-                  else
-                    input.input(
-                      id=parameter.id,
-                      type="number",
-                      name=parameter.id,
-                      value=paramValue,
-                      data-on-input__debounce.500ms.leading="@post('/sets/"+set.id+"', {contentType: 'form'})"
-                    )
+                  +control(
+                    parameter.id,
+                    parameter.dataType === 'weight' || parameter.dataType === 'distance' ? defaultUnit(parameter.dataType, user) : parameter.dataType === 'duration' ? 'min' : parameter.id === 'reps' ? 'reps' : null,
+                  )
+                    if parameter.dataType === 'weight' || parameter.dataType === 'distance'
+                      - var unit = defaultUnit(parameter.dataType, user)
+                      input.input(
+                        id=parameter.id,
+                        type="number",
+                        name=parameter.id,
+                        min="0", step="0.1"
+                        value=paramValue ? convertUnit(paramValue.value, paramValue.unit, unit, 1) : null,
+                        data-on-input__debounce.500ms.leading="@post('/sets/"+set.id+"', {contentType: 'form'})"
+                      )
+                    else if parameter.dataType === 'duration'
+                      input.input(
+                        id=parameter.id,
+                        type="number",
+                        name=parameter.id,
+                        value=paramValue ? paramValue.minutes : null,
+                        data-on-input__debounce.500ms.leading="@post('/sets/"+set.id+"', {contentType: 'form'})"
+                      )
+                    else if parameter.dataType === 'intensity'
+                      +select(
+                        "intensity",
+                        null,
+                        set.parameters.intensity,
+                        "@post('/sets/"+set.id+"', {contentType: 'form'})",
+                        allIntensities
+                      )
+                    else
+                      input.input(
+                        id=parameter.id,
+                        type="number",
+                        name=parameter.id,
+                        value=paramValue,
+                        data-on-input__debounce.500ms.leading="@post('/sets/"+set.id+"', {contentType: 'form'})"
+                      )
+              .cell.buttons.has-addons
+                button.button.is-light(form="", data-on-click="$_isSet"+set.id+"Expanded = !$_isSet"+set.id+"Expanded")
+                  +icon("chart-line")
+                button.button.is-danger.is-light(form="set-"+set.id+"-delete")
+                  +icon("x")
+          div(data-show="$_isSet"+set.id+"Expanded", data-signals="{'_isSet"+set.id+"Expanded': false}")
+            if hasHistorical
+              p= historical[0].date
+              table.table
+                thead
+                  each parameter in allParameters
+                    th(data-show="!!$exercises.find(v => v.id == $set"+set.id+"exerciseid)?.parameters?.find(p => p.id === '"+parameter.id+"')")
+                      +icon(parameter.id)
+                tbody
+                  each historicalSet in historical
+                    tr
+                      each parameter in allParameters
+                        td(data-show="!!$exercises.find(v => v.id == $set"+set.id+"exerciseid)?.parameters?.find(p => p.id === '"+parameter.id+"')")
+                          - var display = displayString(parameter, historicalSet.parameters[parameter.id], user)
+                          = display.value && display.unit ? display.value + ' ' + display.unit : display.value ? display.value : ""
+            else
+              p No historical data for this exercise.
   script
     | exerciseTracker.makeSortableSetList("set-list") 
   if exercises.length !== 0

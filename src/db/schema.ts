@@ -40,6 +40,7 @@ export type Intensity = "low" | "medium" | "high";
 export type ParameterValue = Weight | Intensity | Duration | Distance | number;
 
 export type User = typeof user.$inferSelect;
+export type ExerciseSet = typeof setsTable.$inferSelect;
 
 export const exercisesTable = pgTable("exercises", {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),

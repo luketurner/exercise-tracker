@@ -37,7 +37,7 @@ mixin select(name, signalName, defaultValue, onChange, values)
       data-on-change=onChange,
       data-signals=signalName ? "{'"+signalName+"': '"+defaultValue+"'}" : false
       data-bind=signalName || false
-    )
+    )&attributes(attributes)
       each value in values
         option(value=value.id, selected=(defaultValue === value.id))= value.name
 

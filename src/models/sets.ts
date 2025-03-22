@@ -1,4 +1,4 @@
-import { and, eq, asc, gte } from "drizzle-orm";
+import { and, eq, asc, gte, desc, lt } from "drizzle-orm";
 import { db } from "../db";
 import { setsTable } from "../db/schema";
 import { getExercise } from "./exercises";
@@ -40,6 +40,41 @@ export async function getSetsForExercise(
       startingDate ? gte(setsTable.date, startingDate) : undefined
     ),
     orderBy: [asc(setsTable.date), asc(setsTable.order)],
+  });
+  return sets;
+}
+
+export async function getLatestDaySetsForExercise(
+  exerciseId: number,
+  userId: string,
+  endDate: string
+) {
+  const latestDay = (
+    await db
+      .select({ date: setsTable.date })
+      .from(setsTable)
+      .where(
+        and(
+          eq(setsTable.user, userId),
+          eq(setsTable.exercise, exerciseId),
+          lt(setsTable.date, endDate)
+        )
+      )
+      .orderBy(desc(setsTable.date))
+      .limit(1)
+  )[0];
+
+  if (!latestDay) {
+    return [];
+  }
+
+  const sets = await db.query.setsTable.findMany({
+    where: and(
+      eq(setsTable.user, userId),
+      eq(setsTable.exercise, exerciseId),
+      eq(setsTable.date, latestDay.date)
+    ),
+    orderBy: [asc(setsTable.order)],
   });
   return sets;
 }
