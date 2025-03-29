@@ -95,7 +95,9 @@ block content
                   +icon("x")
           div(data-show="$_isSet"+set.id+"Expanded", data-signals="{'_isSet"+set.id+"Expanded': false}")
             if hasHistorical
-              p= historical[0].date
+              p
+                = historical[0].date
+                a.ml-2(href="/exercises/"+set.exercise.id+"/historical") (See all)
               table.table
                 thead
                   each parameter in allParameters
