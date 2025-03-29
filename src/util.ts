@@ -1,5 +1,9 @@
+import { fileURLToPath } from "bun";
 import type { Request, Response } from "express";
 import { ZodError } from "zod";
+import { dirname, join } from "path";
+import { readdir } from "node:fs/promises";
+import { basename, extname } from "node:path";
 
 const pad = (value: number) => {
   if (value < 10) {
@@ -32,3 +36,17 @@ export function controllerMethod(controller: any) {
     }
   };
 }
+
+export function getManualDir(): string {
+  return join(dirname(fileURLToPath(import.meta.url)), "manual");
+}
+
+export function getManualPath(name: string): string {
+  return join(getManualDir(), `${name}.md`);
+}
+
+export async function getAllManualPages() {
+  return (await readdir(getManualDir())).map((f) => basename(f, extname(f)));
+}
+
+export const allManualPages = await getAllManualPages();

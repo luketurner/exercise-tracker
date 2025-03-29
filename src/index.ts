@@ -31,7 +31,13 @@ import {
   getSetsForExercise,
   getSetsForUserExport,
 } from "./models/sets";
-import { controllerMethod, relativeDate, toDateString } from "./util";
+import {
+  allManualPages,
+  controllerMethod,
+  getManualPath,
+  relativeDate,
+  toDateString,
+} from "./util";
 import multer from "multer";
 import { z } from "zod";
 import {
@@ -44,6 +50,12 @@ import {
   numericStringSchema,
   validateRequest,
 } from "./validation";
+import rehypeStringify from "rehype-stringify";
+import remarkParse from "remark-parse";
+import remarkRehype from "remark-rehype";
+import { unified } from "unified";
+import { readFile } from "node:fs/promises";
+import remarkGfm from "remark-gfm";
 
 export interface RequestWithSession extends Request {
   user?: User;
@@ -98,6 +110,50 @@ app.get(
       ...req.viewBag,
       title: "Exercise Tracker",
       message: "Hello world!",
+      user,
+    });
+  })
+);
+
+app.get(
+  "/manual",
+  controllerMethod(async (req: RequestWithSession, res: Response) => {
+    res.redirect("/manual/intro");
+  })
+);
+
+app.get(
+  "/manual/:page",
+  controllerMethod(async (req: RequestWithSession, res: Response) => {
+    const { user } = req;
+
+    const {
+      params: { page },
+    } = validateRequest(
+      req,
+      z.object({
+        page: z.enum(allManualPages as [string, ...string[]]),
+      }),
+      z.unknown(),
+      z.unknown()
+    );
+
+    const content = await unified()
+      .use(remarkParse)
+      .use(remarkGfm)
+      .use(remarkRehype, { allowDangerousHtml: true })
+      .use(rehypeStringify, { allowDangerousHtml: true })
+      .process(await readFile(getManualPath(page), { encoding: "utf-8" }));
+
+    res.render("manual", {
+      ...req.viewBag,
+      title:
+        "Manual: " +
+        page
+          .split("-")
+          .map((s) => `${s[0].toUpperCase()}${s.substring(1)}`)
+          .join(" "),
+      content,
       user,
     });
   })
