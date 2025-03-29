@@ -3,6 +3,8 @@ import {
   exercisesTable,
   type Distance,
   type Duration,
+  type Intensity,
+  type Numeric,
   type ParameterDefinition,
   type ParameterValue,
   type User,
@@ -120,6 +122,19 @@ export function allIntensities() {
   ] as const;
 }
 
+export function displayStringForTable(
+  param: ParameterDefinition,
+  value: ParameterValue,
+  user: User
+) {
+  const display = displayString(param, value, user);
+  return display.value && display.unit
+    ? display.value + " " + display.unit
+    : display.value
+    ? display.value
+    : "-";
+}
+
 export function displayString(
   param: ParameterDefinition,
   value: ParameterValue,
@@ -152,10 +167,13 @@ export function displayString(
       };
     case "intensity":
       const display =
-        (allIntensities().find((i) => i.id === value) || {}).name || "";
+        (
+          allIntensities().find((i) => i.id === (value as Intensity).value) ||
+          {}
+        ).name || "";
       return { value: display, unit: undefined };
     case "number":
-      return { value: (value as number)?.toString(), unit: undefined };
+      return { value: (value as Numeric).value?.toString(), unit: undefined };
     default:
       throw new Error("Invalid dataType");
   }

@@ -35,12 +35,26 @@ export interface Duration {
   hours?: number;
 }
 
-export type Intensity = "low" | "medium" | "high";
+export type IntensityValue = "low" | "medium" | "high";
+export interface Intensity {
+  value: IntensityValue;
+}
 
-export type ParameterValue = Weight | Intensity | Duration | Distance | number;
+export interface Numeric {
+  value: number;
+}
+
+export type ParameterValue =
+  | Weight
+  | Intensity
+  | Duration
+  | Distance
+  | Numeric
+  | Intensity;
 
 export type User = typeof user.$inferSelect;
 export type ExerciseSet = typeof setsTable.$inferSelect;
+export type Exercise = typeof exercisesTable.$inferSelect;
 
 export const exercisesTable = pgTable("exercises", {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),

@@ -1,7 +1,13 @@
 import { and, eq, asc, gte, desc, lt } from "drizzle-orm";
 import { db } from "../db";
-import { setsTable } from "../db/schema";
-import { getExercise } from "./exercises";
+import {
+  setsTable,
+  type Exercise,
+  type IntensityValue,
+  type ParameterValue,
+  type User,
+} from "../db/schema";
+import { allIntensities, defaultUnit, getExercise } from "./exercises";
 
 export async function getSetById(setId: number, userId: string) {
   return (
@@ -91,4 +97,79 @@ export async function getSetsForUserExport(userId: string) {
     .from(setsTable)
     .where(eq(setsTable.user, userId))
     .orderBy(asc(setsTable.date), asc(setsTable.order));
+}
+
+export function isValidIntensity(s: string): s is IntensityValue {
+  return allIntensities()
+    .map((i) => i.id)
+    .includes(s as IntensityValue);
+}
+
+export function buildSetParameters(
+  inputParameters: Record<string, string>,
+  exercise: Exercise,
+  user: User
+) {
+  const parameters: Record<string, ParameterValue> = {};
+
+  for (const parameter of exercise.parameters ?? []) {
+    const value = inputParameters[parameter.id];
+    if (value === "" || value === null || value === undefined) continue;
+    switch (parameter.dataType) {
+      case "distance": {
+        const numericValue = Number(value);
+        if (!Number.isFinite(numericValue)) {
+          throw new Error(`Invalid distance: ${value}`);
+        }
+        parameters[parameter.id] = {
+          value: numericValue,
+          unit: defaultUnit(parameter.dataType, user) as any,
+        };
+        break;
+      }
+      case "duration": {
+        const numericValue = Number(value);
+        if (!Number.isFinite(numericValue)) {
+          throw new Error(`Invalid duration: ${value}`);
+        }
+        parameters[parameter.id] = {
+          minutes: numericValue,
+        };
+        break;
+      }
+      case "weight": {
+        const numericValue = Number(value);
+        if (!Number.isFinite(numericValue)) {
+          throw new Error(`Invalid weight: ${value}`);
+        }
+        parameters[parameter.id] = {
+          value: numericValue,
+          unit: defaultUnit(parameter.dataType, user) as any,
+        };
+        break;
+      }
+      case "intensity":
+        if (!isValidIntensity(value)) {
+          throw new Error(`Invalid intensity: ${value}`);
+        }
+        parameters[parameter.id] = {
+          value,
+        };
+        break;
+      case "number": {
+        const numericValue = Number(value);
+        if (!Number.isFinite(numericValue)) {
+          throw new Error(`Invalid number: ${value}`);
+        }
+        parameters[parameter.id] = {
+          value: numericValue,
+        };
+        break;
+      }
+      default:
+        throw new Error(`Invalid parameter: ${parameter.id}`);
+    }
+  }
+
+  return parameters;
 }

@@ -36,7 +36,7 @@ export async function buildChart(exercise, sets) {
             label: param.name,
             data: sets.map((set) => {
               const paramValue = set.parameters[param.id];
-              return paramValue?.value ?? paramValue?.minutes ?? paramValue;
+              return paramValue?.value ?? paramValue?.minutes;
             }),
           },
         ],

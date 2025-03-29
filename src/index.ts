@@ -20,11 +20,13 @@ import {
   convertUnit,
   defaultUnit,
   displayString,
+  displayStringForTable,
   getExercise,
   getExercisesForUser,
   getExercisesForUserExport,
 } from "./models/exercises";
 import {
+  buildSetParameters,
   getLatestDaySetsForExercise,
   getSetById,
   getSetsForDay,
@@ -88,6 +90,7 @@ app.use((req: RequestWithSession, res: Response, next: NextFunction) => {
     defaultUnit,
     convertUnit,
     displayString,
+    displayStringForTable,
   };
 
   next();
@@ -240,41 +243,14 @@ authenticatedRouter.post(
     );
 
     const exercise = await getExercise(parseInt(exerciseId, 10), user.id);
-
-    const parameters: Record<string, ParameterValue> = {};
-
-    for (const parameter of exercise.parameters ?? []) {
-      const value = req.body[parameter.id];
-      switch (parameter.dataType) {
-        case "distance":
-          parameters[parameter.id] = {
-            value,
-            unit: defaultUnit(parameter.dataType, user) as any,
-          };
-          break;
-        case "duration":
-          parameters[parameter.id] = {
-            minutes: value,
-          };
-          break;
-        case "weight":
-          parameters[parameter.id] = {
-            value,
-            unit: defaultUnit(parameter.dataType, user) as any,
-          };
-          break;
-        default:
-          parameters[parameter.id] = value;
-          break;
-      }
-    }
+    if (!exercise) throw new Error(`Invalid exercise: ${exerciseId}`);
 
     await db.insert(setsTable).values({
       user: user.id,
-      exercise: parseInt(exerciseId, 10),
+      exercise: exercise.id,
       date,
       order: parseInt(order, 10),
-      parameters,
+      parameters: {},
     });
 
     res.sendStatus(200);
@@ -300,39 +276,18 @@ authenticatedRouter.post(
     );
 
     const exercise = await getExercise(parseInt(exerciseId, 10), user.id);
+    if (!exercise) throw new Error(`Invalid exercise: ${exerciseId}`);
 
-    const parameters: Record<string, ParameterValue> = {};
-
-    for (const parameter of exercise.parameters ?? []) {
-      const value = (parametersInBody as any)[parameter.id];
-      switch (parameter.dataType) {
-        case "distance":
-          parameters[parameter.id] = {
-            value,
-            unit: defaultUnit(parameter.dataType, user) as any,
-          };
-          break;
-        case "duration":
-          parameters[parameter.id] = {
-            minutes: value,
-          };
-          break;
-        case "weight":
-          parameters[parameter.id] = {
-            value,
-            unit: defaultUnit(parameter.dataType, user) as any,
-          };
-          break;
-        default:
-          parameters[parameter.id] = value;
-          break;
-      }
-    }
+    const parameters: Record<string, ParameterValue> = buildSetParameters(
+      parametersInBody,
+      exercise,
+      user
+    );
 
     await db
       .update(setsTable)
       .set({
-        exercise: parseInt(exerciseId, 10),
+        exercise: exercise.id,
         parameters,
       })
       .where(

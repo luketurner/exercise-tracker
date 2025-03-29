@@ -76,16 +76,16 @@ block content
                       +select(
                         "intensity",
                         null,
-                        set.parameters.intensity,
+                        paramValue && paramValue.value,
                         "@post('/sets/"+set.id+"', {contentType: 'form'})",
-                        allIntensities
+                        [{ id: "", name: "" }].concat(allIntensities)
                       )
                     else
                       input.input(
                         id=parameter.id,
                         type="number",
                         name=parameter.id,
-                        value=paramValue,
+                        value=paramValue && paramValue.value,
                         data-on-input__debounce.500ms.leading="@post('/sets/"+set.id+"', {contentType: 'form'})"
                       )
               .cell.buttons.has-addons
@@ -108,8 +108,7 @@ block content
                     tr
                       each parameter in allParameters
                         td(data-show="!!$exercises.find(v => v.id == $set"+set.id+"exerciseid)?.parameters?.find(p => p.id === '"+parameter.id+"')")
-                          - var display = displayString(parameter, historicalSet.parameters[parameter.id], user)
-                          = display.value && display.unit ? display.value + ' ' + display.unit : display.value ? display.value : ""
+                          = displayStringForTable(parameter, historicalSet.parameters[parameter.id], user)
             else
               p No historical data for this exercise.
   script
