@@ -4,7 +4,7 @@ import { ZodError } from "zod";
 import { dirname, join } from "path";
 import { readdir } from "node:fs/promises";
 import { basename, extname } from "node:path";
-import { fromError } from "zod-validation-error";
+import { fromError, isZodErrorLike } from "zod-validation-error";
 import type { RequestWithSession } from ".";
 
 const pad = (value: number) => {
@@ -30,13 +30,23 @@ export function controllerMethod(controller: any) {
     try {
       await controller(req, resp);
     } catch (e) {
-      const isZodError = e instanceof ZodError ? e : null;
+      const isZodError = isZodErrorLike(e);
       if (!isZodError) console.error("Unknown error", e);
-      resp.status(isZodError ? 400 : 500).render("error", {
-        ...req.viewBag,
-        user: req.user,
-        errorMessage: isZodError ? fromError(e) : null,
-      });
+      resp.status(isZodError ? 400 : 500);
+
+      if (req.accepts(["json", "text/event-stream"])) {
+        resp.send({
+          errorMessage: isZodError
+            ? fromError(e)
+            : "An unknown error has occured.",
+        });
+      } else {
+        resp.render("error", {
+          ...req.viewBag,
+          user: req.user,
+          errorMessage: isZodError ? fromError(e) : null,
+        });
+      }
     }
   };
 }
