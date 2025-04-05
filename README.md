@@ -37,3 +37,12 @@ bun run dev
 ```
 
 Then you can visit the app at http://localhost:3000.
+
+## Deploy it yourself
+
+Exercise-tracker is built for deployment on [Fly.io](https://fly.io). Follow these steps to deploy it yourself.
+
+1. Change the app name in the `fly.toml` to something unique.
+2. Run `flyctl launch`. Deploy with a Postgres instance when prompted.
+3. Add secrets: `BETTER_AUTH_SECRET`, `GITHUB_CLIENT_ID`, and `GITHUB_CLIENT_SECRET`.
+4. Update the client/main.js file to use your DNS name.
