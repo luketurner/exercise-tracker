@@ -4,6 +4,8 @@ import { ZodError } from "zod";
 import { dirname, join } from "path";
 import { readdir } from "node:fs/promises";
 import { basename, extname } from "node:path";
+import { fromError } from "zod-validation-error";
+import type { RequestWithSession } from ".";
 
 const pad = (value: number) => {
   if (value < 10) {
@@ -24,15 +26,17 @@ export const relativeDate = (date: Date, num: number) => {
 };
 
 export function controllerMethod(controller: any) {
-  return async function (req: Request, resp: Response) {
+  return async function (req: RequestWithSession, resp: Response) {
     try {
       await controller(req, resp);
     } catch (e) {
-      if (e instanceof ZodError) {
-        return resp.status(400).send(e.toString());
-      }
-      console.error("Unknown error", e);
-      resp.status(500).send("Unknown error");
+      const isZodError = e instanceof ZodError ? e : null;
+      if (!isZodError) console.error("Unknown error", e);
+      resp.status(isZodError ? 400 : 500).render("error", {
+        ...req.viewBag,
+        user: req.user,
+        errorMessage: isZodError ? fromError(e) : null,
+      });
     }
   };
 }
