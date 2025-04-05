@@ -135,10 +135,10 @@ app.get(
     } = validateRequest(
       req,
       z.object({
-        page: z.enum(allManualPages as [string, ...string[]]),
-      }),
-      z.unknown(),
-      z.unknown()
+        params: z.object({
+          page: z.enum(allManualPages as [string, ...string[]]),
+        }),
+      })
     );
 
     const content = await unified()
@@ -174,10 +174,10 @@ authenticatedRouter.get(
     const { params } = validateRequest(
       req,
       z.object({
-        date: z.string().regex(/^today|\d{4}-\d{2}-\d{2}$/),
-      }),
-      z.unknown(),
-      z.unknown()
+        params: z.object({
+          date: z.string().regex(/^today|\d{4}-\d{2}-\d{2}$/),
+        }),
+      })
     );
 
     const isToday = params.date === "today";
@@ -233,12 +233,12 @@ authenticatedRouter.post(
       body: { exercise: exerciseId, date, order },
     } = validateRequest(
       req,
-      z.unknown(),
-      z.unknown(),
       z.object({
-        exercise: numericStringSchema,
-        date: dateSchema,
-        order: numericStringSchema,
+        body: z.object({
+          exercise: numericStringSchema,
+          date: dateSchema,
+          order: numericStringSchema,
+        }),
       })
     );
 
@@ -267,11 +267,12 @@ authenticatedRouter.post(
       body: { exercise: exerciseId, ...parametersInBody },
     } = validateRequest(
       req,
-      z.object({ id: numericStringSchema }),
-      z.unknown(),
       z.object({
-        exercise: numericStringSchema,
-        ...allParametersInputSchema,
+        params: z.object({ id: numericStringSchema }),
+        body: z.object({
+          exercise: numericStringSchema,
+          ...allParametersInputSchema,
+        }),
       })
     );
 
@@ -307,9 +308,9 @@ authenticatedRouter.post(
       params: { id },
     } = validateRequest(
       req,
-      z.object({ id: numericStringSchema }),
-      z.unknown(),
-      z.unknown()
+      z.object({
+        params: z.object({ id: numericStringSchema }),
+      })
     );
 
     const deletedSets = await db
@@ -332,11 +333,12 @@ authenticatedRouter.post(
       body,
     } = validateRequest(
       req,
-      z.object({ id: numericStringSchema }),
-      z.unknown(),
       z.object({
-        oldOrder: numericStringSchema,
-        newOrder: numericStringSchema,
+        params: z.object({ id: numericStringSchema }),
+        body: z.object({
+          oldOrder: numericStringSchema,
+          newOrder: numericStringSchema,
+        }),
       })
     );
 
@@ -422,10 +424,10 @@ authenticatedRouter.post(
       body: { name },
     } = validateRequest(
       req,
-      z.unknown(),
-      z.unknown(),
       z.object({
-        name: nameSchema,
+        body: z.object({
+          name: nameSchema,
+        }),
       })
     );
 
@@ -453,9 +455,9 @@ authenticatedRouter.get(
       params: { id },
     } = validateRequest(
       req,
-      z.object({ id: numericStringSchema }),
-      z.unknown(),
-      z.unknown()
+      z.object({
+        params: z.object({ id: numericStringSchema }),
+      })
     );
 
     const exercise = await getExercise(parseInt(id, 10), user.id);
@@ -480,14 +482,15 @@ authenticatedRouter.get(
 
     const { params, query } = validateRequest(
       req,
-      z.object({ id: numericStringSchema }),
       z.object({
-        lookback: z
-          .string()
-          .regex(/^all|\d+$/)
-          .optional(),
-      }),
-      z.unknown()
+        params: z.object({ id: numericStringSchema }),
+        query: z.object({
+          lookback: z
+            .string()
+            .regex(/^all|\d+$/)
+            .optional(),
+        }),
+      })
     );
 
     const id = parseInt(params.id, 10);
@@ -533,11 +536,12 @@ authenticatedRouter.post(
       body,
     } = validateRequest(
       req,
-      z.object({ id: numericStringSchema }),
-      z.unknown(),
       z.object({
-        name: nameSchema,
-        ...allParametersDeclarationSchema,
+        params: z.object({ id: numericStringSchema }),
+        body: z.object({
+          name: nameSchema,
+          ...allParametersDeclarationSchema,
+        }),
       })
     );
 
@@ -575,9 +579,9 @@ authenticatedRouter.post(
       params: { id },
     } = validateRequest(
       req,
-      z.object({ id: numericStringSchema }),
-      z.unknown(),
-      z.unknown()
+      z.object({
+        params: z.object({ id: numericStringSchema }),
+      })
     );
 
     await db
@@ -619,12 +623,12 @@ authenticatedRouter.post(
       body: { preferredUnits },
     } = validateRequest(
       req,
-      z.unknown(),
-      z.unknown(),
       z.object({
-        preferredUnits: z.object({
-          weight: allWeightUnitsEnumSchema.optional(),
-          distance: allDistanceUnitsEnumSchema.optional(),
+        body: z.object({
+          preferredUnits: z.object({
+            weight: allWeightUnitsEnumSchema.optional(),
+            distance: allDistanceUnitsEnumSchema.optional(),
+          }),
         }),
       })
     );

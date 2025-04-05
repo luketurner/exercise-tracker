@@ -2,17 +2,16 @@ import { z } from "zod";
 import { allParameters, allUnits } from "./models/exercises";
 import { type Request } from "express";
 
-export function validateRequest<TParams, TQuery, TBody>(
+export function validateRequest<TRequest>(
   request: Request,
-  paramsSchema: z.Schema<TParams>,
-  querySchema: z.Schema<TQuery>,
-  bodySchema: z.Schema<TBody>
+  schema: z.Schema<TRequest>
 ) {
-  return {
-    params: paramsSchema.parse(request.params),
-    query: querySchema.parse(request.query),
-    body: bodySchema.parse(request.body),
+  const requestToValidate = {
+    params: request.params,
+    query: request.query,
+    body: request.body,
   };
+  return schema.parse(requestToValidate);
 }
 
 export const allParametersInputSchema = allParameters().reduce(
