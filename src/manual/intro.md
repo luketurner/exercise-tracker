@@ -6,7 +6,7 @@ This is a **side project**!
 
 </div>
 
-Intro paragraph explaining what exercise-tracker is.
+Intro paragraph explaining what Set is.
 
 # Exercises
 

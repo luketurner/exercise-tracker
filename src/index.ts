@@ -111,7 +111,7 @@ app.get(
 
     res.render("index", {
       ...req.viewBag,
-      title: "Exercise Tracker",
+      title: "Set",
       message: "Hello world!",
       user,
     });

@@ -1,6 +1,6 @@
-# exercise-tracker
+# Simple exercise tracker (Set)
 
-Exercise-tracker is a Web application that users can use to track their exercises over time.
+Set is a Web application that users can use to track their exercises over time.
 
 Features:
 
@@ -19,7 +19,7 @@ Dependencies:
 - Bun
 - Podman/Docker
 
-To get started contributing to exercise-tracker, you need to clone it and run initial setup commands:
+To get started contributing to Set, you need to clone it and run initial setup commands:
 
 ```bash
 git clone https://github.com/luketurner/exercise-tracker.git
@@ -40,7 +40,7 @@ Then you can visit the app at http://localhost:3000.
 
 ## Deploy it yourself
 
-Exercise-tracker is built for deployment on [Fly.io](https://fly.io). Follow these steps to deploy it yourself.
+Set is built for deployment on [Fly.io](https://fly.io). Follow these steps to deploy it yourself.
 
 1. Change the app name in the `fly.toml` to something unique.
 2. Run `flyctl launch`. Deploy with a Postgres instance when prompted.
