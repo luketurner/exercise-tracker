@@ -9,8 +9,8 @@
     "migration:run": "drizzle-kit migrate",
     "db:start": "podman start exercise-tracker-db",
     "db:create": "podman run -d -p 5432:5432 --name exercise-tracker-db -e POSTGRES_PASSWORD=foobar postgres",
-    "client:dev": "esbuild client/main.js --bundle --outfile=public/main.js --sourcemap --watch",
-    "client:build": "esbuild client/main.js --bundle --outfile=public/main.js --minify",
+    "client:dev": "esbuild client/main.js --bundle --outfile=public/main.js --sourcemap --watch --define:PROD=false",
+    "client:build": "esbuild client/main.js --bundle --outfile=public/main.js --minify --define:PROD=true",
     "compile": "tsc"
   },
   "devDependencies": {

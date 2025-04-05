@@ -5,7 +5,7 @@ import Sortable from "sortablejs";
 
 // import "@starfederation/datastar";
 export const authClient = createAuthClient({
-  baseURL: "http://localhost:3000", // the base url of your auth server
+  baseURL: PROD ? "https://set.luketurner.org" : "http://localhost:3000", // the base url of your auth server
 });
 
 export async function signIn() {
