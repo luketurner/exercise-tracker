@@ -40,14 +40,14 @@ export async function getExercise(id: number, userId: string) {
 export function defaultUnit(
   dataType: ParameterDefinition["dataType"],
   user: User
-): string {
+): string | null {
   if (dataType === "weight") {
     return user.preferredUnits?.["weight"] ?? "pound";
   }
   if (dataType === "distance") {
     return user.preferredUnits?.["distance"] ?? "mile";
   }
-  throw new Error(`${dataType} does not have units.`);
+  return null;
 }
 
 export function convertUnit(
@@ -149,7 +149,7 @@ export function displayString(
           (value as Distance).unit,
           defaultUnit(param.dataType, user)!
         ),
-        unit: defaultUnit(param.dataType, user),
+        unit: defaultUnit(param.dataType, user)!,
       };
     case "weight":
       return {
@@ -158,7 +158,7 @@ export function displayString(
           (value as Weight).unit,
           defaultUnit(param.dataType, user)!
         ),
-        unit: defaultUnit(param.dataType, user),
+        unit: defaultUnit(param.dataType, user)!,
       };
     case "duration":
       return {

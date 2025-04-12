@@ -253,7 +253,7 @@ authenticatedRouter.post(
       parameters: {},
     });
 
-    res.sendStatus(200);
+    res.status(200).send({ status: "ok" });
   })
 );
 
@@ -264,19 +264,22 @@ authenticatedRouter.post(
 
     const {
       params: { id },
-      body: { exercise: exerciseId, ...parametersInBody },
+      body: { exercise: exerciseId, parameters: parametersInBody },
     } = validateRequest(
       req,
       z.object({
         params: z.object({ id: numericStringSchema }),
         body: z.object({
-          exercise: numericStringSchema,
-          ...allParametersInputSchema,
+          exercise: z.union([numericStringSchema, z.number()]),
+          parameters: z.object(allParametersInputSchema),
         }),
       })
     );
 
-    const exercise = await getExercise(parseInt(exerciseId, 10), user.id);
+    const exercise = await getExercise(
+      typeof exerciseId === "string" ? parseInt(exerciseId, 10) : exerciseId,
+      user.id
+    );
     if (!exercise) throw new Error(`Invalid exercise: ${exerciseId}`);
 
     const parameters: Record<string, ParameterValue> = buildSetParameters(
@@ -295,7 +298,7 @@ authenticatedRouter.post(
         and(eq(setsTable.user, user.id), eq(setsTable.id, parseInt(id, 10)))
       );
 
-    res.sendStatus(200);
+    res.status(200).send({ status: "ok" });
   })
 );
 
@@ -637,8 +640,8 @@ authenticatedRouter.post(
       .update(userTable)
       .set({
         preferredUnits: {
-          weight: preferredUnits.weight ?? defaultUnit("weight", user),
-          distance: preferredUnits.distance ?? defaultUnit("distance", user),
+          weight: preferredUnits.weight ?? defaultUnit("weight", user)!,
+          distance: preferredUnits.distance ?? defaultUnit("distance", user)!,
         },
       })
       .where(eq(userTable.id, user.id));

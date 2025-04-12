@@ -41,6 +41,16 @@ mixin select(name, signalName, defaultValue, onChange, values)
       each value in values
         option(value=value.id, selected=(defaultValue === value.id))= value.name
 
+mixin selectAlpine(signalName, onChange, values)
+  span.select
+    select(
+      x-on:change=onChange,
+      x-model=signalName
+    )&attributes(attributes)
+      each value in values
+        option(value=value.id)= value.name
+
+
 mixin horizontalField(label)
   div.field.is-horizontal
     div.field-label.is-normal

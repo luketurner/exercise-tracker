@@ -1,21 +1,21 @@
 extends _layout.pug
 
 block content
-  div.field.has-addons.has-addons-centered.mb-5(data-signals-exercises=JSON.stringify(exercises))
+  div.field.has-addons.has-addons-centered.mb-5
     div.control
       a.button.is-large(href="/"+yesterday)
         span.icon
           +icon("chevron-left")
     div.control
-      input.input.is-large#date(type="date", name="date", value=date, max=today, data-on-change="window.location.pathname = `/${evt.target.value}`")
+      input.input.is-large#date(type="date", name="date", value=date, max=today, x-on:change="window.location.pathname = `/${$event.target.value}`")
     if !isToday
       div.control
         a.button.is-large(href="/"+tomorrow)
           span.icon
             +icon("chevron-right")
   if exercises.length === 0
-    .notification.is-primary.is-light.content(data-signals-onboardingnotification="true", data-show="$onboardingnotification")
-      button.delete(data-on-click="$onboardingnotification = false")
+    .notification.is-primary.is-light.content(x-data="{ onboardingNotification: true }", x-show="onboardingNotification")
+      button.delete(x-on:click="onboardingNotification = false")
       p Hi, welcome to Set! This is an app that helps you track exercises, but it looks like you don't have any exercises to track yet.
 
       p
@@ -24,31 +24,39 @@ block content
         |  and create the exercises that you want to track.
         | Then, when you want to track your exercises, come back to the Today page (the one you're currently on) to log your sets.
 
-  div.set-list#set-list
+  div.set-list#set-list(x-data=JSON.stringify({exercises}))
     each set in sets
       -
         var historical = historicalSets[set.exercise.id]
         var hasHistorical = historical.length > 0
-      .is-flex.is-flex-direction-row(data-id=set.id)
+      .is-flex.is-flex-direction-row(data-id=set.id, x-data=JSON.stringify({set: { ...set, exercise: set.exercise.id }}))
         form(action="/sets/"+set.id+"/delete", method="POST", id="set-"+set.id+"-delete")
         div.handle.button.is-white.mb-4
           +icon("grip-vertical")
-        .is-flex.is-flex-direction-column.is-flex-grow-1
+        .is-flex.is-flex-direction-column.is-flex-grow-1(x-data="{ historyExpanded: false }")
           div.fixed-grid.has-7-cols-desktop.has-4-cols-tablet.has-2-cols-mobile
-            form.grid
+            div.grid(x-data="{parameters: "+JSON.stringify(Object.entries(set.parameters).reduce((m, [id, v]) => {
+              var parameter = allParameters.find(p => p.id === id);
+              var unit = defaultUnit(parameter.dataType, user);
+              if (unit) {
+                var value = v ? convertUnit(v.value, v.unit, unit, 1) : null;
+                if (value) { m[id] = value; }
+              } else {
+                m[id] = (v.value || v.minutes).toString()
+              }
+              return m;
+             }, {}))+"}")
               .cell
                 +control(null, null)
-                  +select(
-                    "exercise",
-                    "set"+set.id+"exerciseid",
-                    set.exercise.id,
-                    "@post('/sets/"+set.id+"', {contentType: 'form'})",
+                  +selectAlpine(
+                    "set.exercise",
+                    "$fetch('post', '/sets/'+set.id, { exercise: set.exercise, parameters, })",
                     exercises
                   )
               each parameter in allParameters
                 - var paramValue = set.parameters[parameter.id]
                 div.cell(
-                  data-show="!!$exercises.find(v => v.id == $set"+set.id+"exerciseid)?.parameters?.find(p => p.id === '"+parameter.id+"')"
+                  x-show="!!exercises.find(v => v.id == set.exercise)?.parameters?.find(p => p.id === '"+parameter.id+"')"
                 )
                   +control(
                     parameter.id,
@@ -61,23 +69,21 @@ block content
                         type="number",
                         name=parameter.id,
                         min="0", step="0.1"
-                        value=paramValue ? convertUnit(paramValue.value, paramValue.unit, unit, 1) : null,
-                        data-on-input__debounce.500ms.leading="@post('/sets/"+set.id+"', {contentType: 'form'})"
+                        x-model="parameters['"+parameter.id+"']"
+                        x-on:input.debounce.500ms="$fetch('post', '/sets/"+set.id+"', { ...set, parameters, })"
                       )
                     else if parameter.dataType === 'duration'
                       input.input(
                         id=parameter.id,
                         type="number",
                         name=parameter.id,
-                        value=paramValue ? paramValue.minutes : null,
-                        data-on-input__debounce.500ms.leading="@post('/sets/"+set.id+"', {contentType: 'form'})"
+                        x-model="parameters['"+parameter.id+"']"
+                        x-on:input.debounce.500ms="$fetch('post', '/sets/"+set.id+"', { ...set, parameters, })"
                       )
                     else if parameter.dataType === 'intensity'
-                      +select(
-                        "intensity",
-                        null,
-                        paramValue && paramValue.value,
-                        "@post('/sets/"+set.id+"', {contentType: 'form'})",
+                      +selectAlpine(
+                        "parameters['"+parameter.id+"']",
+                        "$fetch('post', '/sets/"+set.id+"', { ...set, parameters, })",
                         [{ id: "", name: "" }].concat(allIntensities)
                       )
                     else
@@ -85,15 +91,15 @@ block content
                         id=parameter.id,
                         type="number",
                         name=parameter.id,
-                        value=paramValue && paramValue.value,
-                        data-on-input__debounce.500ms.leading="@post('/sets/"+set.id+"', {contentType: 'form'})"
+                        x-model="parameters['"+parameter.id+"']"
+                        x-on:input.debounce.500ms="$fetch('post', '/sets/"+set.id+"', { ...set, parameters, })"
                       )
               .cell.buttons.has-addons
-                button.button.is-light(form="", data-on-click="$_isSet"+set.id+"Expanded = !$_isSet"+set.id+"Expanded")
+                button.button.is-light(x-on:click="historyExpanded = !historyExpanded")
                   +icon("chart-line")
                 button.button.is-danger.is-light(form="set-"+set.id+"-delete")
                   +icon("x")
-          div(data-show="$_isSet"+set.id+"Expanded", data-signals="{'_isSet"+set.id+"Expanded': false}")
+          div(x-show="historyExpanded")
             if hasHistorical
               p
                 = historical[0].date
@@ -101,29 +107,24 @@ block content
               table.table
                 thead
                   each parameter in allParameters
-                    th(data-show="!!$exercises.find(v => v.id == $set"+set.id+"exerciseid)?.parameters?.find(p => p.id === '"+parameter.id+"')")
+                    th(x-show="!!exercises.find(v => v.id == set.exercise)?.parameters?.find(p => p.id === '"+parameter.id+"')")
                       +icon(parameter.id)
                 tbody
                   each historicalSet in historical
                     tr
                       each parameter in allParameters
-                        td(data-show="!!$exercises.find(v => v.id == $set"+set.id+"exerciseid)?.parameters?.find(p => p.id === '"+parameter.id+"')")
+                        td(x-show="!!exercises.find(v => v.id == set.exercise)?.parameters?.find(p => p.id === '"+parameter.id+"')")
                           = displayStringForTable(parameter, historicalSet.parameters[parameter.id], user)
             else
               p No historical data for this exercise.
   script
     | _set.makeSortableSetList("set-list") 
   if exercises.length !== 0
-    form
-      +horizontalField("Add new set")
-        .field
-          +control()
-            +select(
-              "exercise",
-              "setnewexerciseid",
-              "",
-              "@post('/sets', {contentType: 'form'}).then(() => window.location.reload())",
-              exercises
-            )
-      input(type="hidden", name="date", value=date)
-      input(type="hidden", name="order", value=nextSetOrder)
+    +horizontalField("Add new set")
+      .field(x-data="{ newSetExercise: null }")
+        +control()
+          +selectAlpine(
+            "newSetExercise",
+            "newSetExercise && $fetch('post', '/sets', {exercise: newSetExercise, date: '"+date+"', order: '"+nextSetOrder+"'}).then(() => window.location.reload())",
+            [{ id: "", name: "" }].concat(exercises)
+          )
