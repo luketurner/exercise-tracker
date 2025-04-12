@@ -2,13 +2,13 @@ include mixins.pug
 html()
   head
     title= title
-    script(src="/main.js")
     script(type="module", src="/datastar-1-0-0-beta-1-709a1d5426cfe2c0.js")
     link(rel="stylesheet", href="/bulma.min.css")
     link(rel="stylesheet", href="/main.css")
     meta(name="viewport", content="width=device-width, initial-scale=1")
     link(rel="stylesheet", href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css")
   body
+    script(src="/main.js")
     div.container.is-flex.is-flex-direction-column(style="min-height: 100vh")
       nav.navbar.mb-4(role="navigation", aria-label="main navigation", data-signals-_theme="'light'")
         div.navbar-brand

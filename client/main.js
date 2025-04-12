@@ -2,6 +2,12 @@ import { createAuthClient } from "better-auth/client";
 import Chart from "chart.js/auto";
 import "chartjs-adapter-luxon";
 import Sortable from "sortablejs";
+import Alpine from "alpinejs";
+
+window.Alpine = Alpine;
+
+
+Alpine.start();
 
 // import "@starfederation/datastar";
 export const authClient = createAuthClient({
