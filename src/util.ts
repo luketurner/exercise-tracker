@@ -37,7 +37,7 @@ export function controllerMethod(controller: any) {
       if (req.accepts(["json", "text/event-stream"])) {
         resp.send({
           errorMessage: isZodError
-            ? fromError(e)
+            ? fromError(e).toString()
             : "An unknown error has occured.",
         });
       } else {
