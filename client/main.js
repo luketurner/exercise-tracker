@@ -6,6 +6,48 @@ import Alpine from "alpinejs";
 
 window.Alpine = Alpine;
 
+Alpine.store("error", {
+  hasError: false,
+  message: null,
+});
+
+Alpine.magic(
+  "fetch",
+  (el, { Alpine }) =>
+    async function setFetch(method, url, body) {
+      try {
+        const resp = await fetch(url, {
+          method,
+          headers: {
+            "content-type": "application/json",
+          },
+          body: body
+            ? typeof body === "string"
+              ? body
+              : JSON.stringify(body)
+            : undefined,
+        });
+
+        if (!resp.ok) {
+          let errorMessage = "An unknown error has occurred.";
+          try {
+            const errorResp = await resp.json();
+            errorMessage = errorResp.errorMessage;
+          } catch (e) {}
+          throw new Error(errorMessage.toString());
+        }
+
+        return await resp.json();
+      } catch (e) {
+        console.log("error", e.message);
+        Alpine.evaluate(
+          document.body,
+          `$store.error = { hasError: true, message: \`${e.message}\` }`,
+          { error: "test" }
+        );
+      }
+    }
+);
 
 Alpine.start();
 
@@ -107,10 +149,45 @@ export function makeSortableSetList(id) {
   });
 }
 
-window.exerciseTracker = {
+export async function setFetch(method, url, body) {
+  try {
+    const resp = await fetch(url, {
+      method,
+      headers: {
+        "content-type": "application/json",
+      },
+      body: body
+        ? typeof body === "string"
+          ? body
+          : JSON.stringify(body)
+        : undefined,
+    });
+
+    if (!resp.ok) {
+      let errorMessage = "An unknown error has occurred.";
+      try {
+        const errorResp = await resp.json();
+        errorMessage = errorResp.errorMessage;
+      } catch (e) {}
+      throw new Error(errorMessage.toString());
+    }
+
+    return await resp.json();
+  } catch (e) {
+    console.log("error", e.message);
+    Alpine.evaluate(
+      document.body,
+      "$store.error = { hasError: true, message: e.message }",
+      { e }
+    );
+  }
+}
+
+window._set = {
   signIn,
   signOut,
   buildChart,
   makeSortable,
   makeSortableSetList,
+  fetch: setFetch,
 };

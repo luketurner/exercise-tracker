@@ -29,7 +29,11 @@ html()
             if user
               button.navbar-item(data-on-click="exerciseTracker.signOut()") Sign out
             else
-              button.navbar-item(data-on-click="exerciseTracker.signIn()") Sign in with Github
+
+      .notification.is-danger.is-light(x-show="$store.error.hasError")
+        button.delete(x-on:click="$store.error.hasError = false")
+        h1.subtitle An error occurred
+        p(x-text="$store.error.message")
       
       div.is-flex-grow-1.mx-2
         block content
