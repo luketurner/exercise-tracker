@@ -27,8 +27,9 @@ html()
             a.navbar-item(href="/manual") Manual
           div.navbar-end
             if user
-              button.navbar-item(data-on-click="exerciseTracker.signOut()") Sign out
+              button.navbar-item(data-on-click="_set.signOut()") Sign out
             else
+              button.navbar-item(data-on-click="_set.signIn()") Sign in with Github
 
       .notification.is-danger.is-light(x-show="$store.error.hasError")
         button.delete(x-on:click="$store.error.hasError = false")

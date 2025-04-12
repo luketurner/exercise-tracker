@@ -27,7 +27,7 @@ block content
               |  
               = param.name
             canvas(id="chart-"+param.id)
-  script!= "window.exerciseTracker.buildChart("+JSON.stringify(exercise)+","+JSON.stringify(historicalSets)+");"
+  script!= "window._set.buildChart("+JSON.stringify(exercise)+","+JSON.stringify(historicalSets)+");"
   table.table
     thead
       tr
