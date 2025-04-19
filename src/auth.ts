@@ -4,7 +4,7 @@ import { db } from "./db"; // your drizzle instance
 import * as schema from "./db/schema";
 import { fromNodeHeaders } from "better-auth/node";
 import type { NextFunction, Response } from "express";
-import type { RequestWithSession } from ".";
+import type { RequestWithSession } from "./router";
 import { eq } from "drizzle-orm";
 
 export const auth = betterAuth({
