@@ -7,18 +7,18 @@ html()
     link(rel="stylesheet", href="/main.css")
     meta(name="viewport", content="width=device-width, initial-scale=1")
     link(rel="stylesheet", href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css")
-  body
+  body(x-data="{theme: (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light'}")
     script(src="/main.js")
     div.container.is-flex.is-flex-direction-column(style="min-height: 100vh")
-      nav.navbar.mb-4(role="navigation", aria-label="main navigation", data-signals-_theme="'light'")
+      nav.navbar.mb-4(role="navigation", aria-label="main navigation", x-data="{ showNavMenu: false }")
         div.navbar-brand
           a.navbar-item(href="/") Set
-          a.navbar-burger(style="color: inherit;", role="button", aria-label="menu", aria-expanded="false", data-attr-aria-expanded="$_shownavmenu.toString()", data-signals-_shownavmenu="false" data-on-click="$_shownavmenu = !$_shownavmenu", data-class-is-active="$_shownavmenu")
+          a.navbar-burger(style="color: inherit;", role="button", aria-label="menu", x-bind:aria-expanded="showNavMenu" x-on:click="showNavMenu = !showNavMenu", x-bind:class="showNavMenu ? 'is-active' : null")
             span(aria-hidden="true")
             span(aria-hidden="true")
             span(aria-hidden="true")
             span(aria-hidden="true")
-        div.navbar-menu(data-class-is-active="$_shownavmenu")
+        div.navbar-menu(x-bind:class="showNavMenu ? 'is-active' : null")
           div.navbar-start
             if user
               a.navbar-item(href="/today") Today
@@ -27,9 +27,9 @@ html()
             a.navbar-item(href="/manual") Manual
           div.navbar-end
             if user
-              button.navbar-item(data-on-click="_set.signOut()") Sign out
+              button.navbar-item(x-on:click="_set.signOut()") Sign out
             else
-              button.navbar-item(data-on-click="_set.signIn()") Sign in with Github
+              button.navbar-item(x-on:click="_set.signIn()") Sign in with Github
 
       .notification.is-danger.is-light(x-show="$store.error.hasError")
         button.delete(x-on:click="$store.error.hasError = false")
@@ -44,7 +44,7 @@ html()
           p
             a.mr-1(href="https://github.com/luketurner/exercise-tracker") Source code
             | Copyright 2025 Luke Turner
-            button.ml-1(data-show="$_theme === 'light'", data-on-click="document.querySelector('html').setAttribute('data-theme', 'dark'); $_theme = 'dark'") 🌙
-            button.ml-1(data-show="$_theme === 'dark'", data-on-click="document.querySelector('html').setAttribute('data-theme', 'light'); $_theme = 'light'") ☀
+            button.ml-1(x-show="theme === 'light'", x-on:click="document.querySelector('html').setAttribute('data-theme', 'dark'); theme = 'dark'") 🌙
+            button.ml-1(x-show="theme === 'dark'", x-on:click="document.querySelector('html').setAttribute('data-theme', 'light'); theme = 'light'") ☀
 
     block modal
