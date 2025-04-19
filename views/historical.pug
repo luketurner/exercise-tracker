@@ -3,19 +3,19 @@ extends _layout.pug
 block content
   +control()
     a.button.is-light(href="/exercises") Back
-  .dropdown(data-class-is-active="$lookbackpicker", data-signals-lookbackpicker="false", style="float: right")
+  .dropdown(x-bind:class="showLookback ? 'is-active' : ''", x-data="{ showLookback: false }", style="float: right")
     .dropdown-trigger
-      button.button(aria-haspopup="true", aria-controls="lookback-picker", data-on-click="$lookbackpicker = !$lookbackpicker")
+      button.button(aria-haspopup="true", aria-controls="lookback-picker", x-on:click="showLookback = !showLookback")
         span Lookback
         +icon("chevron-down")
     .dropdown-menu#lookback-picker(role="menu")
       .dropdown-content
-        button.dropdown-item(data-on-click="window.location.search = 'lookback=7'") 7d
-        button.dropdown-item(data-on-click="window.location.search = 'lookback=30'") 30d
-        button.dropdown-item(data-on-click="window.location.search = 'lookback=365'") 1y
-        button.dropdown-item(data-on-click="window.location.search = 'lookback=all'") All time
+        button.dropdown-item(x-on:click="window.location.search = 'lookback=7'") 7d
+        button.dropdown-item(x-on:click="window.location.search = 'lookback=30'") 30d
+        button.dropdown-item(x-on:click="window.location.search = 'lookback=365'") 1y
+        button.dropdown-item(x-on:click="window.location.search = 'lookback=all'") All time
         +control("clock", "days")(class="dropdown-item")
-          input.input(type="number", min="0", data-on-change="window.location.search = 'lookback='+ evt.target.value")
+          input.input(type="number", min="0", x-on:change="window.location.search = 'lookback='+ $event.target.value")
   h1.title= "History of " + exercise.name
   .fixed-grid.has-1-cols-mobile.has-2-cols-desktop.has-3-cols-widescreen
     .grid
