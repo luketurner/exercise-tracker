@@ -61,6 +61,6 @@ settingsRouter.post(
       })
       .where(eq(userTable.id, user.id));
 
-    res.sendStatus(200);
+    res.status(200).send({ status: "ok" });
   })
 );
