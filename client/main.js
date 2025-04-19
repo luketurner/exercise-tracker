@@ -39,11 +39,12 @@ Alpine.magic(
 
         return await resp.json();
       } catch (e) {
-        console.log("error", e.message);
+        console.error("error", e.message);
         Alpine.evaluate(
           document.body,
-          `$store.error = { hasError: true, message: \`${e.message}\` }`,
-          { error: "test" }
+          `$store.error = { hasError: true, message: ${JSON.stringify(
+            e.message
+          )} }`
         );
       }
     }
