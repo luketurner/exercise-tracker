@@ -1,50 +1,46 @@
 extends _layout.pug
 
 block content
-  +control()
-    a.button.is-light(href="/exercises") Back
-  h1.title= exercise.name
-  +horizontalField("Exercise name")
+  div(x-data=JSON.stringify({ exercise, allParameters }))
     +control()
-      input#name.input(
-        type="text",
-        name="name",
-        value=exercise.name,
-        data-signals-name="'"+exercise.name+"'",
-        data-bind="$name",
-        data-on-input__debounce.500ms.leading="@post('/exercises/"+exercise.id+"')"
-      )
-  +horizontalField("Parameters")(class="is-align-items-center")
-    .field
-      each param in allParameters
-        .control.mb-1
-          - var paramIsSet = !!exercise.parameters.find(p => p.id === param.id)
-          button.button.is-white(
-            class=(paramIsSet ? 'is-success' : '')
-            data-signals="{"+param.id+": "+paramIsSet+"}",
-            data-class-is-success="$"+param.id,
-            data-on-click="$"+param.id+" = !$"+param.id+"; @post('/exercises/"+exercise.id+"')"
-          )
-            +icon(param.id)
-            span.pl-1= param.name
-  .notification.is-danger.is-light
+      a.button.is-light(href="/exercises") Back
+    h1.title(x-text="exercise.name")= exercise.name
+    +horizontalField("Exercise name")
+      +control()
+        input#name.input(
+          type="text",
+          name="name",
+          value=exercise.name,
+          x-model="exercise.name",
+          x-on:input.debounce.500ms="$fetch('post', '/exercises/"+exercise.id+"', exercise)"
+        )
+    +horizontalField("Parameters")(class="is-align-items-center")
+      .field
+        each param in allParameters
+          .control.mb-1
+            button.button.is-white(
+              x-bind:class="exercise.parameters.find(p => p.id === '"+param.id+"') ? 'is-success' : ''"
+              x-on:click="exercise.parameters.find(p => p.id === '"+param.id+"') ? exercise.parameters = exercise.parameters.filter(p => p.id !== '"+param.id+"') : exercise.parameters.push(allParameters.find(p => p.id === '"+param.id+"')); $fetch('post', '/exercises/"+exercise.id+"', exercise)"
+            )
+              +icon(param.id)
+              span.pl-1= param.name
+  .notification.is-danger.is-light(x-data="{ deleteModal: false }")
     h1.subtitle Danger Zone
     
     +horizontalField("Delete exercise")
       +control()
-        button.button.is-danger(data-on-click="$_deletemodal = true", data-signals-_deletemodal="false") Delete
-
-block modal
-  div.modal(data-class-is-active="$_deletemodal")
-    .modal-background(data-on-click="$_deletemodal = false")
-    .modal-card
-      header.modal-card-head
-        p.modal-card-title Delete exercise
-        button.delete(aria-label="close", data-on-click="$_deletemodal = false")
-      section.modal-card-body
-        p Are you sure you want to delete this exercise and all associated historical data? This cannot be undone.
-        form#deleteexercise(name="deleteexercise", action="/exercises/"+exercise.id+"/delete", method="POST")
-      footer.modal-card-foot
-        .buttons
-          input.button.is-danger(type="submit", value="Delete", form="deleteexercise")
-          button.button(data-on-click="$_deletemodal = false") Cancel
+        button.button.is-danger(x-on:click="deleteModal = true") Delete
+    template(x-teleport="body")
+      div.modal.is-active(x-show="deleteModal")
+        .modal-background(x-on:click="deleteModal = false")
+        .modal-card
+          header.modal-card-head
+            p.modal-card-title Delete exercise
+            button.delete(aria-label="close", x-on:click="deleteModal = false")
+          section.modal-card-body
+            p Are you sure you want to delete this exercise and all associated historical data? This cannot be undone.
+            form#deleteexercise(name="deleteexercise", action="/exercises/"+exercise.id+"/delete", method="POST")
+          footer.modal-card-foot
+            .buttons
+              input.button.is-danger(type="submit", value="Delete", form="deleteexercise")
+              button.button(x-on:click="deleteModal = false") Cancel

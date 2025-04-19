@@ -36,7 +36,7 @@ block content
     
     +horizontalField("Delete my account")
       +control()
-        button.button.is-danger(x-on:click="deleteModal = true", ) Delete
+        button.button.is-danger(x-on:click="deleteModal = true") Delete
     template(x-teleport="body")
       div.modal.is-active(x-show="deleteModal")
         .modal-background(x-on:click="deleteModal = false")

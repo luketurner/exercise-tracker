@@ -19,11 +19,6 @@ export const allParametersInputSchema = allParameters().reduce(
   {}
 );
 
-export const allParametersDeclarationSchema = allParameters().reduce(
-  (m, p) => ({ ...m, [p.id]: z.boolean() }),
-  {}
-);
-
 export const nameSchema = z.string().max(64);
 
 export const numericStringSchema = z

@@ -16,7 +16,6 @@ import {
   validateRequest,
   numericStringSchema,
   nameSchema,
-  allParametersDeclarationSchema,
 } from "../validation";
 
 export const exerciseRouter = Router();
@@ -54,7 +53,7 @@ exerciseRouter.get(
     const exercise = await getExercise(parseInt(id, 10), user.id);
 
     if (!exercise) {
-      return res.sendStatus(404);
+      throw new Error("Exercise does not exist");
     }
 
     res.render("exercise", {
@@ -96,7 +95,7 @@ exerciseRouter.get(
     const exercise = await getExercise(id, user.id);
 
     if (!exercise) {
-      return res.sendStatus(404);
+      throw new Error("Exercise does not exist");
     }
 
     const historicalSets = await getSetsForExercise(
@@ -162,7 +161,13 @@ exerciseRouter.post(
         params: z.object({ id: numericStringSchema }),
         body: z.object({
           name: nameSchema,
-          ...allParametersDeclarationSchema,
+          parameters: z.array(
+            z.object({
+              id: z.enum(
+                allParameters().map((p) => p.id) as [string, ...string[]]
+              ),
+            })
+          ),
         }),
       })
     );
@@ -170,7 +175,7 @@ exerciseRouter.post(
     const parameters: ParameterDefinition[] = [];
 
     for (const parameter of allParameters()) {
-      if ((body as any)[parameter.id]) {
+      if (body.parameters.find((p) => p.id === parameter.id)) {
         parameters.push(parameter);
       }
     }
@@ -188,7 +193,7 @@ exerciseRouter.post(
         )
       );
 
-    res.sendStatus(200);
+    res.status(200).send({ status: "ok" });
   })
 );
 
