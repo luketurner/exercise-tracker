@@ -34,7 +34,7 @@ export function controllerMethod(controller: any) {
       if (!isZodError) console.error("Unknown error", e);
       resp.status(isZodError ? 400 : 500);
 
-      if (req.accepts(["json", "text/event-stream"])) {
+      if (req.headers["content-type"] === "application/json") {
         resp.send({
           errorMessage: isZodError
             ? fromError(e).toString()
