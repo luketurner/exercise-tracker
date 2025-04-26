@@ -22,3 +22,7 @@ swap_size_mb = 256
 
 [deploy]
   release_command = "bun run migration:run"
+
+[metrics]
+port = 3001
+path = "/metrics" # default for most prometheus exporters

@@ -5,6 +5,7 @@ import { readdir } from "node:fs/promises";
 import { basename, extname } from "node:path";
 import { fromError, isZodErrorLike } from "zod-validation-error";
 import type { RequestWithSession } from "./router";
+import { routeMetric } from "./metrics";
 
 const pad = (value: number) => {
   if (value < 10) {
@@ -46,6 +47,17 @@ export function controllerMethod(controller: any) {
           errorMessage: isZodError ? fromError(e) : null,
         });
       }
+    } finally {
+      routeMetric.observe(
+        {
+          method: req.method,
+          url: req.originalUrl,
+          statusCode: resp.statusCode,
+          hasSession: req.session ? 1 : 0,
+          isError: resp.statusCode >= 400 ? 1 : 0,
+        },
+        1
+      );
     }
   };
 }
