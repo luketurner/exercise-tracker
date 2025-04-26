@@ -2,11 +2,17 @@
 
 <div class="notification is-warning is-light">
 
-This is a **side project**!
+Set is a **side project**, offered with no guarantees it will continue to work.
+
+Don't store data in Set that you don't want to lose (or at least take advantage of the export functionality to make regular backups).
 
 </div>
 
-Intro paragraph explaining what Set is.
+You've stumbled upon the manual for **Set** (backronym for Simple Exercise Tracker) -- a free and open-source Web app for tracking exercises over time. Using Set is a three-step process:
+
+1. Log in with your Github account (shares your name and email with Set).
+2. Create the exercises you want to track in the [Manage Exercises](/exercises) page.
+3. Log your exercises in the [Today](/today) page.
 
 # Exercises
 
