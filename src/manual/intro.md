@@ -39,11 +39,20 @@ Note that deleting an exercise will permanently delete all historical data assoc
 
 You can change the parameters associated for an exercise at any time -- historical data for that exercise will include an empty value for any parameters added after the data was recorded.
 
-Next to each exercise in the list is a button to view plots and tables of historical data. By default, this page shows you the last year of data, but you can adjust the lookback window (including using "all time" lookback to see all your data.)
+## <i class="ti ti-chart-line"></i> Historical data view
+
+Next to each exercise in the list is a <i class="ti ti-chart-line"></i> button to view historical data for a given exercise. The page includes:
+
+1. Interactive charts that illustrate the change over time for each of the exercise's parameters.
+2. A table of the data for all the exercise's past sets.
+
+By default, this page shows you the last year of data, but you can adjust the lookback window (including using "all time" lookback to see all your data at once.)
 
 # Today / Logging page
 
-The Today page is used to log new sets for your exercises. Changes made to sets are saved automatically. The order of the sets can be adjusted with drag and drop.
+The Today page is used to log new sets for your exercises. You add sets for the exercises you want to log, then fill out the parameter values (e.g. reps, weight, etc.) for each set.
+
+Changes made to sets are saved automatically. The order of the sets can be adjusted with drag and drop.
 
 If you forgot to log some data for an earlier day, you can click the date in the Today page to log data for a different day.
 
