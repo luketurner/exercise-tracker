@@ -122,17 +122,27 @@ export function allIntensities() {
   ] as const;
 }
 
+export function displayRawValueForTable(
+  value: number | string | undefined,
+  param: ParameterDefinition,
+  user: User
+) {
+  const displayValue = typeof value === "number" ? value.toFixed(1) : value;
+  const displayUnit = defaultUnit(param.dataType, user);
+  return displayValue && displayUnit
+    ? displayValue + " " + displayUnit
+    : displayValue
+    ? displayValue
+    : "-";
+}
+
 export function displayStringForTable(
   param: ParameterDefinition,
   value: ParameterValue,
   user: User
 ) {
   const display = displayString(param, value, user);
-  return display.value && display.unit
-    ? display.value + " " + display.unit
-    : display.value
-    ? display.value
-    : "-";
+  return displayRawValueForTable(display.value, param, user);
 }
 
 export function displayString(

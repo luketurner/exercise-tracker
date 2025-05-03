@@ -44,10 +44,10 @@ block content
             +icon(param.id)
             |  
             = param.name
-          td= v.average !== undefined ? v.average.toFixed(1) : '-'
-          td= v.min !== undefined ? v.min.toFixed(1) : '-'
-          td= v.max !== undefined ? v.max.toFixed(1) : '-'
-          td= v.totalChange !== undefined ? v.totalChange.toFixed(1) : '-'
+          td= displayRawValueForTable(v.average, param, user)
+          td= displayRawValueForTable(v.min, param, user)
+          td= displayRawValueForTable(v.max, param, user)
+          td= displayRawValueForTable(v.totalChange, param, user)
   table.table
     thead
       tr

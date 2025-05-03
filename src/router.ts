@@ -9,6 +9,7 @@ import {
   allUnits,
   convertUnit,
   defaultUnit,
+  displayRawValueForTable,
   displayString,
   displayStringForTable,
 } from "./models/exercises";
@@ -57,6 +58,7 @@ router.use(
       displayString,
       displayStringForTable,
       getRawValue,
+      displayRawValueForTable,
     };
 
     next();
