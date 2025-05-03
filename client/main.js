@@ -112,7 +112,6 @@ export async function buildChart(param, sets) {
 export function makeSortable(id, onEnd) {
   return new Sortable(document.getElementById(id), {
     animation: 150,
-    handle: ".handle",
     ghostClass: "blue-background-class",
     async onEnd(evt, originalEvent) {
       const id = evt.item.getAttribute("data-id");

@@ -31,8 +31,6 @@ block content
         var hasHistorical = historical.length > 0
       .is-flex.is-flex-direction-row(data-id=set.id, x-data=JSON.stringify({set: { ...set, exercise: set.exercise.id }}))
         form(action="/sets/"+set.id+"/delete", method="POST", id="set-"+set.id+"-delete")
-        div.handle.button.is-white.mb-4
-          +icon("grip-vertical")
         .is-flex.is-flex-direction-column.is-flex-grow-1(x-data="{ historyExpanded: false }")
           div.fixed-grid.has-7-cols-desktop.has-4-cols-tablet.has-2-cols-mobile
             div.grid(x-data="{parameters: "+JSON.stringify(Object.entries(set.parameters).reduce((m, [id, v]) => {
