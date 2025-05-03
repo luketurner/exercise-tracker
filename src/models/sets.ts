@@ -2,12 +2,21 @@ import { and, eq, asc, gte, desc, lt } from "drizzle-orm";
 import { db } from "../db";
 import {
   setsTable,
+  type Duration,
   type Exercise,
+  type ExerciseSet,
   type IntensityValue,
+  type Numeric,
   type ParameterValue,
   type User,
+  type Weight,
 } from "../db/schema";
-import { allIntensities, defaultUnit, getExercise } from "./exercises";
+import {
+  allIntensities,
+  convertUnit,
+  defaultUnit,
+  getExercise,
+} from "./exercises";
 
 export async function getSetById(setId: number, userId: string) {
   return (
@@ -172,4 +181,64 @@ export function buildSetParameters(
   }
 
   return parameters;
+}
+
+export interface HistoricalParameterAnalysis {
+  average?: number;
+  min?: number;
+  max?: number;
+  totalChange?: number;
+}
+
+export type HistoricalAnalysis = Record<string, HistoricalParameterAnalysis>;
+
+export function analyzeHistoricalSetData(
+  exercise: Exercise,
+  sets: ExerciseSet[],
+  user: User
+) {
+  const analysis: HistoricalAnalysis = {};
+  for (const param of exercise.parameters ?? []) {
+    if (param.dataType === "intensity") {
+      analysis[param.id] = {};
+      continue;
+    }
+
+    const values = sets
+      // .toSorted((s1, s2) => s1.date - s2.date)
+      .map((set) => set.parameters?.[param.id])
+      .map((v) => {
+        if (!v) return undefined;
+        switch (param.dataType) {
+          case "duration":
+            return (v as Duration)?.minutes;
+          case "number":
+            return (v as Numeric)?.value;
+          case "distance":
+          case "weight":
+            const v1 = v as Weight;
+            return Number(
+              convertUnit(v1.value, v1.unit, defaultUnit(param.dataType, user)!)
+            );
+          default:
+            return undefined;
+        }
+      })
+      .filter((v) => v !== undefined);
+
+    if (values.length === 0) {
+      analysis[param.id] = {};
+      continue;
+    }
+
+    const average = values.reduce((avg, v) => avg + v, 0) / values.length;
+
+    analysis[param.id] = {
+      average,
+      min: Math.min(...values),
+      max: Math.max(...values),
+      totalChange: values[values.length - 1] - values[0],
+    };
+  }
+  return analysis;
 }

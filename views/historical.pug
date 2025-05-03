@@ -31,6 +31,26 @@ block content
   table.table
     thead
       tr
+        td Parameter
+        td Average
+        td Min
+        td Max
+        td Total change
+    tbody
+      each param of exercise.parameters
+        - var v = analysis[param.id]
+        tr
+          td
+            +icon(param.id)
+            |  
+            = param.name
+          td= v.average !== undefined ? v.average.toFixed(1) : '-'
+          td= v.min !== undefined ? v.min.toFixed(1) : '-'
+          td= v.max !== undefined ? v.max.toFixed(1) : '-'
+          td= v.totalChange !== undefined ? v.totalChange.toFixed(1) : '-'
+  table.table
+    thead
+      tr
         td Date
         each param of exercise.parameters
             td

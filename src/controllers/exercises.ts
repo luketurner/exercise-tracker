@@ -11,7 +11,7 @@ import {
   getExercise,
   allParameters,
 } from "../models/exercises";
-import { getSetsForExercise } from "../models/sets";
+import { analyzeHistoricalSetData, getSetsForExercise } from "../models/sets";
 import {
   validateRequest,
   numericStringSchema,
@@ -106,12 +106,15 @@ exerciseRouter.get(
         : toDateString(relativeDate(new Date(), -lookback))
     );
 
+    const analysis = analyzeHistoricalSetData(exercise, historicalSets, user);
+
     res.render("historical", {
       ...req.viewBag,
       title: `Historical data: ${exercise.name}`,
       user,
       exercise,
       historicalSets,
+      analysis,
     });
   })
 );
