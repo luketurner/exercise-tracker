@@ -111,7 +111,7 @@ block content
                     tr
                       each parameter in allParameters
                         td(x-show="!!exercises.find(v => v.id == set.exercise)?.parameters?.find(p => p.id === '"+parameter.id+"')")
-                          = displayStringForTable(parameter, historicalSet.parameters[parameter.id], user)
+                          = displayStringForTable(historicalSet.parameters[parameter.id], parameter, user)
             else
               p No historical data for this exercise.
   script

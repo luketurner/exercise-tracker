@@ -9,9 +9,6 @@ import {
   allUnits,
   convertUnit,
   defaultUnit,
-  displayRawValueForTable,
-  displayString,
-  displayStringForTable,
 } from "./models/exercises";
 import multer from "multer";
 import { userRouter } from "./controllers/user";
@@ -20,7 +17,12 @@ import { exerciseRouter } from "./controllers/exercises";
 import { setsRouter } from "./controllers/sets";
 import { manualRouter } from "./controllers/manual";
 import { settingsRouter } from "./controllers/settings";
-import { getRawValue } from "./models/sets";
+import {
+  displayRawValueForTable,
+  displayString,
+  displayStringForTable,
+  getRawValue,
+} from "./models/sets";
 
 export interface RequestWithSession extends express.Request {
   user?: User;

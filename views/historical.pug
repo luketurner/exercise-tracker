@@ -62,4 +62,4 @@ block content
         tr
           td= set.date
           each param of exercise.parameters
-            td= displayStringForTable(param, set.parameters[param.id], user)
+            td= displayStringForTable(set.parameters[param.id], param, user)
