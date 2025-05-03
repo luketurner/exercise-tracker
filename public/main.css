@@ -9,3 +9,8 @@
 form {
   margin-block-end: 0;
 }
+
+.set-brand {
+  text-transform: uppercase;
+  font-weight: 500;
+}

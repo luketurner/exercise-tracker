@@ -11,7 +11,7 @@ html()
     div.container.is-flex.is-flex-direction-column(style="min-height: 100vh")
       nav.navbar.mb-4(role="navigation", aria-label="main navigation", x-data="{ showNavMenu: false }")
         div.navbar-brand
-          a.navbar-item(href="/") Set
+          a.navbar-item.is-size-4.set-brand(href="/") Set
           a.navbar-burger(style="color: inherit;", role="button", aria-label="menu", x-bind:aria-expanded="showNavMenu" x-on:click="showNavMenu = !showNavMenu", x-bind:class="showNavMenu ? 'is-active' : null")
             span(aria-hidden="true")
             span(aria-hidden="true")
