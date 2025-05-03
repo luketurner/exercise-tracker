@@ -7,10 +7,10 @@ block content
       each exercise in exercises
         div.cell= exercise.name
         div.cell(style="width: 7em;")
-          a.button.is-white(href="/exercises/"+exercise.id+"/historical")
+          a.button(href="/exercises/"+exercise.id+"/historical")
             span.icon
               +icon("chart-line")
-          a.button.is-white(href="/exercises/"+exercise.id)
+          a.button(href="/exercises/"+exercise.id)
             span.icon
               +icon("edit")
   form(action="/exercises", method="POST")

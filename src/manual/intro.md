@@ -1,6 +1,6 @@
 # Manual
 
-<div class="notification is-warning is-light">
+<div class="notification is-warning" x-bind:class="theme === 'dark' ? 'is-dark' : 'is-light'">
 
 Set is a **side project**, offered with no guarantees it will continue to work.
 
@@ -31,7 +31,7 @@ Set supports the following types of parameters:
 
 The manage exercises page can be used to create, adjust, or delete exercises.
 
-<div class="notification is-danger is-light">
+<div class="notification is-danger" x-bind:class="theme === 'dark' ? 'is-dark' : 'is-light'">
 
 Note that deleting an exercise will permanently delete all historical data associated with that exercise as well. Deleting an exercise cannot be undone.
 
@@ -69,7 +69,7 @@ The default units are pounds and miles. When you switch units, any historical da
 
 In the [Settings](/settings) page, you can export and/or delete your user data.
 
-<div class="notification is-danger is-light">
+<div class="notification is-danger" x-bind:class="theme === 'dark' ? 'is-dark' : 'is-light'">
 
 Note that deleting your data is permanent and cannot be undone.
 

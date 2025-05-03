@@ -14,3 +14,7 @@ form {
   text-transform: uppercase;
   font-weight: 500;
 }
+/*
+illustration of dark-mode-specific selector
+html[data-theme="dark"] .notification.is-light {
+} */

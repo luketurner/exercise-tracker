@@ -3,7 +3,7 @@ extends _layout.pug
 block content
   div(x-data=JSON.stringify({ exercise, allParameters }))
     +control()
-      a.button.is-light(href="/exercises") Back
+      a.button(href="/exercises", x-bind:class="theme === 'dark' ? 'is-dark' : 'is-light'") Back
     h1.title(x-text="exercise.name")= exercise.name
     +horizontalField("Exercise name")
       +control()
@@ -18,13 +18,13 @@ block content
       .field
         each param in allParameters
           .control.mb-1
-            button.button.is-white(
-              x-bind:class="exercise.parameters.find(p => p.id === '"+param.id+"') ? 'is-success' : ''"
+            button.button(
+              x-bind:class="{ 'is-success': exercise.parameters.find(p => p.id === '"+param.id+"'), 'is-dark': theme === 'dark' && exercise.parameters.find(p => p.id === '"+param.id+"') }"
               x-on:click="exercise.parameters.find(p => p.id === '"+param.id+"') ? exercise.parameters = exercise.parameters.filter(p => p.id !== '"+param.id+"') : exercise.parameters.push(allParameters.find(p => p.id === '"+param.id+"')); $fetch('post', '/exercises/"+exercise.id+"', exercise)"
             )
               +icon(param.id)
               span.pl-1= param.name
-  .notification.is-danger.is-light(x-data="{ deleteModal: false }")
+  .notification.is-danger(x-data="{ deleteModal: false }", x-bind:class="theme === 'dark' ? 'is-dark' : 'is-light'")
     h1.subtitle Danger Zone
     
     +horizontalField("Delete exercise")

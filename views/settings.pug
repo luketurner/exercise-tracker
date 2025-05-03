@@ -2,7 +2,7 @@ extends _layout.pug
 
 block content
   +control()
-    a.button.is-light(href="/today") Back
+    a.button(href="/today", x-bind:class="theme === 'dark' ? 'is-dark' : 'is-light'") Back
   h1.title Settings
   .block(x-data=JSON.stringify({ preferredUnits: {
     weight: defaultUnit("weight", user),
@@ -31,7 +31,7 @@ block content
       +control()
         button.button(x-on:click="window.location = '/user/export'") Export
 
-  .notification.is-danger.is-light(x-data="{ deleteModal: false }")
+  .notification.is-danger(x-data="{ deleteModal: false }", x-bind:class="theme === 'dark' ? 'is-dark' : 'is-light'")
     h1.subtitle Danger Zone
     
     +horizontalField("Delete my account")
