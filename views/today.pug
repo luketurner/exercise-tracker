@@ -90,9 +90,9 @@ block content
                         x-on:input.debounce.500ms="$fetch('post', '/sets/"+set.id+"', { ...set, parameters, })"
                       )
               .cell.buttons.has-addons
-                button.button.is-light(x-on:click="historyExpanded = !historyExpanded")
+                button.button.is-info.is-outlined(x-on:click="historyExpanded = !historyExpanded")
                   +icon("chart-line")
-                button.button.is-danger.is-light(form="set-"+set.id+"-delete")
+                button.button.is-danger.is-outlined(form="set-"+set.id+"-delete")
                   +icon("x")
           div(x-show="historyExpanded")
             if hasHistorical
