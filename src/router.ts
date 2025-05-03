@@ -19,6 +19,7 @@ import { exerciseRouter } from "./controllers/exercises";
 import { setsRouter } from "./controllers/sets";
 import { manualRouter } from "./controllers/manual";
 import { settingsRouter } from "./controllers/settings";
+import { getRawValue } from "./models/sets";
 
 export interface RequestWithSession extends express.Request {
   user?: User;
@@ -55,6 +56,7 @@ router.use(
       convertUnit,
       displayString,
       displayStringForTable,
+      getRawValue,
     };
 
     next();

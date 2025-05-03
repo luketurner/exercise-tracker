@@ -5,8 +5,10 @@ import {
   type Duration,
   type Exercise,
   type ExerciseSet,
+  type Intensity,
   type IntensityValue,
   type Numeric,
+  type ParameterDefinition,
   type ParameterValue,
   type User,
   type Weight,
@@ -183,6 +185,34 @@ export function buildSetParameters(
   return parameters;
 }
 
+export function getRawValue(
+  value: ParameterValue | undefined,
+  param: ParameterDefinition,
+  user: User
+): number | IntensityValue | undefined {
+  if (!value) return undefined;
+  switch (param.dataType) {
+    case "duration":
+      return (value as Duration)?.minutes;
+    case "number":
+      return (value as Numeric)?.value;
+    case "distance":
+    case "weight":
+      const v1 = value as Weight;
+      return Number(
+        convertUnit(v1.value, v1.unit, defaultUnit(param.dataType, user)!)
+      );
+    case "intensity":
+      return (value as Intensity).value;
+    // return (
+    //   1 +
+    //   allIntensities().findIndex((i) => i.id === (value as Intensity).value)
+    // );
+    default:
+      return undefined;
+  }
+}
+
 export interface HistoricalParameterAnalysis {
   average?: number;
   min?: number;
@@ -207,23 +237,7 @@ export function analyzeHistoricalSetData(
     const values = sets
       // .toSorted((s1, s2) => s1.date - s2.date)
       .map((set) => set.parameters?.[param.id])
-      .map((v) => {
-        if (!v) return undefined;
-        switch (param.dataType) {
-          case "duration":
-            return (v as Duration)?.minutes;
-          case "number":
-            return (v as Numeric)?.value;
-          case "distance":
-          case "weight":
-            const v1 = v as Weight;
-            return Number(
-              convertUnit(v1.value, v1.unit, defaultUnit(param.dataType, user)!)
-            );
-          default:
-            return undefined;
-        }
-      })
+      .map((v) => getRawValue(v, param, user) as number | undefined)
       .filter((v) => v !== undefined);
 
     if (values.length === 0) {

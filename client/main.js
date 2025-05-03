@@ -73,45 +73,40 @@ export async function signOut() {
   }
 }
 
-export async function buildChart(exercise, sets) {
-  for (const param of exercise.parameters) {
-    new Chart(document.getElementById(`chart-${param.id}`), {
-      type: "line",
-      data: {
-        labels: sets.map((set) => set.date),
-        datasets: [
-          {
-            label: param.name,
-            data: sets.map((set) => {
-              const paramValue = set.parameters[param.id];
-              return paramValue?.value ?? paramValue?.minutes;
-            }),
-          },
-        ],
-      },
-      options: {
-        plugins: {
-          legend: {
-            display: false,
-          },
+export async function buildChart(param, sets) {
+  new Chart(document.getElementById(`chart-${param.id}`), {
+    type: "line",
+    data: {
+      labels: sets.map((set) => set.date),
+      datasets: [
+        {
+          label: param.name,
+          data: sets.map((set) => set.value),
         },
-        scales: {
-          y:
-            param.dataType === "intensity"
-              ? {
-                  type: "category",
-                  labels: ["high", "medium", "low"],
-                }
-              : {
-                  type: "linear",
-                },
-          x: {
-            type: "time",
-          },
+      ],
+    },
+    options: {
+      plugins: {
+        legend: {
+          display: false,
         },
       },
-    });
-  }
+      scales: {
+        y:
+          param.dataType === "intensity"
+            ? {
+                type: "category",
+                labels: ["high", "medium", "low"],
+              }
+            : {
+                type: "linear",
+              },
+        x: {
+          type: "time",
+        },
+      },
+    },
+  });
 }
 
 export function makeSortable(id, onEnd) {

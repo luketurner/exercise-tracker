@@ -27,7 +27,7 @@ block content
               |  
               = param.name
             canvas(id="chart-"+param.id)
-  script!= "window._set.buildChart("+JSON.stringify(exercise)+","+JSON.stringify(historicalSets)+");"
+        script!= "window._set.buildChart("+JSON.stringify(param)+","+JSON.stringify(historicalSets.map(s => ({date: s.date, value: getRawValue(s.parameters[param.id], param, user)})))+");"
   table.table
     thead
       tr

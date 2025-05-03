@@ -37,12 +37,9 @@ block content
           div.fixed-grid.has-7-cols-desktop.has-4-cols-tablet.has-2-cols-mobile
             div.grid(x-data="{parameters: "+JSON.stringify(Object.entries(set.parameters).reduce((m, [id, v]) => {
               var parameter = allParameters.find(p => p.id === id);
-              var unit = defaultUnit(parameter.dataType, user);
-              if (unit) {
-                var value = v ? convertUnit(v.value, v.unit, unit, 1) : null;
-                if (value) { m[id] = value; }
-              } else {
-                m[id] = (v.value != undefined ? v.value : v.minutes).toString()
+              var value = getRawValue(v, parameter, user);
+              if (value != undefined) {
+                m[id] = value.toString()
               }
               return m;
              }, {}))+"}")
