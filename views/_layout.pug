@@ -1,12 +1,12 @@
 include mixins.pug
-html()
+html(x-data="{theme: (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light'}", x-bind:data-theme="theme")
   head
     title= title
     link(rel="stylesheet", href="/bulma.min.css")
     link(rel="stylesheet", href="/main.css")
     meta(name="viewport", content="width=device-width, initial-scale=1")
     link(rel="stylesheet", href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css")
-  body(x-data="{theme: (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light'}")
+  body()
     script(src="/main.js")
     div.container.is-flex.is-flex-direction-column(style="min-height: 100vh")
       nav.navbar.mb-4(role="navigation", aria-label="main navigation", x-data="{ showNavMenu: false }")
@@ -43,7 +43,7 @@ html()
           p
             a.mr-1(href="https://github.com/luketurner/exercise-tracker") Source code
             | Copyright 2025 Luke Turner
-            button.ml-1(x-show="theme === 'light'", x-on:click="document.querySelector('html').setAttribute('data-theme', 'dark'); theme = 'dark'") 🌙
-            button.ml-1(x-show="theme === 'dark'", x-on:click="document.querySelector('html').setAttribute('data-theme', 'light'); theme = 'light'") ☀
+            button.ml-1(x-show="theme === 'light'", x-on:click="theme = 'dark'") 🌙
+            button.ml-1(x-show="theme === 'dark'", x-on:click="theme = 'light'") ☀
 
     block modal
