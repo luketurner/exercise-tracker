@@ -42,7 +42,7 @@ block content
                 var value = v ? convertUnit(v.value, v.unit, unit, 1) : null;
                 if (value) { m[id] = value; }
               } else {
-                m[id] = (v.value || v.minutes).toString()
+                m[id] = (v.value != undefined ? v.value : v.minutes).toString()
               }
               return m;
              }, {}))+"}")
