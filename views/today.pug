@@ -47,7 +47,7 @@ block content
                     "set.exercise",
                     "$fetch('post', '/sets/'+set.id, { exercise: set.exercise, parameters, })",
                     exercises
-                  )
+                  )(class="is-fullwidth")
               each parameter in allParameters
                 - var paramValue = set.parameters[parameter.id]
                 div.cell(
@@ -80,7 +80,7 @@ block content
                         "parameters['"+parameter.id+"']",
                         "$fetch('post', '/sets/"+set.id+"', { ...set, parameters, })",
                         [{ id: "", name: "" }].concat(allIntensities)
-                      )
+                      )(class="is-fullwidth")
                     else
                       input.input(
                         id=parameter.id,

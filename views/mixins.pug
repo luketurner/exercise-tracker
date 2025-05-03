@@ -42,11 +42,11 @@ mixin select(name, signalName, defaultValue, onChange, values)
         option(value=value.id, selected=(defaultValue === value.id))= value.name
 
 mixin selectAlpine(signalName, onChange, values)
-  span.select
+  span.select&attributes(attributes)
     select(
       x-on:change=onChange,
       x-model=signalName
-    )&attributes(attributes)
+    )
       each value in values
         option(value=value.id)= value.name
 
