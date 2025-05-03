@@ -54,7 +54,7 @@ export const requireSessionOrRedirect = async (
 ) => {
   try {
     if (!req.user || !req.session) {
-      res.redirect("/");
+      return res.redirect("/");
     }
     next();
   } catch (error) {
