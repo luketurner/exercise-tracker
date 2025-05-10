@@ -40,3 +40,7 @@ html[data-theme="dark"] .primary-box {
 html[data-theme="dark"] .primary-box label {
   color: var(--bulma-primary-dark-invert) !important;
 }
+
+.set-grid {
+  margin-bottom: var(--bulma-block-spacing);
+}

@@ -32,7 +32,7 @@ block content
       .is-flex.is-flex-direction-row(data-id=set.id, x-data=JSON.stringify({set: { ...set, exercise: set.exercise.id }}))
         form(action="/sets/"+set.id+"/delete", method="POST", id="set-"+set.id+"-delete")
         .is-flex.is-flex-direction-column.is-flex-grow-1(x-data="{ historyExpanded: false }")
-          div.fixed-grid.has-7-cols-desktop.has-4-cols-tablet.has-2-cols-mobile
+          div.fixed-grid.has-7-cols-desktop.has-4-cols-tablet.has-2-cols-mobile.set-grid
             div.grid(x-data="{parameters: "+JSON.stringify(Object.entries(set.parameters).reduce((m, [id, v]) => {
               var parameter = allParameters.find(p => p.id === id);
               var value = getRawValue(v, parameter, user);
@@ -48,11 +48,12 @@ block content
                       "set.exercise",
                       "$fetch('post', '/sets/'+set.id, { exercise: set.exercise, parameters, })",
                       exercises
-                    )(class="is-fullwidth")
-                  .control
-                    button.button(x-on:click="historyExpanded = !historyExpanded", x-bind:class="theme === 'dark' ? 'is-dark' : 'is-light'")
-                      span.icon
-                        +icon("chart-line")
+                    )(class="is-fullwidth is-primary")
+                  if hasHistorical
+                    .control
+                      button.button.is-primary(x-on:click="historyExpanded = !historyExpanded", x-bind:class="theme === 'dark' ? 'is-dark' : 'is-light'")
+                        span.icon
+                          +icon("chart-line")
                   .control
                     button.button.is-danger(form="set-"+set.id+"-delete", x-bind:class="theme === 'dark' ? 'is-dark' : 'is-light'")
                       span.icon
@@ -98,8 +99,8 @@ block content
                         x-model="parameters['"+parameter.id+"']"
                         x-on:input.debounce.500ms="$fetch('post', '/sets/"+set.id+"', { ...set, parameters, })"
                       )
-          div(x-show="historyExpanded")
-            if hasHistorical
+          if hasHistorical
+            div(x-show="historyExpanded")
               p
                 = historical[0].date
                 a.ml-2(href="/exercises/"+set.exercise.id+"/historical?back=/"+date) (See all)
@@ -114,8 +115,6 @@ block content
                       each parameter in allParameters
                         td(x-show="!!exercises.find(v => v.id == set.exercise)?.parameters?.find(p => p.id === '"+parameter.id+"')")
                           = displayStringForTable(historicalSet.parameters[parameter.id], parameter, user)
-            else
-              p No historical data for this exercise.
   script
     | _set.makeSortableSetList("set-list") 
   if exercises.length !== 0
