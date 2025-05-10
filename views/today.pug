@@ -115,11 +115,12 @@ block content
   script
     | _set.makeSortableSetList("set-list") 
   if exercises.length !== 0
-    +horizontalField("Add new set")
+    .box.primary-box
       .field(x-data="{ newSetExercise: null }")
+        label.label Add new set
         +control()
           +selectAlpine(
             "newSetExercise",
             "newSetExercise && $fetch('post', '/sets', {exercise: newSetExercise, date: '"+date+"', order: '"+nextSetOrder+"'}).then(() => window.location.reload())",
             [{ id: "", name: "" }].concat(exercises)
-          )
+          )(class="is-primary is-fullwidth")

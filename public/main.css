@@ -13,8 +13,30 @@ form {
 .set-brand {
   text-transform: uppercase;
   font-weight: 500;
+  background-color: var(--bulma-primary) !important;
+  color: var(--bulma-primary-invert) !important;
 }
-/*
-illustration of dark-mode-specific selector
-html[data-theme="dark"] .notification.is-light {
-} */
+
+html[data-theme="dark"] .set-brand {
+  background-color: var(--bulma-primary-dark) !important;
+  color: var(--bulma-primary-dark-invert) !important;
+}
+
+.primary-box {
+  background-color: var(--bulma-primary) !important;
+  color: var(--bulma-primary-invert) !important;
+  width: 20em;
+}
+
+.primary-box label {
+  color: var(--bulma-primary-invert) !important;
+}
+
+html[data-theme="dark"] .primary-box {
+  background-color: var(--bulma-primary-dark) !important;
+  color: var(--bulma-primary-dark-invert) !important;
+}
+
+html[data-theme="dark"] .primary-box label {
+  color: var(--bulma-primary-dark-invert) !important;
+}

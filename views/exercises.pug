@@ -14,10 +14,11 @@ block content
             span.icon
               +icon("edit")
   form(action="/exercises", method="POST")
-    +horizontalField("Exercise name")
-      .field
-        +control()
-          input.input#name(type="text", name="name")
-      .field
-        +control()
-          input.button(type="submit", value="Create new exercise")
+    .box.primary-box
+      .field(x-data="{ newSetExercise: null }")
+        label.label Create new exercise
+        .field.has-addons
+          .control
+            input.input#name.is-primary(type="text", name="name")
+          .control
+            button.button.is-primary Create
