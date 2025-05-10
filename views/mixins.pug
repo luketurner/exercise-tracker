@@ -9,9 +9,9 @@ mixin icon(iconName)
     }[iconName];
     if (!iconClass) iconClass = iconName;
   if iconName === 'reps'
-    i #
+    i&attributes(attributes) #
   else
-    i.ti(class="ti-"+iconClass)
+    i.ti(class="ti-"+iconClass)&attributes(attributes)
 
 
 mixin control(leftIcon, rightIcon)

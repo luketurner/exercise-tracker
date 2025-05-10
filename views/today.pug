@@ -41,13 +41,22 @@ block content
               }
               return m;
              }, {}))+"}")
-              .cell
-                +control(null, null)
-                  +selectAlpine(
-                    "set.exercise",
-                    "$fetch('post', '/sets/'+set.id, { exercise: set.exercise, parameters, })",
-                    exercises
-                  )(class="is-fullwidth")
+              .cell.is-col-span-2
+                .field.has-addons
+                  .control.is-expanded
+                    +selectAlpine(
+                      "set.exercise",
+                      "$fetch('post', '/sets/'+set.id, { exercise: set.exercise, parameters, })",
+                      exercises
+                    )(class="is-fullwidth")
+                  .control
+                    button.button(x-on:click="historyExpanded = !historyExpanded", x-bind:class="theme === 'dark' ? 'is-dark' : 'is-light'")
+                      span.icon
+                        +icon("chart-line")
+                  .control
+                    button.button.is-danger(form="set-"+set.id+"-delete", x-bind:class="theme === 'dark' ? 'is-dark' : 'is-light'")
+                      span.icon
+                        +icon("x")(class="is-medium")
               each parameter in allParameters
                 - var paramValue = set.parameters[parameter.id]
                 div.cell(
@@ -89,11 +98,6 @@ block content
                         x-model="parameters['"+parameter.id+"']"
                         x-on:input.debounce.500ms="$fetch('post', '/sets/"+set.id+"', { ...set, parameters, })"
                       )
-              .cell.buttons.has-addons
-                button.button.is-outlined(x-on:click="historyExpanded = !historyExpanded", x-bind:class="theme === 'dark' ? 'is-light' : 'is-dark'")
-                  +icon("chart-line")
-                button.button.is-danger.is-outlined(form="set-"+set.id+"-delete")
-                  +icon("x")
           div(x-show="historyExpanded")
             if hasHistorical
               p
