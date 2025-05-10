@@ -2,7 +2,7 @@ extends _layout.pug
 
 block content
   +control()
-    a.button(href="/today", x-bind:class="theme === 'dark' ? 'is-dark' : 'is-light'") Back
+    a.button(href=back, x-bind:class="theme === 'dark' ? 'is-dark' : 'is-light'") Back
   h1.title Settings
   .block(x-data=JSON.stringify({ preferredUnits: {
     weight: defaultUnit("weight", user),

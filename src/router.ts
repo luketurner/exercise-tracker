@@ -61,6 +61,7 @@ router.use(
       displayStringForTable,
       getRawValue,
       displayRawValueForTable,
+      currentPath: req.originalUrl.replace(/\?.*$/, ""),
     };
 
     next();

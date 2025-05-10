@@ -22,7 +22,7 @@ html(x-data="{theme: (window.matchMedia && window.matchMedia('(prefers-color-sch
             if user
               a.navbar-item(href="/today") Today
               a.navbar-item(href="/exercises") Manage exercises
-              a.navbar-item(href="/settings") Settings
+              a.navbar-item(href="/settings?back="+currentPath) Settings
             a.navbar-item(href="/manual") Manual
           div.navbar-end
             if user

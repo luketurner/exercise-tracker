@@ -2,7 +2,7 @@ extends _layout.pug
 
 block content
   +control()
-    a.button(href="/exercises", x-bind:class="theme === 'dark' ? 'is-dark' : 'is-light'") Back
+    a.button(href=back, x-bind:class="theme === 'dark' ? 'is-dark' : 'is-light'") Back
   .dropdown(x-bind:class="showLookback ? 'is-active' : ''", x-data="{ showLookback: false }", style="float: right")
     .dropdown-trigger
       button.button(aria-haspopup="true", aria-controls="lookback-picker", x-on:click="showLookback = !showLookback")

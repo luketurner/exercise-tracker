@@ -98,7 +98,7 @@ block content
             if hasHistorical
               p
                 = historical[0].date
-                a.ml-2(href="/exercises/"+set.exercise.id+"/historical") (See all)
+                a.ml-2(href="/exercises/"+set.exercise.id+"/historical?back=/"+date) (See all)
               table.table
                 thead
                   each parameter in allParameters

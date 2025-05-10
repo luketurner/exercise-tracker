@@ -20,6 +20,17 @@ settingsRouter.get(
   controllerMethod(async (req: RequestWithGuaranteedSession, res: Response) => {
     const { user } = req;
 
+    const {
+      query: { back },
+    } = validateRequest(
+      req,
+      z.object({
+        query: z.object({
+          back: z.string().optional(),
+        }),
+      })
+    );
+
     const units = allUnits();
 
     res.render("settings", {
@@ -28,6 +39,7 @@ settingsRouter.get(
       weightUnits: units.filter((unit) => unit.type === "weight"),
       distanceUnits: units.filter((unit) => unit.type === "distance"),
       user,
+      back: back || "/today",
     });
   })
 );

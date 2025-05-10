@@ -79,6 +79,7 @@ exerciseRouter.get(
             .string()
             .regex(/^all|\d+$/)
             .optional(),
+          back: z.string().optional(),
         }),
       })
     );
@@ -111,6 +112,7 @@ exerciseRouter.get(
     res.render("historical", {
       ...req.viewBag,
       title: `Historical data: ${exercise.name}`,
+      back: query.back || "/exercises",
       user,
       exercise,
       historicalSets,
