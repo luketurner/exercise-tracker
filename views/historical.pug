@@ -3,7 +3,7 @@ extends _layout.pug
 block content
   +control()
     a.button(href=back, x-bind:class="theme === 'dark' ? 'is-dark' : 'is-light'") Back
-  .dropdown(x-bind:class="showLookback ? 'is-active' : ''", x-data="{ showLookback: false }", style="float: right")
+  .dropdown.is-right(x-bind:class="showLookback ? 'is-active' : ''", x-data="{ showLookback: false }", style="float: right")
     .dropdown-trigger
       button.button(aria-haspopup="true", aria-controls="lookback-picker", x-on:click="showLookback = !showLookback")
         span Lookback
@@ -17,49 +17,50 @@ block content
         +control("clock", "days")(class="dropdown-item")
           input.input(type="number", min="0", x-on:change="window.location.search = 'lookback='+ $event.target.value")
   h1.title= "History of " + exercise.name
-  .fixed-grid.has-1-cols-mobile.has-2-cols-desktop.has-3-cols-widescreen
+  .fixed-grid.has-1-cols-mobile.has-2-cols-desktop.has-3-cols-widescreen.mb-6
     .grid
       each param of exercise.parameters
-        .cell
-          .box
-            h1.title(style="text-align: center;")
-              +icon(param.id)
-              |  
-              = param.name
-            canvas(id="chart-"+param.id)
-        script!= "window._set.buildChart("+JSON.stringify(param)+","+JSON.stringify(historicalSets.map(s => ({date: s.date, value: getRawValue(s.parameters[param.id], param, user)})))+");"
-  table.table
-    thead
-      tr
-        td Parameter
-        td Average
-        td Min
-        td Max
-        td Total change
-    tbody
-      each param of exercise.parameters
-        - var v = analysis[param.id]
-        tr
-          td
+        .cell.box
+          h1.title(style="text-align: center;")
             +icon(param.id)
             |  
             = param.name
-          td= displayRawValueForTable(v.average, param, user)
-          td= displayRawValueForTable(v.min, param, user)
-          td= displayRawValueForTable(v.max, param, user)
-          td= displayRawValueForTable(v.totalChange, param, user)
-  table.table
-    thead
-      tr
-        td Date
+          canvas(id="chart-"+param.id)
+        script!= "window._set.buildChart("+JSON.stringify(param)+","+JSON.stringify(historicalSets.map(s => ({date: s.date, value: getRawValue(s.parameters[param.id], param, user)})))+");"
+  div.mb-6(style="overflow-x: auto")
+    table.table
+      thead
+        tr
+          td Parameter
+          td Average
+          td Min
+          td Max
+          td Total change
+      tbody
         each param of exercise.parameters
+          - var v = analysis[param.id]
+          tr
             td
               +icon(param.id)
               |  
               = param.name
-    tbody
-      each set of historicalSets
+            td= displayRawValueForTable(v.average, param, user)
+            td= displayRawValueForTable(v.min, param, user)
+            td= displayRawValueForTable(v.max, param, user)
+            td= displayRawValueForTable(v.totalChange, param, user)
+  div(style="overflow-x: auto")
+    table.table
+      thead
         tr
-          td= set.date
+          td Date
           each param of exercise.parameters
-            td= displayStringForTable(set.parameters[param.id], param, user)
+              td
+                +icon(param.id)
+                |  
+                = param.name
+      tbody
+        each set of historicalSets
+          tr
+            td= set.date
+            each param of exercise.parameters
+              td= displayStringForTable(set.parameters[param.id], param, user)
