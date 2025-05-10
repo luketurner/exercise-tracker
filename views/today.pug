@@ -7,7 +7,7 @@ block content
         span.icon
           +icon("chevron-left")
     div.control
-      input.input.is-large#date(type="date", name="date", value=date, max=today, x-on:change="window.location.pathname = `/${$event.target.value}`")
+      input.input.is-large#date(type="date", name="date", value=date, max=today, x-on:change="window.location.pathname = `/${$event.target.value}`", x-bind:style="'color-scheme: '+theme")
     if !isToday
       div.control
         a.button.is-large(href="/"+tomorrow)
