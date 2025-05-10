@@ -50,8 +50,6 @@ Alpine.magic(
     }
 );
 
-Alpine.start();
-
 export const authClient = createAuthClient({
   baseURL: PROD ? "https://set.luketurner.org" : "http://localhost:3000", // the base url of your auth server
 });
@@ -177,6 +175,25 @@ export async function setFetch(method, url, body) {
   }
 }
 
+export function browserTheme() {
+  return window.matchMedia &&
+    window.matchMedia("(prefers-color-scheme: dark)").matches
+    ? "dark"
+    : "light";
+}
+
+export function theme() {
+  return window.localStorage.getItem("set:theme") || browserTheme();
+}
+
+export function saveTheme(newTheme) {
+  if (newTheme === browserTheme()) {
+    window.localStorage.removeItem("set:theme");
+  } else {
+    window.localStorage.setItem("set:theme", newTheme);
+  }
+}
+
 window._set = {
   signIn,
   signOut,
@@ -184,4 +201,9 @@ window._set = {
   makeSortable,
   makeSortableSetList,
   fetch: setFetch,
+  browserTheme,
+  theme,
+  saveTheme,
 };
+
+Alpine.start();

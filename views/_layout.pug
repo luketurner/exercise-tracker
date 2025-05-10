@@ -1,5 +1,9 @@
 include mixins.pug
-html(x-data="{theme: (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light'}", x-bind:data-theme="theme")
+html(
+  x-data="{theme: window._set.theme() }",
+  x-bind:data-theme="theme",
+  x-effect="window._set.saveTheme(theme)"
+)
   head
     title= title
     link(rel="stylesheet", href="/bulma.min.css")
