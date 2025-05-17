@@ -1,24 +1,43 @@
 extends _layout.pug
 
 block content
-  h1.title Manage Exercises
-  div.fixed-grid.has-2-cols
-    div.grid
-      each exercise in exercises
-        div.cell= exercise.name
-        div.cell(style="width: 7em;")
-          a.button(href="/exercises/"+exercise.id+"/historical")
-            span.icon
-              +icon("chart-line")
-          a.button(href="/exercises/"+exercise.id)
-            span.icon
-              +icon("edit")
-  form(action="/exercises", method="POST")
-    .box.primary-box
-      .field(x-data="{ newSetExercise: null }")
-        label.label Create new exercise
-        .field.has-addons
-          .control
-            input.input#name.is-primary(type="text", name="name")
-          .control
-            button.button.is-primary Create
+  .container.is-max-desktop(x-data="{ sortByKey: 'name' }")
+    h1.title Manage Exercises
+
+    .dropdown.is-right.table-sort(x-bind:class="showSortBy ? 'is-active' : ''", x-data="{ showSortBy: false }")
+      .dropdown-trigger
+        button.button(aria-haspopup="true", aria-controls="lookback-picker", x-on:click="showSortBy = !showSortBy")
+          span(x-text="'Sort by '+sortByKey")
+          span.icon
+            +icon("chevron-down")
+      .dropdown-menu#lookback-picker(role="menu")
+        .dropdown-content
+          button.dropdown-item(x-on:click="showSortBy = false; sortByKey = 'name'") Name
+          //- button.dropdown-item(x-on:click="showSortBy = false; sortByKey = 'used'") Recently used
+          button.dropdown-item(x-on:click="showSortBy = false; sortByKey = 'updated'") Recently updated
+    table.table.is-fullwidth(x-data=JSON.stringify({ exercises }))
+      tbody(x-data="{ sortedExercises: window._set.sortExercises(exercises, sortByKey)}")
+        template(x-for="exercise in window._set.sortExercises(exercises, sortByKey)")
+          tr(:id="exercise.id")
+            td(x-text="exercise.name")
+            td(style="width: 5rem;")
+              .field.has-addons
+                .control
+                  a.button(x-bind:href="'/exercises/'+exercise.id")
+                    span.icon
+                      +icon("edit")
+                    span Edit
+                .control
+                  a.button(x-bind:href="'/exercises/'+exercise.id+'/historical'")
+                    span.icon
+                      +icon("chart-line")
+                    span History
+    form(action="/exercises", method="POST")
+      .box.primary-box
+        .field(x-data="{ newSetExercise: null }")
+          label.label Create new exercise
+          .field.has-addons
+            .control
+              input.input#name.is-primary(type="text", name="name")
+            .control
+              button.button.is-primary Create

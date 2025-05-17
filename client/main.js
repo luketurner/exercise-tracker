@@ -3,6 +3,7 @@ import Chart from "chart.js/auto";
 import "chartjs-adapter-luxon";
 import Sortable from "sortablejs";
 import Alpine from "alpinejs";
+import sortBy from "lodash.sortby";
 
 window.Alpine = Alpine;
 
@@ -194,6 +195,20 @@ export function saveTheme(newTheme) {
   }
 }
 
+// TODO -- this function isn't actually sorting the array properly
+export function sortExercises(exercises, sortKey) {
+  switch (sortKey) {
+    case "name":
+      return sortBy(exercises, (e) => e.name.toLowerCase());
+    // case "used":
+    //   return sortBy(exercises, (e) => e.updatedAt);
+    case "updated":
+      return sortBy(exercises, (e) => e.updatedAt).reverse();
+    default:
+      return exercises;
+  }
+}
+
 window._set = {
   signIn,
   signOut,
@@ -204,6 +219,7 @@ window._set = {
   browserTheme,
   theme,
   saveTheme,
+  sortExercises,
 };
 
 Alpine.start();

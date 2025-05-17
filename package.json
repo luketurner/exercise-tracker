@@ -34,6 +34,7 @@
     "dotenv": "^16.4.7",
     "drizzle-orm": "^0.37.0",
     "express": "^4.21.2",
+    "lodash.sortby": "^4.7.0",
     "luxon": "^3.5.0",
     "multer": "^1.4.5-lts.1",
     "pg": "^8.13.1",
