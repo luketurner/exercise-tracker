@@ -66,6 +66,14 @@ export const exercisesTable = pgTable("exercises", {
       onUpdate: "cascade",
     }),
   parameters: jsonb().$type<ParameterDefinition[]>(),
+  createdAt: timestamp("createdAt")
+    .notNull()
+    .defaultNow()
+    .$default(() => new Date()),
+  updatedAt: timestamp("updatedAt")
+    .notNull()
+    .defaultNow()
+    .$onUpdate(() => new Date()),
 });
 
 export const setsTable = pgTable(
@@ -87,6 +95,14 @@ export const setsTable = pgTable(
     date: date().notNull(),
     order: integer().notNull(),
     parameters: jsonb().$type<Record<string, ParameterValue>>(),
+    createdAt: timestamp("createdAt")
+      .notNull()
+      .defaultNow()
+      .$default(() => new Date()),
+    updatedAt: timestamp("updatedAt")
+      .notNull()
+      .defaultNow()
+      .$onUpdate(() => new Date()),
   },
   (table) => [
     {
