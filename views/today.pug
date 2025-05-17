@@ -1,129 +1,137 @@
 extends _layout.pug
 
 block content
-  div.field.has-addons.has-addons-centered.mb-5
-    div.control
-      a.button.is-large(href="/"+yesterday)
-        span.icon
-          +icon("chevron-left")
-    div.control
-      input.input.is-large#date(type="date", name="date", value=date, max=today, x-on:change="window.location.pathname = `/${$event.target.value}`", x-bind:style="'color-scheme: '+theme")
-    if !isToday
+  div(x-data="{creatingNewSet: false}")
+    div.field.has-addons.has-addons-centered.mb-5
       div.control
-        a.button.is-large(href="/"+tomorrow)
+        a.button.is-large(href="/"+yesterday)
           span.icon
-            +icon("chevron-right")
-  if exercises.length === 0
-    .notification.is-primary.is-light.content(x-data="{ onboardingNotification: true }", x-show="onboardingNotification")
-      button.delete(x-on:click="onboardingNotification = false")
-      p Hi, welcome to Set! This is an app that helps you track exercises, but it looks like you don't have any exercises to track yet.
+            +icon("chevron-left")
+      div.control
+        input.input.is-large#date(type="date", name="date", value=date, max=today, x-on:change="window.location.pathname = `/${$event.target.value}`", x-bind:style="'color-scheme: '+theme")
+      if !isToday
+        div.control
+          a.button.is-large(href="/"+tomorrow)
+            span.icon
+              +icon("chevron-right")
+    if exercises.length === 0
+      .notification.is-primary.is-light.content(x-data="{ onboardingNotification: true }", x-show="onboardingNotification")
+        button.delete(x-on:click="onboardingNotification = false")
+        p Hi, welcome to Set! This is an app that helps you track exercises, but it looks like you don't have any exercises to track yet.
 
-      p
-        | The first step is to open the 
-        a(href="/exercises") Manage Exercises page
-        |  and create the exercises that you want to track.
-        | Then, when you want to track your exercises, come back to the Today page (the one you're currently on) to log your sets.
+        p
+          | The first step is to open the 
+          a(href="/exercises") Manage Exercises page
+          |  and create the exercises that you want to track.
+          | Then, when you want to track your exercises, come back to the Today page (the one you're currently on) to log your sets.
 
-  div.set-list#set-list(x-data=JSON.stringify({exercises}))
-    each set in sets
-      -
-        var historical = historicalSets[set.exercise.id]
-        var hasHistorical = historical.length > 0
-      .is-flex.is-flex-direction-row(data-id=set.id, x-data=JSON.stringify({set: { ...set, exercise: set.exercise.id }}))
-        form(action="/sets/"+set.id+"/delete", method="POST", id="set-"+set.id+"-delete")
-        .is-flex.is-flex-direction-column.is-flex-grow-1(x-data="{ historyExpanded: false }")
-          div.fixed-grid.has-7-cols-desktop.has-4-cols-tablet.has-2-cols-mobile.set-grid
-            div.grid(x-data="{parameters: "+JSON.stringify(Object.entries(set.parameters).reduce((m, [id, v]) => {
-              var parameter = allParameters.find(p => p.id === id);
-              var value = getRawValue(v, parameter, user);
-              if (value != undefined) {
-                m[id] = value.toString()
-              }
-              return m;
-             }, {}))+"}")
-              .cell.is-col-span-2
-                .field.has-addons
-                  .control.is-expanded
-                    +selectAlpine(
-                      "set.exercise",
-                      "$fetch('post', '/sets/'+set.id, { exercise: set.exercise, parameters, })",
-                      exercises
-                    )(class="is-fullwidth is-primary")
-                  if hasHistorical
-                    .control
-                      button.button.is-primary(x-on:click="historyExpanded = !historyExpanded", x-bind:class="theme === 'dark' ? 'is-dark' : 'is-light'")
-                        span.icon
-                          +icon("chart-line")
-                  .control
-                    button.button.is-danger(form="set-"+set.id+"-delete", x-bind:class="theme === 'dark' ? 'is-dark' : 'is-light'")
-                      span.icon
-                        +icon("x")(class="is-medium")
-              each parameter in allParameters
-                - var paramValue = set.parameters[parameter.id]
-                div.cell(
-                  x-show="!!exercises.find(v => v.id == set.exercise)?.parameters?.find(p => p.id === '"+parameter.id+"')"
-                )
-                  +control(
-                    parameter.id,
-                    parameter.dataType === 'weight' || parameter.dataType === 'distance' ? defaultUnit(parameter.dataType, user) : parameter.dataType === 'duration' ? 'min' : parameter.id === 'reps' ? 'reps' : null,
-                  )
-                    if parameter.dataType === 'weight' || parameter.dataType === 'distance'
-                      - var unit = defaultUnit(parameter.dataType, user)
-                      input.input(
-                        id=parameter.id,
-                        type="number",
-                        name=parameter.id,
-                        min="0", step="0.1"
-                        x-model="parameters['"+parameter.id+"']"
-                        x-on:input.debounce.500ms="$fetch('post', '/sets/"+set.id+"', { ...set, parameters, })"
-                      )
-                    else if parameter.dataType === 'duration'
-                      input.input(
-                        id=parameter.id,
-                        type="number",
-                        name=parameter.id,
-                        x-model="parameters['"+parameter.id+"']"
-                        x-on:input.debounce.500ms="$fetch('post', '/sets/"+set.id+"', { ...set, parameters, })"
-                      )
-                    else if parameter.dataType === 'intensity'
+    div.set-list#set-list(x-data=JSON.stringify({exercises }))
+      each set in sets
+        -
+          var historical = historicalSets[set.exercise.id]
+          var hasHistorical = historical.length > 0
+        .is-flex.is-flex-direction-row(data-id=set.id, x-data=JSON.stringify({set: { ...set, exercise: set.exercise.id }}))
+          form(action="/sets/"+set.id+"/delete", method="POST", id="set-"+set.id+"-delete")
+          .is-flex.is-flex-direction-column.is-flex-grow-1(x-data="{ historyExpanded: false }")
+            div.fixed-grid.has-7-cols-desktop.has-4-cols-tablet.has-2-cols-mobile.set-grid
+              div.grid(x-data="{parameters: "+JSON.stringify(Object.entries(set.parameters).reduce((m, [id, v]) => {
+                var parameter = allParameters.find(p => p.id === id);
+                var value = getRawValue(v, parameter, user);
+                if (value != undefined) {
+                  m[id] = value.toString()
+                }
+                return m;
+              }, {}))+"}")
+                .cell.is-col-span-2
+                  .field.has-addons
+                    .control.is-expanded
                       +selectAlpine(
-                        "parameters['"+parameter.id+"']",
-                        "$fetch('post', '/sets/"+set.id+"', { ...set, parameters, })",
-                        [{ id: "", name: "" }].concat(allIntensities)
-                      )(class="is-fullwidth")
-                    else
-                      input.input(
-                        id=parameter.id,
-                        type="number",
-                        name=parameter.id,
-                        x-model="parameters['"+parameter.id+"']"
-                        x-on:input.debounce.500ms="$fetch('post', '/sets/"+set.id+"', { ...set, parameters, })"
-                      )
-          if hasHistorical
-            div(x-show="historyExpanded")
-              p
-                = historical[0].date
-                a.ml-2(href="/exercises/"+set.exercise.id+"/historical?back=/"+date) (See all)
-              table.table
-                thead
-                  each parameter in allParameters
-                    th(x-show="!!exercises.find(v => v.id == set.exercise)?.parameters?.find(p => p.id === '"+parameter.id+"')")
-                      +icon(parameter.id)
-                tbody
-                  each historicalSet in historical
-                    tr
-                      each parameter in allParameters
-                        td(x-show="!!exercises.find(v => v.id == set.exercise)?.parameters?.find(p => p.id === '"+parameter.id+"')")
-                          = displayStringForTable(historicalSet.parameters[parameter.id], parameter, user)
-  script
-    | _set.makeSortableSetList("set-list") 
-  if exercises.length !== 0
-    .box.primary-box
-      .field(x-data="{ newSetExercise: null }")
-        label.label Add new set
-        +control()
-          +selectAlpine(
-            "newSetExercise",
-            "newSetExercise && $fetch('post', '/sets', {exercise: newSetExercise, date: '"+date+"', order: '"+nextSetOrder+"'}).then(() => window.location.reload())",
-            [{ id: "", name: "" }].concat(exercises)
-          )(class="is-primary is-fullwidth")
+                        "set.exercise",
+                        "$fetch('post', '/sets/'+set.id, { exercise: set.exercise, parameters, })",
+                        exercises
+                      )(class="is-fullwidth is-primary")
+                    if hasHistorical
+                      .control
+                        button.button.is-primary(x-on:click="historyExpanded = !historyExpanded", x-bind:class="theme === 'dark' ? 'is-dark' : 'is-light'")
+                          span.icon
+                            +icon("chart-line")
+                    .control
+                      button.button.is-danger(form="set-"+set.id+"-delete", x-bind:class="theme === 'dark' ? 'is-dark' : 'is-light'")
+                        span.icon
+                          +icon("x")(class="is-medium")
+                each parameter in allParameters
+                  - var paramValue = set.parameters[parameter.id]
+                  div.cell(
+                    x-show="!!exercises.find(v => v.id == set.exercise)?.parameters?.find(p => p.id === '"+parameter.id+"')"
+                  )
+                    +control(
+                      parameter.id,
+                      parameter.dataType === 'weight' || parameter.dataType === 'distance' ? defaultUnit(parameter.dataType, user) : parameter.dataType === 'duration' ? 'min' : parameter.id === 'reps' ? 'reps' : null,
+                    )
+                      if parameter.dataType === 'weight' || parameter.dataType === 'distance'
+                        - var unit = defaultUnit(parameter.dataType, user)
+                        input.input(
+                          id=parameter.id,
+                          type="number",
+                          name=parameter.id,
+                          min="0", step="0.1"
+                          x-model="parameters['"+parameter.id+"']"
+                          x-on:input.debounce.500ms="$fetch('post', '/sets/"+set.id+"', { ...set, parameters, })"
+                        )
+                      else if parameter.dataType === 'duration'
+                        input.input(
+                          id=parameter.id,
+                          type="number",
+                          name=parameter.id,
+                          x-model="parameters['"+parameter.id+"']"
+                          x-on:input.debounce.500ms="$fetch('post', '/sets/"+set.id+"', { ...set, parameters, })"
+                        )
+                      else if parameter.dataType === 'intensity'
+                        +selectAlpine(
+                          "parameters['"+parameter.id+"']",
+                          "$fetch('post', '/sets/"+set.id+"', { ...set, parameters, })",
+                          [{ id: "", name: "" }].concat(allIntensities)
+                        )(class="is-fullwidth")
+                      else
+                        input.input(
+                          id=parameter.id,
+                          type="number",
+                          name=parameter.id,
+                          x-model="parameters['"+parameter.id+"']"
+                          x-on:input.debounce.500ms="$fetch('post', '/sets/"+set.id+"', { ...set, parameters, })"
+                        )
+            if hasHistorical
+              div(x-show="historyExpanded")
+                p
+                  = historical[0].date
+                  a.ml-2(href="/exercises/"+set.exercise.id+"/historical?back=/"+date) (See all)
+                table.table
+                  thead
+                    each parameter in allParameters
+                      th(x-show="!!exercises.find(v => v.id == set.exercise)?.parameters?.find(p => p.id === '"+parameter.id+"')")
+                        +icon(parameter.id)
+                  tbody
+                    each historicalSet in historical
+                      tr
+                        each parameter in allParameters
+                          td(x-show="!!exercises.find(v => v.id == set.exercise)?.parameters?.find(p => p.id === '"+parameter.id+"')")
+                            = displayStringForTable(historicalSet.parameters[parameter.id], parameter, user)
+      template(x-if="creatingNewSet")
+        .is-flex.is-flex-direction-row
+          .is-flex.is-flex-direction-column.is-flex-grow-1
+            div.fixed-grid.has-7-cols-desktop.has-4-cols-tablet.has-2-cols-mobile.set-grid
+              div.grid
+                .cell.is-col-span-7.skeleton-block.set-skeleton
+    script
+      | _set.makeSortableSetList("set-list") 
+    if exercises.length !== 0
+      .box.primary-box
+        .field(x-data="{ newSetExercise: null }")
+          label.label Add new set
+          +control()
+            +selectAlpine(
+              "newSetExercise",
+              "if (newSetExercise) { creatingNewSet = true; $fetch('post', '/sets', {exercise: newSetExercise, date: '"+date+"', order: '"+nextSetOrder+"'}).then(() => window.location.reload()) }",
+              [{ id: "", name: "" }].concat(exercises),
+              "creatingNewSet"
+            )(class="is-primary is-fullwidth")

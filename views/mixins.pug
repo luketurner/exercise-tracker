@@ -41,11 +41,12 @@ mixin select(name, signalName, defaultValue, onChange, values)
       each value in values
         option(value=value.id, selected=(defaultValue === value.id))= value.name
 
-mixin selectAlpine(signalName, onChange, values)
-  span.select&attributes(attributes)
+mixin selectAlpine(signalName, onChange, values, isLoadingSignal)
+  span.select(x-bind:class=isLoadingSignal+" ? 'is-loading' : null")&attributes(attributes)
     select(
       x-on:change=onChange,
-      x-model=signalName
+      x-model=signalName,
+      x-bind:disabled=isLoadingSignal
     )
       each value in values
         option(value=value.id)= value.name

@@ -44,3 +44,8 @@ html[data-theme="dark"] .primary-box label {
 .set-grid {
   margin-bottom: var(--bulma-block-spacing);
 }
+
+.set-skeleton {
+  height: var(--bulma-control-height);
+  min-height: var(--bulma-control-height);
+}
