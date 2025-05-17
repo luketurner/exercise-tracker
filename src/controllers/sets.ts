@@ -158,8 +158,8 @@ setsRouter.post(
   })
 );
 
-setsRouter.post(
-  "/sets/:id/delete",
+setsRouter.delete(
+  "/sets/:id",
   controllerMethod(async (req: RequestWithGuaranteedSession, res: Response) => {
     const { user } = req;
 
@@ -172,13 +172,13 @@ setsRouter.post(
       })
     );
 
-    const deletedSets = await db
+    await db
       .delete(setsTable)
       .where(
         and(eq(setsTable.user, user.id), eq(setsTable.id, parseInt(id, 10)))
       )
       .returning();
-    res.redirect(`/${deletedSets?.[0]?.date}`);
+    res.status(200).send({ status: "ok" });
   })
 );
 
