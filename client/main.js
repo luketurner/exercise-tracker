@@ -195,15 +195,14 @@ export function saveTheme(newTheme) {
   }
 }
 
-// TODO -- this function isn't actually sorting the array properly
 export function sortExercises(exercises, sortKey) {
   switch (sortKey) {
     case "name":
-      return sortBy(exercises, (e) => e.name.toLowerCase());
+      return exercises.toSorted((a, b) => a.name.localeCompare(b.name));
     // case "used":
     //   return sortBy(exercises, (e) => e.updatedAt);
     case "updated":
-      return sortBy(exercises, (e) => e.updatedAt).reverse();
+      return exercises.toSorted((a, b) => b.updatedAt - a.updatedAt);
     default:
       return exercises;
   }

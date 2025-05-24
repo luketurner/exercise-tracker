@@ -16,7 +16,7 @@ block content
           //- button.dropdown-item(x-on:click="showSortBy = false; sortByKey = 'used'") Recently used
           button.dropdown-item(x-on:click="showSortBy = false; sortByKey = 'updated'") Recently updated
     table.table.is-fullwidth(x-data=JSON.stringify({ exercises }))
-      tbody(x-data="{ sortedExercises: window._set.sortExercises(exercises, sortByKey)}")
+      tbody
         template(x-for="exercise in window._set.sortExercises(exercises, sortByKey)")
           tr(:id="exercise.id")
             td(x-text="exercise.name")
