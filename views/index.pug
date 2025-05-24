@@ -1,17 +1,26 @@
 extends _layout.pug
 
 block content
-  section.hero.is-warning
-    .hero-body
-      p.title Work in progress!
-      p.body This app is a work in progress, use at your own risk!
-  section.section
-    h1.title Set
-    div.content
-      p Set is an open-source Web application that users can use to track their exercises over time.
-    h1.title Features
-    div.content
-      ul
-        li Sign-in with your Github account.
-        li Define your own exercises and track them over time. Exercises can be tracked with reps, weight, assisted weight, duration, distance, and/or intensity.
-        li Mobile-friendly UI.
+  .container.is-max-tablet
+    .columns
+      .column.is-one-third
+        figure.image.is-square.block.mx-auto(style="max-width: 300px; perspective: 1000px;")
+          img.screenshot(x-bind:src="`/screenshot_${theme}.png`")
+
+        h1.title.block
+          | Simple
+          br
+          | Exercise
+          br
+          | Tracker
+
+      .column
+        .content
+          p
+            | Simple Exercise Tracker (Set) is an open-source webapp for recording exercises and tracking their data over time.
+            | You can create your own exercises and assign a variety of parameters to them (like "Weight", "Reps", etc.)
+          ul
+            li Sign-in with your Github account.
+            li Create your own exercises using variety of parameters (Weight, Assisted weight, Reps, Duration, Distance, and Intensity)
+            li Mobile-friendly interface.
+        button.button.is-primary.mx-auto.is-block(x-data="{ isLoading: false }" x-on:click="isLoading = true; _set.signIn()" x-bind:class="isLoading ? 'is-loading' : null") Sign in with Github
