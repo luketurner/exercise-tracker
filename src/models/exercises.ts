@@ -1,4 +1,4 @@
-import { eq, and } from "drizzle-orm";
+import { eq, and, asc } from "drizzle-orm";
 import {
   exercisesTable,
   type ParameterDefinition,
@@ -10,7 +10,8 @@ export async function getExercisesForUser(userId: string) {
   return await db
     .select()
     .from(exercisesTable)
-    .where(eq(exercisesTable.user, userId));
+    .where(eq(exercisesTable.user, userId))
+    .orderBy(asc(exercisesTable.name));
 }
 
 export async function getExercisesForUserExport(userId: string) {
