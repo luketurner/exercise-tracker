@@ -115,3 +115,12 @@ export function allIntensities() {
     { id: "high", name: "High" },
   ] as const;
 }
+
+export async function updateExerciseLastUsed(id: number, date: Date) {
+  return await db
+    .update(exercisesTable)
+    .set({
+      lastUsedAt: date,
+    })
+    .where(eq(exercisesTable.id, id));
+}

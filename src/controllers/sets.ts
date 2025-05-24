@@ -6,7 +6,11 @@ import { and, eq, gt, gte, lt, lte, sql } from "drizzle-orm";
 import { z } from "zod";
 import { db } from "../db";
 import { setsTable, type ExerciseSet, type ParameterValue } from "../db/schema";
-import { getExercisesForUser, getExercise } from "../models/exercises";
+import {
+  getExercisesForUser,
+  getExercise,
+  updateExerciseLastUsed,
+} from "../models/exercises";
 import {
   buildSetParameters,
   getLatestDaySetsForExercise,
@@ -101,13 +105,18 @@ setsRouter.post(
     const exercise = await getExercise(parseInt(exerciseId, 10), user.id);
     if (!exercise) throw new Error(`Invalid exercise: ${exerciseId}`);
 
-    await db.insert(setsTable).values({
-      user: user.id,
-      exercise: exercise.id,
-      date,
-      order: parseInt(order, 10),
-      parameters: {},
-    });
+    const [{ createdAt }] = await db
+      .insert(setsTable)
+      .values({
+        user: user.id,
+        exercise: exercise.id,
+        date,
+        order: parseInt(order, 10),
+        parameters: {},
+      })
+      .returning({ createdAt: setsTable.createdAt });
+
+    await updateExerciseLastUsed(exercise.id, createdAt);
 
     res.status(200).send({ status: "ok" });
   })
@@ -144,7 +153,7 @@ setsRouter.post(
       user
     );
 
-    await db
+    const [{ createdAt }] = await db
       .update(setsTable)
       .set({
         exercise: exercise.id,
@@ -152,7 +161,9 @@ setsRouter.post(
       })
       .where(
         and(eq(setsTable.user, user.id), eq(setsTable.id, parseInt(id, 10)))
-      );
+      )
+      .returning({ createdAt: setsTable.createdAt });
+    await updateExerciseLastUsed(exercise.id, createdAt);
 
     res.status(200).send({ status: "ok" });
   })
