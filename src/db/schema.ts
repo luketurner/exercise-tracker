@@ -74,6 +74,7 @@ export const exercisesTable = pgTable("exercises", {
     .notNull()
     .defaultNow()
     .$onUpdate(() => new Date()),
+  lastUsedAt: timestamp("lastUsedAt"),
 });
 
 export const setsTable = pgTable(
