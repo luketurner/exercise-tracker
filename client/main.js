@@ -3,7 +3,6 @@ import Chart from "chart.js/auto";
 import "chartjs-adapter-luxon";
 import Sortable from "sortablejs";
 import Alpine from "alpinejs";
-import sortBy from "lodash.sortby";
 
 window.Alpine = Alpine;
 
@@ -196,11 +195,16 @@ export function saveTheme(newTheme) {
 }
 
 export function sortExercises(exercises, sortKey) {
+  console.log(exercises);
   switch (sortKey) {
     case "name":
       return exercises.toSorted((a, b) => a.name.localeCompare(b.name));
-    // case "used":
-    //   return sortBy(exercises, (e) => e.updatedAt);
+    case "used":
+      return exercises.toSorted(
+        (a, b) =>
+          (b.lastUsedAt ? new Date(b.lastUsedAt) : 0) -
+          (a.lastUsedAt ? new Date(a.lastUsedAt) : 0)
+      );
     case "updated":
       return exercises.toSorted((a, b) => b.updatedAt - a.updatedAt);
     default:

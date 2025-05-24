@@ -13,7 +13,7 @@ block content
       .dropdown-menu#lookback-picker(role="menu")
         .dropdown-content
           button.dropdown-item(x-on:click="showSortBy = false; sortByKey = 'name'") Name
-          //- button.dropdown-item(x-on:click="showSortBy = false; sortByKey = 'used'") Recently used
+          button.dropdown-item(x-on:click="showSortBy = false; sortByKey = 'used'") Recently used
           button.dropdown-item(x-on:click="showSortBy = false; sortByKey = 'updated'") Recently updated
     table.table.is-fullwidth(x-data=JSON.stringify({ exercises }))
       tbody
