@@ -1,7 +1,3 @@
-import { Router } from "express";
-import type { Response } from "express";
-import { controllerMethod, relativeDate, toDateString } from "../util";
-import type { RequestWithGuaranteedSession } from "../router";
 import { and, eq, gt, gte, lt, lte, sql } from "drizzle-orm";
 import type { Response } from "express";
 import { Router } from "express";
@@ -140,7 +136,24 @@ setsRouter.post(
         params: z.object({ id: numericStringSchema }),
         body: z.object({
           exercise: z.union([numericStringSchema, z.number()]),
-          parameters: z.object(allParametersInputSchema),
+          parameters: z.object(
+            allParameters().reduce(
+              (m, p) => ({
+                ...m,
+                [p.id]:
+                  p.dataType === "duration"
+                    ? z
+                        .object({
+                          minutes: z.string(),
+                          seconds: z.string(),
+                          hours: z.string(),
+                        })
+                        .optional()
+                    : z.string().optional(),
+              }),
+              {}
+            )
+          ),
         }),
       })
     );

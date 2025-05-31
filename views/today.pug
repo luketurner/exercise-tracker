@@ -1,7 +1,7 @@
 extends _layout.pug
 
 block content
-  div(x-data="{creatingNewSet: false}")
+  div(x-data="{creatingNewSet: false, date: "+date+", user: "+JSON.stringify(user)+", allParameters: "+JSON.stringify(allParameters)+"}")
     div.field.has-addons.has-addons-centered.mb-5
       div.control
         a.button.is-large(href="/"+yesterday)
@@ -25,24 +25,33 @@ block content
           |  and create the exercises that you want to track.
           | Then, when you want to track your exercises, come back to the Today page (the one you're currently on) to log your sets.
 
-    div.set-list#set-list(x-data=JSON.stringify({exercises }))
+    div.set-list#set-list(x-data=JSON.stringify({exercises, historicalSets }))
       each set in sets
-        -
-          var historical = historicalSets[set.exercise.id]
-          var hasHistorical = historical.length > 0
-        template(x-if="!isDeleted", x-data=JSON.stringify({set: { ...set, exercise: set.exercise.id }, isDeleted: false}))
-          .is-flex.is-flex-direction-row(data-id=set.id)
+        template(x-if="!isDeleted", x-data="{ isDeleted: false, hasHistorical: false, historyExpanded: false, set: "+JSON.stringify({ ...set, exercise: set.exercise.id })+"}")
+          .is-flex.is-flex-direction-row(data-id=set.id, x-effect="historyExpanded = !set.exercise; hasHistorical = historicalSets[set.exercise]?.length;")
             form(action="/sets/"+set.id+"/delete", method="POST", id="set-"+set.id+"-delete")
-            .is-flex.is-flex-direction-column.is-flex-grow-1(x-data="{ historyExpanded: false }")
+            .is-flex.is-flex-direction-column.is-flex-grow-1
               div.fixed-grid.has-7-cols-desktop.has-4-cols-tablet.has-2-cols-mobile.set-grid
-                div.grid(x-data="{parameters: "+JSON.stringify(Object.entries(set.parameters).reduce((m, [id, v]) => {
-                  var parameter = allParameters.find(p => p.id === id);
-                  var value = getRawValue(v, parameter, user);
-                  if (value != undefined) {
-                    m[id] = value.toString()
-                  }
-                  return m;
-                }, {}))+"}")
+                div.grid(x-data=`{
+                  parameters: {},
+                }`, x-effect=`
+                  parameters = exercises.find(v => v.id == set.exercise).parameters.reduce((m, parameter) => {
+                    const v = set.parameters[parameter.id];
+                    if (parameter.dataType === 'duration') {
+                      m[parameter.id] = {
+                        minutes: (v && v.minutes)?.toString() || "",
+                        seconds: (v && v.seconds)?.toString() || "",
+                        hours: (v && v.hours)?.toString() || ""
+                      };
+                      return m;
+                    }
+                    var value = _set.getRawValue(v, parameter, user);
+                    if (value != undefined) {
+                      m[parameter.id] = value.toString()
+                    }
+                    return m;
+                  }, {})
+                `)
                   .cell.is-col-span-2
                     .field.has-addons
                       .control.is-expanded
@@ -51,7 +60,7 @@ block content
                           "$fetch('post', '/sets/'+set.id, { exercise: set.exercise, parameters, })",
                           exercises
                         )(class="is-fullwidth is-primary")
-                      if hasHistorical
+                      template(x-if="hasHistorical")
                         .control
                           button.button.is-primary(x-on:click="historyExpanded = !historyExpanded", x-bind:class="theme === 'dark' ? 'is-dark' : 'is-light'")
                             span.icon
@@ -65,58 +74,74 @@ block content
                     div.cell(
                       x-show="!!exercises.find(v => v.id == set.exercise)?.parameters?.find(p => p.id === '"+parameter.id+"')"
                     )
-                      +control(
-                        parameter.id,
-                        parameter.dataType === 'weight' || parameter.dataType === 'distance' ? defaultUnit(parameter.dataType, user) : parameter.dataType === 'duration' ? 'min' : parameter.id === 'reps' ? 'reps' : null,
-                      )
-                        if parameter.dataType === 'weight' || parameter.dataType === 'distance'
-                          - var unit = defaultUnit(parameter.dataType, user)
-                          input.input(
-                            id=parameter.id,
-                            type="number",
-                            name=parameter.id,
-                            min="0", step="0.1"
-                            x-model="parameters['"+parameter.id+"']"
-                            x-on:input.debounce.500ms="$fetch('post', '/sets/"+set.id+"', { ...set, parameters, })"
-                          )
-                        else if parameter.dataType === 'duration'
-                          input.input(
-                            id=parameter.id,
-                            type="number",
-                            name=parameter.id,
-                            x-model="parameters['"+parameter.id+"']"
-                            x-on:input.debounce.500ms="$fetch('post', '/sets/"+set.id+"', { ...set, parameters, })"
-                          )
-                        else if parameter.dataType === 'intensity'
-                          +selectAlpine(
-                            "parameters['"+parameter.id+"']",
-                            "$fetch('post', '/sets/"+set.id+"', { ...set, parameters, })",
-                            [{ id: "", name: "" }].concat(allIntensities)
-                          )(class="is-fullwidth")
-                        else
-                          input.input(
-                            id=parameter.id,
-                            type="number",
-                            name=parameter.id,
-                            x-model="parameters['"+parameter.id+"']"
-                            x-on:input.debounce.500ms="$fetch('post', '/sets/"+set.id+"', { ...set, parameters, })"
-                          )
-              if hasHistorical
-                div(x-show="historyExpanded")
+                      if parameter.dataType === 'duration'
+                        template(x-if="!!exercises.find(v => v.id == set.exercise)?.parameters?.find(p => p.id === '"+parameter.id+"')")
+                          .field.has-addons.duration-field
+                            .control.has-icons-left
+                              input.input(
+                                id=parameter.id + "-min",
+                                type="number",
+                                name=parameter.id + "-min",
+                                x-model="parameters['"+parameter.id+"'].minutes"
+                                x-on:input.debounce.500ms="$fetch('post', '/sets/"+set.id+"', { ...set, parameters, })"
+                              )
+                              span.icon.is-small.is-left
+                                +icon('duration')
+                            .control
+                              input.input(
+                                id=parameter.id + "-sec",
+                                type="number",
+                                name=parameter.id + "-sec",
+                                x-model="parameters['"+parameter.id+"'].seconds"
+                                x-on:input.debounce.500ms="$fetch('post', '/sets/"+set.id+"', { ...set, parameters, })"
+                              )
+                      else
+                        +control(
+                          parameter.id,
+                          parameter.dataType === 'weight' || parameter.dataType === 'distance' ? defaultUnit(parameter.dataType, user) : parameter.dataType === 'duration' ? 'min' : parameter.id === 'reps' ? 'reps' : null,
+                        )
+                          if parameter.dataType === 'weight' || parameter.dataType === 'distance'
+                            - var unit = defaultUnit(parameter.dataType, user)
+                            input.input(
+                              id=parameter.id,
+                              type="number",
+                              name=parameter.id,
+                              min="0", step="0.1"
+                              x-model="parameters['"+parameter.id+"']"
+                              x-on:input.debounce.500ms="$fetch('post', '/sets/"+set.id+"', { ...set, parameters, })"
+                            )
+                          else if parameter.dataType === 'intensity'
+                            +selectAlpine(
+                              "parameters['"+parameter.id+"']",
+                              "$fetch('post', '/sets/"+set.id+"', { ...set, parameters, })",
+                              [{ id: "", name: "" }].concat(allIntensities)
+                            )(class="is-fullwidth")
+                          else
+                            input.input(
+                              id=parameter.id,
+                              type="number",
+                              name=parameter.id,
+                              x-model="parameters['"+parameter.id+"']"
+                              x-on:input.debounce.500ms="$fetch('post', '/sets/"+set.id+"', { ...set, parameters, })"
+                            )
+              template(x-if="hasHistorical && historyExpanded")
+                div
                   p
-                    = historical[0].date
-                    a.ml-2(href="/exercises/"+set.exercise.id+"/historical?back=/"+date) (See all)
+                    span(x-text="historicalSets[set.exercise][0].date")
+                    a.ml-2(x-bind:href="`/exercises/${set.exercise}/historical?back=/${date}`") (See all)
                   table.table
                     thead
                       each parameter in allParameters
                         th(x-show="!!exercises.find(v => v.id == set.exercise)?.parameters?.find(p => p.id === '"+parameter.id+"')")
                           +icon(parameter.id)
                     tbody
-                      each historicalSet in historical
+                      template(x-for="historicalSet in historicalSets[set.exercise]")
                         tr
-                          each parameter in allParameters
-                            td(x-show="!!exercises.find(v => v.id == set.exercise)?.parameters?.find(p => p.id === '"+parameter.id+"')")
-                              = displayStringForTable(historicalSet.parameters[parameter.id], parameter, user)
+                          template(x-for="parameter in allParameters")
+                            td(
+                              x-show="!!exercises.find(v => v.id == set.exercise)?.parameters?.find(p => p.id === parameter.id)"
+                              x-text="_set.displayStringForTable(historicalSet.parameters[parameter.id], parameter, user)"
+                            )
       template(x-if="creatingNewSet")
         .is-flex.is-flex-direction-row
           .is-flex.is-flex-direction-column.is-flex-grow-1

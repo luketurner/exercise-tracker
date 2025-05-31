@@ -1,5 +1,3 @@
-import { z } from "zod";
-import { allParameters, allUnits } from "./models/exercises";
 import { type Request } from "express";
 import { z } from "zod";
 import { allUnits } from "./shared";
@@ -15,11 +13,6 @@ export function validateRequest<TRequest>(
   };
   return schema.parse(requestToValidate);
 }
-
-export const allParametersInputSchema = allParameters().reduce(
-  (m, p) => ({ ...m, [p.id]: z.string().optional() }),
-  {}
-);
 
 export const nameSchema = z.string().max(64);
 

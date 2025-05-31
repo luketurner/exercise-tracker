@@ -113,7 +113,7 @@ export function isValidIntensity(s: string): s is IntensityValue {
 }
 
 export function buildSetParameters(
-  inputParameters: Record<string, string>,
+  inputParameters: Record<string, string | Duration>,
   exercise: Exercise,
   user: User
 ) {
@@ -135,12 +135,23 @@ export function buildSetParameters(
         break;
       }
       case "duration": {
-        const numericValue = Number(value);
-        if (!Number.isFinite(numericValue)) {
-          throw new Error(`Invalid duration: ${value}`);
+        const duration = value as Duration;
+        const secondsValue = Number(duration.seconds);
+        if (!Number.isFinite(secondsValue)) {
+          throw new Error(`Invalid seconds: ${secondsValue}`);
+        }
+        const minutesValue = Number(duration.minutes);
+        if (!Number.isFinite(minutesValue)) {
+          throw new Error(`Invalid minutes: ${minutesValue}`);
+        }
+        const hoursValue = Number(duration.hours);
+        if (!Number.isFinite(hoursValue)) {
+          throw new Error(`Invalid hours: ${hoursValue}`);
         }
         parameters[parameter.id] = {
-          minutes: numericValue,
+          minutes: minutesValue,
+          seconds: secondsValue,
+          hours: hoursValue,
         };
         break;
       }
@@ -156,12 +167,12 @@ export function buildSetParameters(
         break;
       }
       case "intensity":
-        if (!isValidIntensity(value)) {
+        if (!isValidIntensity(value as string)) {
           throw new Error(`Invalid intensity: ${value}`);
         }
         parameters[parameter.id] = {
           value,
-        };
+        } as Intensity;
         break;
       case "number": {
         const numericValue = Number(value);
@@ -189,7 +200,12 @@ export function getRawValue(
   if (!value) return undefined;
   switch (param.dataType) {
     case "duration":
-      return (value as Duration)?.minutes;
+      const duration = value as Duration;
+      return (
+        (duration.seconds ?? 0) +
+        (duration.minutes ?? 0) * 60 +
+        (duration.hours ?? 0) * 3600
+      );
     case "number":
       return (value as Numeric)?.value;
     case "distance":
