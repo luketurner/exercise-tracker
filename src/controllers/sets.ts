@@ -3,12 +3,14 @@ import type { Response } from "express";
 import { controllerMethod, relativeDate, toDateString } from "../util";
 import type { RequestWithGuaranteedSession } from "../router";
 import { and, eq, gt, gte, lt, lte, sql } from "drizzle-orm";
+import type { Response } from "express";
+import { Router } from "express";
 import { z } from "zod";
 import { db } from "../db";
 import { setsTable, type ExerciseSet, type ParameterValue } from "../db/schema";
 import {
-  getExercisesForUser,
   getExercise,
+  getExercisesForUser,
   updateExerciseLastUsed,
 } from "../models/exercises";
 import {
@@ -17,11 +19,13 @@ import {
   getSetById,
   getSetsForDay,
 } from "../models/sets";
+import type { RequestWithGuaranteedSession } from "../router";
+import { allParameters } from "../shared";
+import { controllerMethod, relativeDate, toDateString } from "../util";
 import {
-  validateRequest,
-  numericStringSchema,
-  allParametersInputSchema,
   dateSchema,
+  numericStringSchema,
+  validateRequest,
 } from "../validation";
 
 export const setsRouter = Router();

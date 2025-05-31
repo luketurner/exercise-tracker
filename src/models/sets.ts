@@ -1,8 +1,7 @@
-import { and, eq, asc, gte, desc, lt } from "drizzle-orm";
+import { and, asc, desc, eq, gte, lt } from "drizzle-orm";
 import { db } from "../db";
 import {
   setsTable,
-  type Distance,
   type Duration,
   type Exercise,
   type ExerciseSet,
@@ -14,12 +13,8 @@ import {
   type User,
   type Weight,
 } from "../db/schema";
-import {
-  allIntensities,
-  convertUnit,
-  defaultUnit,
-  getExercise,
-} from "./exercises";
+import { allIntensities, convertUnit, defaultUnit } from "../shared";
+import { getExercise } from "./exercises";
 
 export async function getSetById(setId: number, userId: string) {
   return (
@@ -211,73 +206,6 @@ export function getRawValue(
     // );
     default:
       return undefined;
-  }
-}
-
-export function displayRawValueForTable(
-  value: number | string | undefined,
-  param: ParameterDefinition,
-  user: User
-) {
-  const displayValue = typeof value === "number" ? value.toFixed(1) : value;
-  const displayUnit = defaultUnit(param.dataType, user);
-  return displayValue && displayUnit
-    ? displayValue + " " + displayUnit
-    : displayValue
-    ? displayValue
-    : "-";
-}
-
-export function displayStringForTable(
-  value: ParameterValue,
-  param: ParameterDefinition,
-  user: User
-) {
-  const display = displayString(value, param, user);
-  return displayRawValueForTable(display.value, param, user);
-}
-
-export function displayString(
-  value: ParameterValue,
-  param: ParameterDefinition,
-  user: User
-): { value?: string; unit?: string } {
-  if (!value && value !== 0) return {};
-  switch (param.dataType) {
-    case "distance":
-      return {
-        value: convertUnit(
-          (value as Distance).value,
-          (value as Distance).unit,
-          defaultUnit(param.dataType, user)!
-        ),
-        unit: defaultUnit(param.dataType, user)!,
-      };
-    case "weight":
-      return {
-        value: convertUnit(
-          (value as Weight).value,
-          (value as Weight).unit,
-          defaultUnit(param.dataType, user)!
-        ),
-        unit: defaultUnit(param.dataType, user)!,
-      };
-    case "duration":
-      return {
-        value: (value as Duration).minutes?.toString(),
-        unit: "min",
-      };
-    case "intensity":
-      const display =
-        (
-          allIntensities().find((i) => i.id === (value as Intensity).value) ||
-          {}
-        ).name || "";
-      return { value: display, unit: undefined };
-    case "number":
-      return { value: (value as Numeric).value?.toString(), unit: undefined };
-    default:
-      throw new Error("Invalid dataType");
   }
 }
 

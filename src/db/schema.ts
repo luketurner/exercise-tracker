@@ -1,16 +1,13 @@
-import { sql } from "drizzle-orm";
 import {
+  boolean,
+  date,
+  integer,
+  jsonb,
   pgTable,
   text,
-  integer,
   timestamp,
-  boolean,
-  varchar,
-  interval,
-  check,
-  date,
   unique,
-  jsonb,
+  varchar,
 } from "drizzle-orm/pg-core";
 
 export interface ParameterDefinition {

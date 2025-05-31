@@ -1,6 +1,8 @@
 import { z } from "zod";
 import { allParameters, allUnits } from "./models/exercises";
 import { type Request } from "express";
+import { z } from "zod";
+import { allUnits } from "./shared";
 
 export function validateRequest<TRequest>(
   request: Request,

@@ -1,11 +1,11 @@
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
+import { fromNodeHeaders } from "better-auth/node";
+import { eq } from "drizzle-orm";
+import type { NextFunction, Response } from "express";
 import { db } from "./db"; // your drizzle instance
 import * as schema from "./db/schema";
-import { fromNodeHeaders } from "better-auth/node";
-import type { NextFunction, Response } from "express";
 import type { RequestWithSession } from "./router";
-import { eq } from "drizzle-orm";
 
 export const auth = betterAuth({
   database: drizzleAdapter(db, {

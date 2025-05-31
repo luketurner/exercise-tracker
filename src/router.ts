@@ -1,28 +1,26 @@
-import * as express from "express";
-import type { User } from "./db/schema";
 import type { Session } from "better-auth";
 import { toNodeHandler } from "better-auth/node";
+import * as express from "express";
+import multer from "multer";
 import { auth, getSessionMiddleware, requireSessionOrRedirect } from "./auth";
+import { exerciseRouter } from "./controllers/exercises";
+import { homeRouter } from "./controllers/home";
+import { manualRouter } from "./controllers/manual";
+import { setsRouter } from "./controllers/sets";
+import { settingsRouter } from "./controllers/settings";
+import { userRouter } from "./controllers/user";
+import type { User } from "./db/schema";
+import { getRawValue } from "./models/sets";
 import {
   allIntensities,
   allParameters,
   allUnits,
   convertUnit,
   defaultUnit,
-} from "./models/exercises";
-import multer from "multer";
-import { userRouter } from "./controllers/user";
-import { homeRouter } from "./controllers/home";
-import { exerciseRouter } from "./controllers/exercises";
-import { setsRouter } from "./controllers/sets";
-import { manualRouter } from "./controllers/manual";
-import { settingsRouter } from "./controllers/settings";
-import {
   displayRawValueForTable,
   displayString,
   displayStringForTable,
-  getRawValue,
-} from "./models/sets";
+} from "./shared";
 
 export interface RequestWithSession extends express.Request {
   user?: User;

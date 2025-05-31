@@ -1,16 +1,16 @@
-import { Router } from "express";
-import type { Response } from "express";
-import { controllerMethod } from "../util";
-import type { RequestWithGuaranteedSession } from "../router";
 import { eq } from "drizzle-orm";
+import type { Response } from "express";
+import { Router } from "express";
 import { z } from "zod";
 import { db } from "../db";
 import { user as userTable } from "../db/schema";
-import { allUnits, defaultUnit } from "../models/exercises";
+import type { RequestWithGuaranteedSession } from "../router";
+import { allUnits, defaultUnit } from "../shared";
+import { controllerMethod } from "../util";
 import {
-  validateRequest,
   allDistanceUnitsEnumSchema,
   allWeightUnitsEnumSchema,
+  validateRequest,
 } from "../validation";
 
 export const settingsRouter = Router();

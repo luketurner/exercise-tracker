@@ -1,6 +1,6 @@
+import express from "express";
 import { metricsRouter } from "./metrics";
 import { router } from "./router";
-import express from "express";
 
 const app = express();
 const port = 3000;

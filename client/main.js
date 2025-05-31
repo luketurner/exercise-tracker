@@ -4,6 +4,8 @@ import "chartjs-adapter-luxon";
 import Sortable from "sortablejs";
 import Alpine from "alpinejs";
 
+import { getRawValue, displayStringForTable } from "../src/shared";
+
 window.Alpine = Alpine;
 
 Alpine.store("error", {
@@ -223,6 +225,8 @@ window._set = {
   theme,
   saveTheme,
   sortExercises,
+  getRawValue,
+  displayStringForTable,
 };
 
 Alpine.start();

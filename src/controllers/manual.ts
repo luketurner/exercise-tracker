@@ -1,15 +1,15 @@
-import { Router } from "express";
 import type { Response } from "express";
-import { allManualPages, controllerMethod, getManualPath } from "../util";
-import type { RequestWithSession } from "../router";
-import { validateRequest } from "../validation";
+import { Router } from "express";
+import { readFile } from "node:fs/promises";
 import rehypeStringify from "rehype-stringify";
 import remarkGfm from "remark-gfm";
 import remarkParse from "remark-parse";
 import remarkRehype from "remark-rehype";
 import { unified } from "unified";
 import { z } from "zod";
-import { readFile } from "node:fs/promises";
+import type { RequestWithSession } from "../router";
+import { allManualPages, controllerMethod, getManualPath } from "../util";
+import { validateRequest } from "../validation";
 
 export const manualRouter = Router();
 

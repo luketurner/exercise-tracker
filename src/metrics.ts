@@ -1,7 +1,7 @@
 "use strict";
 
 import { Router } from "express";
-import { register, Counter, Histogram, Gauge } from "prom-client";
+import { Gauge, Histogram, register } from "prom-client";
 import { countUsers } from "./models/user";
 
 export const routeMetric = new Histogram({

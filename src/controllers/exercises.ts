@@ -1,22 +1,19 @@
-import { Router } from "express";
-import type { Response } from "express";
-import { controllerMethod, relativeDate, toDateString } from "../util";
-import type { RequestWithGuaranteedSession } from "../router";
 import { and, eq } from "drizzle-orm";
+import type { Response } from "express";
+import { Router } from "express";
 import { z } from "zod";
 import { db } from "../db";
 import { exercisesTable, type ParameterDefinition } from "../db/schema";
-import {
-  getExercisesForUser,
-  getExercise,
-  allParameters,
-} from "../models/exercises";
+import { getExercise, getExercisesForUser } from "../models/exercises";
 import { analyzeHistoricalSetData, getSetsForExercise } from "../models/sets";
+import type { RequestWithGuaranteedSession } from "../router";
+import { controllerMethod, relativeDate, toDateString } from "../util";
 import {
-  validateRequest,
-  numericStringSchema,
   nameSchema,
+  numericStringSchema,
+  validateRequest,
 } from "../validation";
+import { allParameters } from "../shared";
 
 export const exerciseRouter = Router();
 

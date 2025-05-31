@@ -1,7 +1,7 @@
-import { Router } from "express";
 import type { Response } from "express";
-import { controllerMethod } from "../util";
+import { Router } from "express";
 import type { RequestWithSession } from "../router";
+import { controllerMethod } from "../util";
 
 export const homeRouter = Router();
 

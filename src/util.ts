@@ -1,11 +1,11 @@
 import { fileURLToPath } from "bun";
 import type { Response } from "express";
-import { dirname, join } from "path";
 import { readdir } from "node:fs/promises";
 import { basename, extname } from "node:path";
+import { dirname, join } from "path";
 import { fromError, isZodErrorLike } from "zod-validation-error";
-import type { RequestWithSession } from "./router";
 import { routeMetric } from "./metrics";
+import type { RequestWithSession } from "./router";
 
 const pad = (value: number) => {
   if (value < 10) {
