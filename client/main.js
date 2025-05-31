@@ -197,7 +197,6 @@ export function saveTheme(newTheme) {
 }
 
 export function sortExercises(exercises, sortKey) {
-  console.log(exercises);
   switch (sortKey) {
     case "name":
       return exercises.toSorted((a, b) => a.name.localeCompare(b.name));
