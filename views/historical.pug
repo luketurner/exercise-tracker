@@ -44,10 +44,10 @@ block content
               +icon(param.id)
               |  
               = param.name
-            td= displayRawValueForTable(v.average, param, user)
-            td= displayRawValueForTable(v.min, param, user)
-            td= displayRawValueForTable(v.max, param, user)
-            td= displayRawValueForTable(v.totalChange, param, user)
+            td= displayStringForTable({ value: v.average }, param, user)
+            td= displayStringForTable({ value: v.min }, param, user)
+            td= displayStringForTable({ value: v.max }, param, user)
+            td= displayStringForTable({ value: v.totalChange }, param, user)
   div(style="overflow-x: auto")
     table.table
       thead

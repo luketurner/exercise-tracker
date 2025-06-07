@@ -3,8 +3,13 @@ import Chart from "chart.js/auto";
 import "chartjs-adapter-luxon";
 import Sortable from "sortablejs";
 import Alpine from "alpinejs";
+import { Duration } from "luxon";
 
-import { getRawValue, displayStringForTable } from "../src/shared";
+import {
+  getRawValue,
+  displayStringForTable,
+  durationToString,
+} from "../src/shared";
 
 window.Alpine = Alpine;
 
@@ -90,10 +95,38 @@ export async function buildChart(param, sets) {
         legend: {
           display: false,
         },
+        tooltip: {
+          callbacks: {
+            ...(param.dataType === "duration"
+              ? {
+                  label: function (context) {
+                    let label = context.dataset.label || "";
+
+                    if (label) {
+                      label += ": ";
+                    }
+                    if (context.parsed.y !== null) {
+                      label += durationToString(context.parsed.y);
+                    }
+                    return label;
+                  },
+                }
+              : null),
+          },
+        },
       },
       scales: {
         y:
-          param.dataType === "intensity"
+          param.dataType === "duration"
+            ? {
+                type: "linear",
+                ticks: {
+                  callback(value, index, ticks) {
+                    return durationToString(value);
+                  },
+                },
+              }
+            : param.dataType === "intensity"
             ? {
                 type: "category",
                 labels: ["high", "medium", "low"],
@@ -213,6 +246,12 @@ export function sortExercises(exercises, sortKey) {
   }
 }
 
+export function parseDuration(raw) {
+  return Duration.fromMillis(raw)
+    .normalize()
+    .shiftTo("minutes", "seconds", "milliseconds");
+}
+
 window._set = {
   signIn,
   signOut,
@@ -226,6 +265,7 @@ window._set = {
   sortExercises,
   getRawValue,
   displayStringForTable,
+  parseDuration,
 };
 
 Alpine.start();

@@ -9,6 +9,7 @@ import type {
   User,
   Weight,
 } from "./db/schema";
+import { Duration as LuxonDuration } from "luxon";
 
 export function defaultUnit(
   dataType: ParameterDefinition["dataType"],
@@ -51,12 +52,7 @@ export function getRawValue(
   if (!value) return undefined;
   switch (param.dataType) {
     case "duration":
-      const duration = value as Duration;
-      return (
-        (duration.seconds ?? 0) +
-        (duration.minutes ?? 0) * 60 +
-        (duration.hours ?? 0) * 3600
-      );
+      return (value as Duration)?.value;
     case "number":
       return (value as Numeric)?.value;
     case "distance":
@@ -126,8 +122,7 @@ export function displayString(
       };
     case "duration":
       return {
-        value: (value as Duration).minutes?.toString(),
-        unit: "min",
+        value: durationToString((value as Duration).value),
       };
     case "intensity":
       const display =
@@ -141,6 +136,16 @@ export function displayString(
     default:
       throw new Error("Invalid dataType");
   }
+}
+
+export function durationToString(value: number) {
+  return LuxonDuration.fromMillis(value)
+    .shiftTo("minutes", "seconds")
+    .normalize()
+    .toHuman({
+      unitDisplay: "narrow",
+      listStyle: "narrow",
+    });
 }
 
 export function allUnits() {

@@ -27,9 +27,7 @@ export interface Distance {
 }
 
 export interface Duration {
-  seconds?: number;
-  minutes?: number;
-  hours?: number;
+  value: number; // milliseconds
 }
 
 export type IntensityValue = "low" | "medium" | "high";

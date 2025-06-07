@@ -138,19 +138,7 @@ setsRouter.post(
           exercise: z.union([numericStringSchema, z.number()]),
           parameters: z.object(
             allParameters().reduce(
-              (m, p) => ({
-                ...m,
-                [p.id]:
-                  p.dataType === "duration"
-                    ? z
-                        .object({
-                          minutes: z.string(),
-                          seconds: z.string(),
-                          hours: z.string(),
-                        })
-                        .optional()
-                    : z.string().optional(),
-              }),
+              (m, p) => ({ ...m, [p.id]: z.string().optional() }),
               {}
             )
           ),

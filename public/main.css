@@ -70,3 +70,34 @@ html[data-theme="dark"] .primary-box label {
 .duration-field input[type="number"]::-webkit-outer-spin-button {
   -webkit-appearance: none;
 }
+
+.duration-field .minutes input {
+  border-right: none;
+  padding-right: 0.25em;
+  text-align: right;
+}
+
+.duration-field .minutes {
+  display: flex;
+  align-items: center;
+}
+
+.duration-field .minutes::after {
+  content: ":";
+}
+
+.duration-field .seconds input {
+  border-left: none;
+  padding-left: 0.25em;
+  width: 4em;
+}
+
+.duration-field .minutes input:focus {
+  border-right: none;
+  box-shadow: none;
+}
+
+.duration-field .seconds input:focus {
+  border-left: none;
+  box-shadow: none;
+}

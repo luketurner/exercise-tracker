@@ -37,14 +37,6 @@ block content
                 }`, x-effect=`
                   parameters = exercises.find(v => v.id == set.exercise).parameters.reduce((m, parameter) => {
                     const v = set.parameters[parameter.id];
-                    if (parameter.dataType === 'duration') {
-                      m[parameter.id] = {
-                        minutes: (v && v.minutes)?.toString() || "",
-                        seconds: (v && v.seconds)?.toString() || "",
-                        hours: (v && v.hours)?.toString() || ""
-                      };
-                      return m;
-                    }
                     var value = _set.getRawValue(v, parameter, user);
                     if (value != undefined) {
                       m[parameter.id] = value.toString()
@@ -76,25 +68,32 @@ block content
                     )
                       if parameter.dataType === 'duration'
                         template(x-if="!!exercises.find(v => v.id == set.exercise)?.parameters?.find(p => p.id === '"+parameter.id+"')")
-                          .field.has-addons.duration-field
-                            .control.has-icons-left
+                          .field.has-addons.duration-field(
+                            x-data="{ minutes: _set.parseDuration(parameters['"+parameter.id+"']).minutes, hours: _set.parseDuration(parameters['"+parameter.id+"']).hours, seconds: _set.parseDuration(parameters['"+parameter.id+"']).seconds }",
+                            x-effect="parameters['"+parameter.id+"'] = (1000 * (Number(seconds) + 60 * Number(minutes) + 3600 * Number(hours))).toString()"
+                          )
+                            .control.has-icons-left.minutes
                               input.input(
                                 id=parameter.id + "-min",
                                 type="number",
                                 name=parameter.id + "-min",
-                                x-model="parameters['"+parameter.id+"'].minutes"
+                                x-model="minutes"
                                 x-on:input.debounce.500ms="$fetch('post', '/sets/"+set.id+"', { ...set, parameters, })"
                               )
                               span.icon.is-small.is-left
                                 +icon('duration')
-                            .control
+                            .control.has-icons-right.seconds
                               input.input(
                                 id=parameter.id + "-sec",
                                 type="number",
                                 name=parameter.id + "-sec",
-                                x-model="parameters['"+parameter.id+"'].seconds"
-                                x-on:input.debounce.500ms="$fetch('post', '/sets/"+set.id+"', { ...set, parameters, })"
+                                x-model="seconds",
+                                x-on:input.debounce.500ms="$fetch('post', '/sets/"+set.id+"', { ...set, parameters, })",
+                                max="60"
                               )
+                              span.icon.is-small.is-right
+                                | s
+
                       else
                         +control(
                           parameter.id,

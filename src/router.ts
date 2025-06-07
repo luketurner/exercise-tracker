@@ -10,7 +10,6 @@ import { setsRouter } from "./controllers/sets";
 import { settingsRouter } from "./controllers/settings";
 import { userRouter } from "./controllers/user";
 import type { User } from "./db/schema";
-import { getRawValue } from "./models/sets";
 import {
   allIntensities,
   allParameters,
@@ -20,6 +19,7 @@ import {
   displayRawValueForTable,
   displayString,
   displayStringForTable,
+  getRawValue,
 } from "./shared";
 
 export interface RequestWithSession extends express.Request {

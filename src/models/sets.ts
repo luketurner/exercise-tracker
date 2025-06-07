@@ -7,13 +7,10 @@ import {
   type ExerciseSet,
   type Intensity,
   type IntensityValue,
-  type Numeric,
-  type ParameterDefinition,
   type ParameterValue,
   type User,
-  type Weight,
 } from "../db/schema";
-import { allIntensities, convertUnit, defaultUnit } from "../shared";
+import { allIntensities, defaultUnit, getRawValue } from "../shared";
 import { getExercise } from "./exercises";
 
 export async function getSetById(setId: number, userId: string) {
@@ -135,23 +132,12 @@ export function buildSetParameters(
         break;
       }
       case "duration": {
-        const duration = value as Duration;
-        const secondsValue = Number(duration.seconds);
-        if (!Number.isFinite(secondsValue)) {
-          throw new Error(`Invalid seconds: ${secondsValue}`);
-        }
-        const minutesValue = Number(duration.minutes);
-        if (!Number.isFinite(minutesValue)) {
-          throw new Error(`Invalid minutes: ${minutesValue}`);
-        }
-        const hoursValue = Number(duration.hours);
-        if (!Number.isFinite(hoursValue)) {
-          throw new Error(`Invalid hours: ${hoursValue}`);
+        const numericValue = Number(value);
+        if (!Number.isFinite(numericValue)) {
+          throw new Error(`Invalid duration: ${value}`);
         }
         parameters[parameter.id] = {
-          minutes: minutesValue,
-          seconds: secondsValue,
-          hours: hoursValue,
+          value: numericValue,
         };
         break;
       }
@@ -190,39 +176,6 @@ export function buildSetParameters(
   }
 
   return parameters;
-}
-
-export function getRawValue(
-  value: ParameterValue | undefined,
-  param: ParameterDefinition,
-  user: User
-): number | IntensityValue | undefined {
-  if (!value) return undefined;
-  switch (param.dataType) {
-    case "duration":
-      const duration = value as Duration;
-      return (
-        (duration.seconds ?? 0) +
-        (duration.minutes ?? 0) * 60 +
-        (duration.hours ?? 0) * 3600
-      );
-    case "number":
-      return (value as Numeric)?.value;
-    case "distance":
-    case "weight":
-      const v1 = value as Weight;
-      return Number(
-        convertUnit(v1.value, v1.unit, defaultUnit(param.dataType, user)!)
-      );
-    case "intensity":
-      return (value as Intensity).value;
-    // return (
-    //   1 +
-    //   allIntensities().findIndex((i) => i.id === (value as Intensity).value)
-    // );
-    default:
-      return undefined;
-  }
 }
 
 export interface HistoricalParameterAnalysis {
