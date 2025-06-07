@@ -45,9 +45,12 @@ html(
       footer.footer.mt-6
         div.content.has-text-centered
           p
+            a.mr-1(href="/manual/privacy") Privacy policy
+            | - 
             a.mr-1(href="https://github.com/luketurner/exercise-tracker") Source code
-            | Copyright 2025 Luke Turner
+            | -
             button.ml-1(x-show="theme === 'light'", x-on:click="theme = 'dark'") 🌙
             button.ml-1(x-show="theme === 'dark'", x-on:click="theme = 'light'") ☀
+          p Copyright 2025 Luke Turner
 
     block modal
