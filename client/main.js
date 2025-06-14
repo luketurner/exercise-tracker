@@ -252,6 +252,12 @@ export function parseDuration(raw) {
     .shiftTo("minutes", "seconds", "milliseconds");
 }
 
+export function setQueryParam(key, value) {
+  const params = new URLSearchParams(window.location.search);
+  params.set(key, value);
+  window.location.search = params.toString();
+}
+
 window._set = {
   signIn,
   signOut,
@@ -266,6 +272,7 @@ window._set = {
   getRawValue,
   displayStringForTable,
   parseDuration,
+  setQueryParam,
 };
 
 Alpine.start();

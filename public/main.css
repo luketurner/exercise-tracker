@@ -101,3 +101,25 @@ html[data-theme="dark"] .primary-box label {
   border-left: none;
   box-shadow: none;
 }
+
+.date-card {
+  display: block;
+  color: inherit;
+  text-align: left;
+}
+
+.date-card .date {
+  font-size: var(--bulma-size-medium);
+}
+
+.date-card .exercises {
+  display: flex;
+  flex-flow: row wrap;
+  font-weight: normal;
+}
+
+.back-button-row {
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: space-between;
+}

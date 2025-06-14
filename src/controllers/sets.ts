@@ -11,6 +11,7 @@ import {
 } from "../models/exercises";
 import {
   buildSetParameters,
+  getHistoricalSets,
   getLatestDaySetsForExercise,
   getSetById,
   getSetsForDay,
@@ -80,6 +81,75 @@ setsRouter.get(
       yesterday: yesterdayString,
       tomorrow: tomorrowString,
       historicalSets,
+    });
+  })
+);
+
+setsRouter.get(
+  "/history",
+  controllerMethod(async (req: RequestWithGuaranteedSession, res: Response) => {
+    const { user } = req;
+
+    const { query } = validateRequest(
+      req,
+      z.object({
+        query: z.object({
+          from: z
+            .string()
+            .regex(/^today|\d{4}-\d{2}-\d{2}$/)
+            .default("today"),
+          lookback: z
+            .string()
+            .regex(/^all|\d+$/)
+            .optional(),
+        }),
+      })
+    );
+
+    const lookback =
+      query.lookback === "all"
+        ? "all"
+        : typeof query.lookback === "string"
+        ? parseInt(query.lookback, 10)
+        : 365;
+
+    const sets = await getHistoricalSets(
+      user.id,
+      lookback === "all"
+        ? undefined
+        : toDateString(relativeDate(new Date(), -lookback))
+    );
+
+    const dates: Record<string, ExerciseSet[]> = {};
+    for (const set of sets) {
+      dates[set.date] = [...(dates[set.date] ?? []), set];
+    }
+
+    const sortedDates = Object.entries(dates).toSorted(
+      (a, b) => new Date(b[0]).getTime() - new Date(a[0]).getTime()
+    );
+
+    const aggregatedDates: [string, Record<number, ExerciseSet[]>][] = [];
+    for (const [date, dateSets] of sortedDates) {
+      const aggregatedSets: Record<number, ExerciseSet[]> = {};
+      for (const set of dateSets) {
+        aggregatedSets[set.exercise] = [
+          ...(aggregatedSets[set.exercise] ?? []),
+          set,
+        ];
+      }
+
+      aggregatedDates.push([date, aggregatedSets]);
+    }
+
+    const exercises = await getExercisesForUser(user.id);
+
+    res.render("history", {
+      ...req.viewBag,
+      title: "History",
+      aggregatedDates,
+      exercises,
+      from: query.from,
     });
   })
 );

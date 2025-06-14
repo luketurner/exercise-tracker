@@ -58,3 +58,18 @@ mixin horizontalField(label)
       label.label= label
     div.field-body&attributes(attributes)
       block
+
+mixin lookbackPicker()
+  .dropdown.is-right(x-bind:class="showLookback ? 'is-active' : ''", x-data="{ showLookback: false }")
+    .dropdown-trigger
+      button.button(aria-haspopup="true", aria-controls="lookback-picker", x-on:click="showLookback = !showLookback")
+        span Lookback
+        +icon("chevron-down")
+    .dropdown-menu#lookback-picker(role="menu")
+      .dropdown-content
+        button.dropdown-item(x-on:click="_set.setQueryParam('lookback', '7')") 7d
+        button.dropdown-item(x-on:click="_set.setQueryParam('lookback', '30')") 30d
+        button.dropdown-item(x-on:click="_set.setQueryParam('lookback', '365')") 1y
+        button.dropdown-item(x-on:click="_set.setQueryParam('lookback', 'all')") All time
+        +control("clock", "days")(class="dropdown-item")
+          input.input(type="number", min="0", x-on:change="_set.setQueryParam('lookback', $event.target.value)")

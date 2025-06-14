@@ -1,0 +1,17 @@
+extends _layout.pug
+
+block content
+  .container.is-max-desktop(x-data=JSON.stringify({ aggregatedDates, exercises, from }))
+    div.back-button-row
+      +control()
+        a.button(href="/"+from, x-bind:class="theme === 'dark' ? 'is-dark' : 'is-light'") Back
+      +lookbackPicker()
+    template(x-for="[date, aggregatedSets] of aggregatedDates")
+      a.p-4.my-2.button.date-card(x-bind:href="`/${date}`", x-bind:class="date === from ? 'is-primary' : null")
+        div.date(x-text="date")
+        div.exercises
+          template(x-for="[exerciseId, sets] of Object.entries(aggregatedSets)")
+            div.mt-1.mx-2(x-data="{ exercise: null }", x-effect="exercise = exercises.find(e => e.id == exerciseId)")
+              span(x-text="sets.length")
+              | x 
+              span(x-text="exercise.name")

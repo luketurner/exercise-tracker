@@ -1,21 +1,10 @@
 extends _layout.pug
 
 block content
-  +control()
-    a.button(href=back, x-bind:class="theme === 'dark' ? 'is-dark' : 'is-light'") Back
-  .dropdown.is-right(x-bind:class="showLookback ? 'is-active' : ''", x-data="{ showLookback: false }", style="float: right")
-    .dropdown-trigger
-      button.button(aria-haspopup="true", aria-controls="lookback-picker", x-on:click="showLookback = !showLookback")
-        span Lookback
-        +icon("chevron-down")
-    .dropdown-menu#lookback-picker(role="menu")
-      .dropdown-content
-        button.dropdown-item(x-on:click="window.location.search = 'lookback=7'") 7d
-        button.dropdown-item(x-on:click="window.location.search = 'lookback=30'") 30d
-        button.dropdown-item(x-on:click="window.location.search = 'lookback=365'") 1y
-        button.dropdown-item(x-on:click="window.location.search = 'lookback=all'") All time
-        +control("clock", "days")(class="dropdown-item")
-          input.input(type="number", min="0", x-on:change="window.location.search = 'lookback='+ $event.target.value")
+  div.back-button-row
+    +control()
+      a.button(href=back, x-bind:class="theme === 'dark' ? 'is-dark' : 'is-light'") Back
+    +lookbackPicker()
   h1.title= "History of " + exercise.name
   .fixed-grid.has-1-cols-mobile.has-2-cols-desktop.has-3-cols-widescreen.mb-6
     .grid

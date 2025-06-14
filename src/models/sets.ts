@@ -89,6 +89,19 @@ export async function getLatestDaySetsForExercise(
   return sets;
 }
 
+export async function getHistoricalSets(userId: string, startingDate?: string) {
+  return await db
+    .select()
+    .from(setsTable)
+    .where(
+      and(
+        eq(setsTable.user, userId),
+        startingDate ? gte(setsTable.date, startingDate) : undefined
+      )
+    )
+    .orderBy(desc(setsTable.date), asc(setsTable.order));
+}
+
 export async function getSetsForUserExport(userId: string) {
   return await db
     .select({
