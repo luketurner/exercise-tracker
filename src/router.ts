@@ -43,6 +43,8 @@ router.use(express.urlencoded({ extended: true }));
 router.use(express.json());
 router.use(multer().none());
 
+router.use(getSessionMiddleware);
+
 router.use(
   (
     req: RequestWithSession,
@@ -60,13 +62,12 @@ router.use(
       getRawValue,
       displayRawValueForTable,
       currentPath: req.originalUrl.replace(/\?.*$/, ""),
+      user: req.user ?? null,
     };
 
     next();
   }
 );
-
-router.use(getSessionMiddleware);
 
 router.use(homeRouter);
 router.use(manualRouter);
