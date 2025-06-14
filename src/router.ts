@@ -21,6 +21,7 @@ import {
   displayStringForTable,
   getRawValue,
 } from "./shared";
+import { getAbsoluteUrl } from "./config";
 
 export interface RequestWithSession extends express.Request {
   user?: User;
@@ -63,6 +64,7 @@ router.use(
       displayRawValueForTable,
       currentPath: req.originalUrl.replace(/\?.*$/, ""),
       user: req.user ?? null,
+      getAbsoluteUrl,
     };
 
     next();
