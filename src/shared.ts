@@ -100,7 +100,9 @@ export function displayString(
   param: ParameterDefinition,
   user: User
 ): { value?: string; unit?: string } {
-  if (!value && value !== 0) return {};
+  if (!value?.value && value?.value !== 0) {
+    return {};
+  }
   switch (param.dataType) {
     case "distance":
       return {
