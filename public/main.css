@@ -141,5 +141,5 @@ html[data-theme="dark"] .primary-box label {
     var(--bulma-primary-l),
     1
   );
-  --bulma-primary-rgb: 0, 209, 178;
+  --bulma-primary-rgb: 0, 188, 255;
 }
