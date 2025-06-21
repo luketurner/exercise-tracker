@@ -123,3 +123,23 @@ html[data-theme="dark"] .primary-box label {
   flex-flow: row nowrap;
   justify-content: space-between;
 }
+
+:root {
+  /* from tailwind sky-400 */
+  --bulma-primary-h: 195deg;
+  --bulma-primary-s: 100%;
+  --bulma-primary-l: 47.4%;
+  --bulma-primary: hsla(
+    var(--bulma-primary-h),
+    var(--bulma-primary-s),
+    var(--bulma-primary-l),
+    1
+  );
+  --bulma-primary-base: hsla(
+    var(--bulma-primary-h),
+    var(--bulma-primary-s),
+    var(--bulma-primary-l),
+    1
+  );
+  --bulma-primary-rgb: 0, 209, 178;
+}
