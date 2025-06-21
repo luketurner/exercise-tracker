@@ -9,7 +9,7 @@ block content
     distance: defaultUnit("distance", user)
   }}))
     form
-      +horizontalField("Weight unit")
+      +horizontalField("Weight unit", "Determines the unit (pounds vs. kg) used for weight-related measurements. Previous exercises using other units will automatically be converted.")
         .field
           +control()
             +selectAlpine(
@@ -18,7 +18,7 @@ block content
               weightUnits
             )
     form
-      +horizontalField("Distance unit")
+      +horizontalField("Distance unit", "Determines the unit (miles vs. km) used for distance-related measurements. Previous exercises using other units will automatically be converted.")
         .field
           +control()
             +selectAlpine(
@@ -27,14 +27,14 @@ block content
               distanceUnits
             )
   .notification
-    +horizontalField("Export my data")
+    +horizontalField("Export my data", "Download your exercises, sets, and related data as a JSON object")
       +control()
         button.button(x-on:click="window.location = '/user/export'") Export
 
   .notification.is-danger(x-data="{ deleteModal: false }", x-bind:class="theme === 'dark' ? 'is-dark' : 'is-light'")
     h1.subtitle Danger Zone
     
-    +horizontalField("Delete my account")
+    +horizontalField("Delete my account", "Permanently deletes your user account, exercises, and all associated data.")
       +control()
         button.button.is-danger(x-on:click="deleteModal = true") Delete
     template(x-teleport="body")

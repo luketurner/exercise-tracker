@@ -143,3 +143,17 @@ html[data-theme="dark"] .primary-box label {
   );
   --bulma-primary-rgb: 0, 188, 255;
 }
+
+.help-text-container {
+  position: relative;
+}
+
+.help-text {
+  position: absolute;
+  z-index: 1000;
+  left: 100%;
+  width: max-content;
+  max-width: 20rem;
+  text-align: left;
+  color: var(--bulma-text) !important;
+}

@@ -52,10 +52,26 @@ mixin selectAlpine(signalName, onChange, values, isLoadingSignal)
         option(value=value.id)= value.name
 
 
-mixin horizontalField(label)
-  div.field.is-horizontal
-    div.field-label.is-normal
-      label.label= label
+mixin helpTextBox(signalName, helpText)
+  template(x-if=signalName)
+    div.box.content.help-text
+      div.icon.is-small.is-clickable.is-pulled-right(x-on:click=(signalName + " = false"))
+        +icon("x")
+      = helpText
+
+mixin helpTextAnchor(signalName)
+  span.icon.is-small.is-clickable(x-on:click=(signalName + " = !" + signalName))
+    +icon("help")
+
+mixin horizontalField(label, helpText)
+  div.field.is-horizontal(x-data="{ showHelp: false }")
+    div.field-label.is-normal.help-text-container
+      label.label
+        = label
+        if helpText
+          |  
+          +helpTextAnchor("showHelp")
+      +helpTextBox("showHelp", helpText)
     div.field-body&attributes(attributes)
       block
 

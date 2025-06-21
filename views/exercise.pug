@@ -5,7 +5,7 @@ block content
     +control()
       a.button(href="/exercises", x-bind:class="theme === 'dark' ? 'is-dark' : 'is-light'") Back
     h1.title(x-text="exercise.name")= exercise.name
-    +horizontalField("Exercise name")
+    +horizontalField("Exercise name", "Human-readable name for the exercise, e.g. 'Dumbbell squat'")
       +control()
         input#name.input(
           type="text",
@@ -14,7 +14,7 @@ block content
           x-model="exercise.name",
           x-on:input.debounce.500ms="$fetch('post', '/exercises/"+exercise.id+"', exercise)"
         )
-    +horizontalField("Parameters")(class="is-align-items-center")
+    +horizontalField("Parameters", "Choose which parameters (types of measurements) are appropriate for this exercise. These will be used when logging exercise sets.")(class="is-align-items-center")
       .field
         each param in allParameters
           .control.mb-1
@@ -27,7 +27,7 @@ block content
   .notification.is-danger(x-data="{ deleteModal: false }", x-bind:class="theme === 'dark' ? 'is-dark' : 'is-light'")
     h1.subtitle Danger Zone
     
-    +horizontalField("Delete exercise")
+    +horizontalField("Delete exercise", "Permanently deletes this exercise and all historical data.")
       +control()
         button.button.is-danger(x-on:click="deleteModal = true") Delete
     template(x-teleport="body")
