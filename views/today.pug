@@ -124,9 +124,15 @@ block content
                               x-on:input.debounce.500ms="$fetch('post', '/sets/"+set.id+"', { ...set, parameters, })"
                             )
               template(x-if="hasHistorical && historyExpanded")
-                div
+                div(x-data="{ showHelp: false }")
                   p
-                    span(x-text="historicalSets[set.exercise][0].date")
+                    span(style="position: relative;")
+                      strong
+                        | Exercises from 
+                        span(x-text="historicalSets[set.exercise][0].date")
+                      |  
+                      +helpTextAnchor("showHelp")
+                      +helpTextBox("showHelp", "Shows the most recently recorded measurements for this exercise, excluding today.")
                     a.ml-2(x-bind:href="`/exercises/${set.exercise}/historical?back=/${date}`") (See all)
                   table.table
                     thead
