@@ -19,7 +19,7 @@ block content
         each param in allParameters
           .control.mb-1
             button.button(
-              x-bind:class="{ 'is-success': exercise.parameters.find(p => p.id === '"+param.id+"'), 'is-dark': theme === 'dark' && exercise.parameters.find(p => p.id === '"+param.id+"') }"
+              x-bind:class="{ 'is-primary': exercise.parameters.find(p => p.id === '"+param.id+"'), 'is-dark': theme === 'dark' && exercise.parameters.find(p => p.id === '"+param.id+"') }"
               x-on:click="exercise.parameters.find(p => p.id === '"+param.id+"') ? exercise.parameters = exercise.parameters.filter(p => p.id !== '"+param.id+"') : exercise.parameters.push(allParameters.find(p => p.id === '"+param.id+"')); $fetch('post', '/exercises/"+exercise.id+"', exercise)"
             )
               +icon(param.id)

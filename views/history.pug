@@ -7,7 +7,7 @@ block content
         a.button(href="/"+from, x-bind:class="theme === 'dark' ? 'is-dark' : 'is-light'") Back
       +lookbackPicker()
     template(x-for="[date, aggregatedSets] of aggregatedDates")
-      a.p-4.my-2.button.date-card(x-bind:href="`/${date}`", x-bind:class="date === from ? 'is-primary' : null")
+      a.p-4.my-2.button.date-card(x-bind:href="`/${date}`", x-bind:class="{ 'is-primary': date === from, 'is-dark': theme === 'dark' }")
         div.date(x-text="date")
         div.exercises
           template(x-for="[exerciseId, sets] of Object.entries(aggregatedSets)")
