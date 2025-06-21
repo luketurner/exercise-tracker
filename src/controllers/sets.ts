@@ -51,7 +51,7 @@ setsRouter.get(
     const tomorrowString = toDateString(relativeDate(date, 1));
 
     if (dateString === today && !isToday) {
-      res.redirect("/today");
+      return res.redirect("/today");
     }
 
     const exercises = await getExercisesForUser(user.id);
