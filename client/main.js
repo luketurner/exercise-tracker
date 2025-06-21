@@ -9,6 +9,8 @@ import {
   getRawValue,
   displayStringForTable,
   durationToString,
+  colorScheme,
+  saveColorScheme,
 } from "../src/shared";
 
 window.Alpine = Alpine;
@@ -210,25 +212,6 @@ export async function setFetch(method, url, body) {
   }
 }
 
-export function browserTheme() {
-  return window.matchMedia &&
-    window.matchMedia("(prefers-color-scheme: dark)").matches
-    ? "dark"
-    : "light";
-}
-
-export function theme() {
-  return window.localStorage.getItem("set:theme") || browserTheme();
-}
-
-export function saveTheme(newTheme) {
-  if (newTheme === browserTheme()) {
-    window.localStorage.removeItem("set:theme");
-  } else {
-    window.localStorage.setItem("set:theme", newTheme);
-  }
-}
-
 export function sortExercises(exercises, sortKey) {
   switch (sortKey) {
     case "name":
@@ -265,14 +248,13 @@ window._set = {
   makeSortable,
   makeSortableSetList,
   fetch: setFetch,
-  browserTheme,
-  theme,
-  saveTheme,
   sortExercises,
   getRawValue,
   displayStringForTable,
   parseDuration,
   setQueryParam,
+  colorScheme,
+  saveColorScheme,
 };
 
 Alpine.start();

@@ -1,4 +1,5 @@
 import type {
+  ColorScheme,
   Distance,
   Duration,
   Intensity,
@@ -10,6 +11,27 @@ import type {
   Weight,
 } from "./db/schema";
 import { Duration as LuxonDuration } from "luxon";
+
+export function colorScheme(user?: User): ColorScheme {
+  const storedScheme = window.localStorage.getItem("set:theme");
+  if (storedScheme) {
+    return storedScheme as ColorScheme;
+  }
+  if (user?.preferredTheme) {
+    return user?.preferredTheme;
+  }
+  return browserColorScheme();
+}
+
+export function browserColorScheme() {
+  return window?.matchMedia("(prefers-color-scheme: dark)")?.matches
+    ? "dark"
+    : "light";
+}
+
+export function saveColorScheme(newScheme: ColorScheme) {
+  window.localStorage.setItem("set:theme", newScheme);
+}
 
 export function defaultUnit(
   dataType: ParameterDefinition["dataType"],
@@ -200,4 +222,11 @@ export function allIntensities() {
     { id: "medium", name: "Medium" },
     { id: "high", name: "High" },
   ] as const;
+}
+
+export function allColorSchemes() {
+  return [
+    { id: "light", name: "Light" },
+    { id: "dark", name: "Dark" },
+  ];
 }

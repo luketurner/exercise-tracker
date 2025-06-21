@@ -47,6 +47,8 @@ export type ParameterValue =
   | Numeric
   | Intensity;
 
+export type ColorScheme = "dark" | "light";
+
 export type User = typeof user.$inferSelect;
 export type ExerciseSet = typeof setsTable.$inferSelect;
 export type Exercise = typeof exercisesTable.$inferSelect;
@@ -120,6 +122,7 @@ export const user = pgTable("user", {
   createdAt: timestamp("createdAt").notNull(),
   updatedAt: timestamp("updatedAt").notNull(),
   preferredUnits: jsonb().$type<Record<"weight" | "distance", string>>(),
+  preferredTheme: text("preferredTheme").$type<ColorScheme>(),
 });
 
 export const session = pgTable("session", {

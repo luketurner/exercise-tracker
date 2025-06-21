@@ -3,9 +3,9 @@ import type { Response } from "express";
 import { Router } from "express";
 import { z } from "zod";
 import { db } from "../db";
-import { user as userTable } from "../db/schema";
+import { user as userTable, type ColorScheme } from "../db/schema";
 import type { RequestWithGuaranteedSession } from "../router";
-import { allUnits, defaultUnit } from "../shared";
+import { allColorSchemes, allUnits, defaultUnit } from "../shared";
 import { controllerMethod } from "../util";
 import {
   allDistanceUnitsEnumSchema,
@@ -50,7 +50,7 @@ settingsRouter.post(
     const { user } = req;
 
     const {
-      body: { preferredUnits },
+      body: { preferredUnits, preferredTheme },
     } = validateRequest(
       req,
       z.object({
@@ -59,6 +59,9 @@ settingsRouter.post(
             weight: allWeightUnitsEnumSchema.optional(),
             distance: allDistanceUnitsEnumSchema.optional(),
           }),
+          preferredTheme: z.enum(
+            allColorSchemes().map((s) => s.id) as [string, ...string[]]
+          ),
         }),
       })
     );
@@ -70,6 +73,7 @@ settingsRouter.post(
           weight: preferredUnits.weight ?? defaultUnit("weight", user)!,
           distance: preferredUnits.distance ?? defaultUnit("distance", user)!,
         },
+        preferredTheme: preferredTheme as ColorScheme | null,
       })
       .where(eq(userTable.id, user.id));
 

@@ -1,8 +1,7 @@
 include mixins.pug
 html(
-  x-data="{theme: window._set.theme() }",
+  x-data="{ user: "+JSON.stringify(user)+", theme: window._set.colorScheme() }",
   x-bind:data-theme="theme",
-  x-effect="window._set.saveTheme(theme)"
 )
   head
     title= title
@@ -16,7 +15,9 @@ html(
     meta(property="og:locale" content="en_US")
     meta(property="og:image", content=(getAbsoluteUrl('/screenshot_light.png')))
     meta(property="og:description" content="Simple Exercise Tracker (Set) is an open-source webapp for recording exercises and tracking their data over time.")
-  body()
+  body(
+    x-effect="theme = window._set.colorScheme(user)"
+  )
     script(src="/main.js")
     div.container.is-flex.is-flex-direction-column(style="min-height: 100vh")
       nav.navbar.mb-4(role="navigation", aria-label="main navigation", x-data="{ showNavMenu: false }")
@@ -48,7 +49,7 @@ html(
       div.is-flex-grow-1.mx-2
         block content
 
-      footer.footer.mt-6
+      footer.footer.mt-6(x-effect="window._set.saveColorScheme(theme)")
         div.content.has-text-centered
           p
             a.mr-1(href="/manual/privacy") Privacy policy

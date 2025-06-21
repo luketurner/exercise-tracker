@@ -26,7 +26,10 @@ userRouter.get(
   controllerMethod(async (req: RequestWithGuaranteedSession, res: Response) => {
     const { user } = req;
 
-    const userData = { preferredUnits: user.preferredUnits };
+    const userData = {
+      preferredUnits: user.preferredUnits,
+      preferredTheme: user.preferredTheme,
+    };
     const exercises = await getExercisesForUserExport(user.id);
     const sets = await getSetsForUserExport(user.id);
 

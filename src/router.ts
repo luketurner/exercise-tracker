@@ -11,6 +11,7 @@ import { settingsRouter } from "./controllers/settings";
 import { userRouter } from "./controllers/user";
 import type { User } from "./db/schema";
 import {
+  allColorSchemes,
   allIntensities,
   allParameters,
   allUnits,
@@ -65,6 +66,7 @@ router.use(
       currentPath: req.originalUrl.replace(/\?.*$/, ""),
       user: req.user ?? null,
       getAbsoluteUrl,
+      colorSchemes: allColorSchemes(),
     };
 
     next();

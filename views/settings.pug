@@ -4,27 +4,38 @@ block content
   +control()
     a.button(href=back, x-bind:class="theme === 'dark' ? 'is-dark' : 'is-light'") Back
   h1.title Settings
-  .block(x-data=JSON.stringify({ preferredUnits: {
-    weight: defaultUnit("weight", user),
-    distance: defaultUnit("distance", user)
-  }}))
-    form
+  .block(x-data=JSON.stringify({
+    preferredUnits: {
+      weight: defaultUnit("weight", user),
+      distance: defaultUnit("distance", user),
+    },
+    preferredTheme: user.preferredTheme || defaultColorScheme
+  }))
+    .block
       +horizontalField("Weight unit", "Determines the unit (pounds vs. kg) used for weight-related measurements. Previous exercises using other units will automatically be converted.")
         .field
           +control()
             +selectAlpine(
               "preferredUnits.weight",
-              "$fetch('post', '/settings', { preferredUnits, })",
+              "$fetch('post', '/settings', { preferredUnits, preferredTheme })",
               weightUnits
             )
-    form
       +horizontalField("Distance unit", "Determines the unit (miles vs. km) used for distance-related measurements. Previous exercises using other units will automatically be converted.")
         .field
           +control()
             +selectAlpine(
               "preferredUnits.distance",
-              "$fetch('post', '/settings', { preferredUnits, })",
+              "$fetch('post', '/settings', { preferredUnits, preferredTheme })",
               distanceUnits
+            )
+    .block
+      +horizontalField("Default color scheme", "Specifies whether the app should use dark mode or light mode. Note that this can be overridden in specific browsers by clicking the color scheme switcher in the footer.")
+        .field
+          +control()
+            +selectAlpine(
+              "preferredTheme",
+              "$fetch('post', '/settings', { preferredUnits, preferredTheme }); theme = preferredTheme",
+              [{ id: '', label: '' }].concat(colorSchemes)
             )
   .notification
     +horizontalField("Export my data", "Download your exercises, sets, and related data as a JSON object")
