@@ -33,10 +33,10 @@ block content
               +icon(param.id)
               |  
               = param.name
-            td= displayStringForTable({ value: v.average }, param, user)
-            td= displayStringForTable({ value: v.min }, param, user)
-            td= displayStringForTable({ value: v.max }, param, user)
-            td= displayStringForTable({ value: v.totalChange }, param, user)
+            td= displayStringForTable({ value: v.average, unit: v.unit }, param, user)
+            td= displayStringForTable({ value: v.min, unit: v.unit }, param, user)
+            td= displayStringForTable({ value: v.max, unit: v.unit }, param, user)
+            td= displayStringForTable({ value: v.totalChange, unit: v.unit }, param, user)
   div(style="overflow-x: auto")
     table.table
       thead

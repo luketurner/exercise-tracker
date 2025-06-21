@@ -196,6 +196,7 @@ export interface HistoricalParameterAnalysis {
   min?: number;
   max?: number;
   totalChange?: number;
+  unit?: string | null;
 }
 
 export type HistoricalAnalysis = Record<string, HistoricalParameterAnalysis>;
@@ -230,6 +231,7 @@ export function analyzeHistoricalSetData(
       min: Math.min(...values),
       max: Math.max(...values),
       totalChange: values[values.length - 1] - values[0],
+      unit: defaultUnit(param.dataType, user),
     };
   }
   return analysis;
