@@ -1,5 +1,7 @@
 # Simple exercise tracker (Set)
 
+![Screenshot of the app](public/screenshot_light.png)
+
 Set is a Web application that users can use to track their exercises over time.
 
 Features:
